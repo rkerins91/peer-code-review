@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
-const userSchema = require('./models/User')
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.mongoURI, { useUnifiedTopology: true, useNewUrlParser: true });
-    // mongoose.
+    console.log(typeof process.env.MONGO_URI, process.env.MONGO_URI)
+    await mongoose.connect(String(process.env.MONGO_URI), { useUnifiedTopology: true, useNewUrlParser: true });
     console.log('mongo connected');
   } catch (err) {
     console.error(err.message);
