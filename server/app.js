@@ -7,6 +7,7 @@ const logger = require("morgan");
 const connectDB = require('./database')
 
 const indexRouter = require("./routes/index");
+const pingRouter = require("./routes/ping");
 const userRouter = require("./routes/user")
 
 const { json, urlencoded } = express;
@@ -22,6 +23,7 @@ app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
 app.use("/", indexRouter);
+app.use("/ping", pingRouter);
 app.use("/user", userRouter);
 
 // catch 404 and forward to error handler
