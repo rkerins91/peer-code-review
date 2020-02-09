@@ -1,20 +1,20 @@
-require('dotenv').config();
+require("dotenv").config();
 const createError = require("http-errors");
 const express = require("express");
 const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const connectDB = require('./database')
+const { connectDB } = require("./database");
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
-const userRouter = require("./routes/user")
+const userRouter = require("./routes/user");
 
 const { json, urlencoded } = express;
 
 var app = express();
 
-connectDB()
+connectDB();
 
 app.use(logger("dev"));
 app.use(json());
