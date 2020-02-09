@@ -3,7 +3,6 @@ const User = require("./models/User");
 
 const connectDB = async () => {
   try {
-    console.log(process.env.MONGO_URI_DEV);
     await mongoose.connect(String(process.env.MONGO_URI_DEV), {
       useUnifiedTopology: true,
       useNewUrlParser: true
