@@ -27,18 +27,6 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [secondPassword, setSecondPassword] = useState("");
 
-  const changeEmail = e => {
-    setEmail(e.target.value);
-  };
-
-  const changePassword = e => {
-    setPassword(e.target.value);
-  };
-
-  const changeSecondPassword = e => {
-    setSecondPassword(e.target.value);
-  };
-
   const validateEmail = () => {
     if (email === "") {
       return false;
@@ -70,7 +58,9 @@ const Signup = () => {
         error={validateEmail()}
         label="email address"
         variant="outlined"
-        onChange={changeEmail}
+        onChange={e => {
+          setEmail(e.target.value);
+        }}
       />
       <br />
       <TextField
@@ -84,7 +74,9 @@ const Signup = () => {
             ? "password must be at least 6 characters"
             : ""
         }
-        onChange={changePassword}
+        onChange={e => {
+          setPassword(e.target.value);
+        }}
       />
       <br />
       <TextField
@@ -98,7 +90,9 @@ const Signup = () => {
             ? "passwords must match"
             : ""
         }
-        onChange={changeSecondPassword}
+        onChange={e => {
+          setSecondPassword(e.target.value);
+        }}
       />
       <br />
       <Button
