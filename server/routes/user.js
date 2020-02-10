@@ -37,8 +37,7 @@ router.put("/:id/experience", async (req, res) => {
     for (let language in languages) {
       await user.experience.set(language, Number(languages[language]));
     }
-    // send back user
-    res.send(user);
+    res.sendStatus(200);
   } catch (err) {
     res.sendStatus(400);
   }
