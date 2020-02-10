@@ -28,4 +28,20 @@ router.post(
   }
 );
 
+router.post("/:id/experience", (req, res) => {
+  // Get language data from body of request, userID from params
+  const languages = req.body;
+  const user = User.findById(req.params.id);
+  try {
+    // loop through body of request, setting user experience for each key
+    for (let language in languages) {
+      user.experience.set(language, languages[language]);
+    }
+    // send back user
+    res.send(user);
+  } catch (err) {
+    res.send(400);
+  }
+});
+
 module.exports = router;

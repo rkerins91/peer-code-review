@@ -8,6 +8,10 @@ var userSchema = new Schema({
   email: {
     type: String,
     required: true
+  },
+  experience: {
+    type: Map,
+    of: Number
   }
 });
 
