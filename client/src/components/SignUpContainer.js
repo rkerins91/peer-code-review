@@ -1,16 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Button, Paper, TextField, Typography, Grid } from "@material-ui/core";
+import { Paper, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
-const useStyles = {
+const useStyles = makeStyles({
   root: {
     padding: "10vh",
     backgroundColor: "#6E3ADB",
     height: "80vh"
-  },
-  text: {
-    fontWeight: "800",
-    fontSize: "4vh"
   },
   signUp: {
     width: "50vw",
@@ -20,16 +16,16 @@ const useStyles = {
     backgroundColor: "white",
     margin: "auto"
   }
-};
+});
 
 const SignUpContainer = props => {
-  const classes = useStyles;
+  const classes = useStyles();
 
   return (
-    <div style={classes.root}>
+    <div className={classes.root}>
       <Grid container direction="row" justify="center" alignItems="center">
         <Grid item xs={12} s={6}>
-          <Paper style={classes.signUp} elevation={3}>
+          <Paper className={classes.signUp} elevation={3}>
             {props.children}
           </Paper>
         </Grid>
