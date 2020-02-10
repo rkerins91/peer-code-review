@@ -19,7 +19,7 @@ router.post(
     }
     const { name, email } = req.body;
     try {
-      const user = new User({ name, email });
+      const user = new User({ name, email, experience: {} });
       await user.save();
       res.send(user);
     } catch (err) {
@@ -28,19 +28,19 @@ router.post(
   }
 );
 
-router.post("/:id/experience", (req, res) => {
+router.put("/:id/experience", async (req, res) => {
   // Get language data from body of request, userID from params
   const languages = req.body;
-  const user = User.findById(req.params.id);
+  const user = await User.findById(req.params.id);
   try {
     // loop through body of request, setting user experience for each key
     for (let language in languages) {
-      user.experience.set(language, languages[language]);
+      await user.experience.set(language, Number(languages[language]));
     }
     // send back user
     res.send(user);
   } catch (err) {
-    res.send(400);
+    res.sendStatus(400);
   }
 });
 
