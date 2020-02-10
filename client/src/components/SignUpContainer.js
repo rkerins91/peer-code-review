@@ -5,11 +5,13 @@ import { makeStyles } from "@material-ui/styles";
 const useStyles = makeStyles({
   root: {
     padding: "10vh",
-    backgroundColor: "#6E3ADB",
+    backgroundImage: "linear-gradient(#6E3ADB, #501CBD)",
     height: "80vh"
   },
   signUp: {
     width: "50vw",
+    maxHeight: "80vh",
+    overflowY: "auto",
     padding: "5vh",
     textAlign: "center",
     rounded: true,
