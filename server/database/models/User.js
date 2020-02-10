@@ -8,6 +8,14 @@ var userSchema = new Schema({
   email: {
     type: String,
     required: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  registeredDate: {
+    type: Date,
+    default: Date.now
   }
 });
 
