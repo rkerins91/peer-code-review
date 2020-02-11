@@ -58,25 +58,30 @@ const Signup = () => {
   };
 
   const submit = () => {
+    async function signup(user) {
+      try {
+        let res = await fetch("/signup", {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(user)
+        });
+        let json = await res.json();
+        console.log(json);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     let user = {
       email: email,
       name: name,
       password: password,
       password2: secondPassword
     };
-    fetch("/signup", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(user)
-    })
-      .then(res => {
-        console.log(res.json());
-      })
-      .catch(err => {
-        console.log(err);
-      });
+
+    signup(user);
     return; // placeholder
   };
 

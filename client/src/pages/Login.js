@@ -38,23 +38,27 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const submit = () => {
+    async function login(user) {
+      try {
+        let res = await fetch("/login", {
+          method: "post",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(user)
+        });
+        let json = await res.json();
+        console.log(json.user);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
     let user = {
       email: email,
       password: password
     };
-    fetch("/login", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(user)
-    })
-      .then(res => {
-        console.log(res.json());
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    login(user);
     return; // placeholder
   };
 
