@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
-import SignUpContainer from "../components";
+import { SignUpContainer } from "../components";
 
 const useStyles = makeStyles({
   input: {
