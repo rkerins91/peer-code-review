@@ -45,12 +45,6 @@ const Signup = () => {
     } else return !/\S+@\S+\.\S+/.test(email);
   };
 
-  const validateName = () => {
-    if (email === "") {
-      return false;
-    } else return true;
-  };
-
   const validatePassword = () => {
     if (password.length > 6 || password.length === 0) {
       return null;
@@ -64,6 +58,25 @@ const Signup = () => {
   };
 
   const submit = () => {
+    let user = {
+      email: email,
+      name: name,
+      password: password,
+      password2: secondPassword
+    };
+    fetch("/signup", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(user)
+    })
+      .then(res => {
+        console.log(res.json());
+      })
+      .catch(err => {
+        console.log(err);
+      });
     return; // placeholder
   };
 
@@ -81,7 +94,6 @@ const Signup = () => {
       />
       <TextField
         className={classes.input}
-        error={validateName()}
         label="name"
         variant="outlined"
         onChange={e => {
