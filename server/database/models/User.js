@@ -13,6 +13,10 @@ var userSchema = new Schema({
     type: String,
     required: true
   },
+  experience: {
+    type: Map,
+    of: Number
+  },
   registeredDate: {
     type: Date,
     default: Date.now

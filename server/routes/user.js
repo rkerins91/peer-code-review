@@ -39,7 +39,8 @@ router.post(
         const newUser = new User({
           name: name,
           email: email,
-          password: password
+          password: password,
+          experience: {}
         });
 
         //hash the incoming password and save to DB
