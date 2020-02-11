@@ -1,6 +1,8 @@
 const express = require("express");
-const { check, validationResult } = require("express-validator");
+const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const { User } = require("../database");
 
@@ -14,11 +16,16 @@ router.post(
     check("password", "Choose a password at least 6 characters long").isLength({
       min: 6
     }),
-    check("password2", "Passwords must match").equals(req.body.password2)
+    body("password2").custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Password confirmation does not match password");
+      }
+      return true;
+    })
   ],
-  async (req, res) => {
+  (req, res) => {
     const errors = validationResult(req);
-    if (errors.length) {
+    if (errors.length > 0) {
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -42,7 +49,27 @@ router.post(
             newUser.password = hash;
             newUser
               .save()
-              .then(user => res.json(user))
+              .then(user => {
+                //On successful save, log user in and send JW token
+                const payload = {
+                  email: user.email,
+                  name: user.name
+                };
+                jwt.sign(
+                  payload,
+                  process.env.SECRET,
+                  {
+                    expiresIn: 2628000 //1 month
+                  },
+                  (err, token) => {
+                    res.status(201).json({
+                      success: true,
+                      token: "Bearer " + token,
+                      user: user
+                    });
+                  }
+                );
+              })
               .catch(err => console.log(err));
           });
         });
@@ -61,10 +88,9 @@ router.post(
       .not()
       .isEmpty()
   ],
-  (req,
-  res => {
+  (req, res) => {
     const errors = validationResult(req);
-    if (errors.length) {
+    if (errors.length > 0) {
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -93,9 +119,10 @@ router.post(
                   expiresIn: 2628000 //1 month
                 },
                 (err, token) => {
-                  res.json({
+                  res.status(200).json({
                     success: true,
-                    token: "Bearer " + token
+                    token: "Bearer " + token,
+                    user: user
                   });
                 }
               );
@@ -106,7 +133,7 @@ router.post(
           .catch(err => console.log(err));
       })
       .catch(err => console.log(err));
-  })
+  }
 );
 
 module.exports = router;

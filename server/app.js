@@ -28,7 +28,7 @@ require("./config/passport-config")(passport);
 
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
-app.use("/user", userRouter);
+app.use(userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
