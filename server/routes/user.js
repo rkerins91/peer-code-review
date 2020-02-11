@@ -19,7 +19,7 @@ router.post(
     }
     const { name, email } = req.body;
     try {
-      const user = new User({ name, email, experience: {} });
+      const user = new User({ name, email });
       await user.save();
       res.send(user);
     } catch (err) {
