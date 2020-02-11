@@ -11,10 +11,16 @@ const useStyles = makeStyles({
   },
   text: {
     fontSize: "3vw",
-    fontWeight: "800"
+    fontWeight: "800",
+    margin: "2vh"
   },
   button: {
-    backgroundColor: "#43DDC1"
+    backgroundColor: "#43DDC1",
+    marginLeft: "30%",
+    marginRight: "30%",
+    marginTop: "2vh",
+    marginBottom: "2vh",
+    width: "30%"
   },
   link: {
     marginTop: "2vh"
@@ -52,7 +58,6 @@ const Signup = () => {
   return (
     <SignUpContainer>
       <Typography className={classes.text}> Create An Account </Typography>
-      <br />
       <TextField
         className={classes.input}
         error={validateEmail()}
@@ -62,7 +67,6 @@ const Signup = () => {
           setEmail(e.target.value);
         }}
       />
-      <br />
       <TextField
         className={classes.input}
         error={validatePassword()}
@@ -78,7 +82,6 @@ const Signup = () => {
           setPassword(e.target.value);
         }}
       />
-      <br />
       <TextField
         className={classes.input}
         error={validateSecondPassword()}
@@ -94,7 +97,6 @@ const Signup = () => {
           setSecondPassword(e.target.value);
         }}
       />
-      <br />
       <Button
         className={classes.button}
         variant="contained"
