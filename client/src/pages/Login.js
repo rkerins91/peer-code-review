@@ -22,8 +22,13 @@ const useStyles = makeStyles({
     marginBottom: "2vh",
     width: "30%"
   },
+  switch: {
+    marginTop: "2vh",
+    fontWeight: "700"
+  },
   link: {
-    marginTop: "2vh"
+    marginLeft: "1vh",
+    textDecoration: "none"
   }
 });
 
@@ -64,8 +69,11 @@ const Login = () => {
       >
         Login
       </Button>
-      <Typography className={classes.link}>
-        Don't have an account? <Link to="/signup">sign up</Link>
+      <Typography className={classes.switch}>
+        Don't have an account?
+        <Link className={classes.link} to="/signup">
+          sign up
+        </Link>
       </Typography>
     </SignUpContainer>
   );
