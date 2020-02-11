@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
-import SignUpContainer from "../components";
+import { SignUpContainer } from "../components";
 
 const useStyles = makeStyles({
   input: {
@@ -36,6 +36,45 @@ const Login = () => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+
+  const checkEmailError = () => {
+    if (emailError) {
+      return emailError;
+    } else return null;
+  };
+
+  const checkPasswordError = () => {
+    if (passwordError) {
+      return passwordError;
+    } else return null;
+  };
+
+  useEffect(() => {
+    if (error.includes("Email")) {
+      setEmailError(error);
+    } else if (error.includes("Password")) {
+      setPasswordError(error);
+    } else {
+      setEmailError(null);
+      setPasswordError(null);
+    }
+  }, [error]);
+
+  // remove errors when user starts typing
+  useEffect(() => {
+    if (emailError) {
+      setEmailError(null);
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (passwordError) {
+      setPasswordError(null);
+    }
+  }, [password]);
 
   const submit = () => {
     async function login(user) {
@@ -48,7 +87,12 @@ const Login = () => {
           body: JSON.stringify(user)
         });
         let json = await res.json();
-        console.log(json.user);
+        console.log(json);
+        if (json.errors) {
+          setError(json.errors[0]);
+        } else {
+          console.log(json.user);
+        }
       } catch (e) {
         console.log(e);
       }
@@ -59,7 +103,6 @@ const Login = () => {
       password: password
     };
     login(user);
-    return; // placeholder
   };
 
   return (
@@ -69,6 +112,8 @@ const Login = () => {
         className={classes.input}
         label="email address"
         variant="outlined"
+        error={checkEmailError() ? true : false}
+        helperText={emailError}
         onChange={e => {
           setEmail(e.target.value);
         }}
@@ -78,6 +123,8 @@ const Login = () => {
         label="password"
         type="password"
         variant="outlined"
+        error={checkPasswordError() ? true : false}
+        helperText={passwordError}
         onChange={e => {
           setPassword(e.target.value);
         }}
