@@ -62,7 +62,7 @@ const Login = () => {
         color="primary"
         onClick={submit}
       >
-        Sign Up
+        Login
       </Button>
       <Typography className={classes.link}>
         Don't have an account? <Link to="/signup">sign up</Link>
