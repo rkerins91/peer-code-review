@@ -5,6 +5,7 @@ const { join } = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const { connectDB } = require("./database");
+const passport = require("passport");
 
 const indexRouter = require("./routes/index");
 const pingRouter = require("./routes/ping");
@@ -22,9 +23,12 @@ app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(join(__dirname, "public")));
 
+app.use(passport.initialize());
+require("./config/passport-config")(passport);
+
 app.use("/", indexRouter);
 app.use("/ping", pingRouter);
-app.use("/user", userRouter);
+app.use(userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
