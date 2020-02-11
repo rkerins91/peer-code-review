@@ -41,14 +41,14 @@ const Signup = () => {
 
   const validatePassword = () => {
     if (password.length > 6 || password.length === 0) {
-      return false;
-    } else return true;
+      return null;
+    } else return "password must be at least 6 characters";
   };
 
   const validateSecondPassword = () => {
     if (secondPassword === password || secondPassword === "") {
-      return false;
-    } else return true;
+      return null;
+    } else return "passwords must match";
   };
 
   const submit = () => {
@@ -69,30 +69,22 @@ const Signup = () => {
       />
       <TextField
         className={classes.input}
-        error={validatePassword()}
+        error={validatePassword() ? true : false}
         label="password"
         type="password"
         variant="outlined"
-        helperText={
-          password.length > 0 && password.length < 6
-            ? "password must be at least 6 characters"
-            : ""
-        }
+        helperText={validatePassword()}
         onChange={e => {
           setPassword(e.target.value);
         }}
       />
       <TextField
         className={classes.input}
-        error={validateSecondPassword()}
+        error={validateSecondPassword() ? true : false}
         label="re-enter password"
         type="password"
         variant="outlined"
-        helperText={
-          secondPassword.length > 0 && password !== secondPassword
-            ? "passwords must match"
-            : ""
-        }
+        helperText={validateSecondPassword()}
         onChange={e => {
           setSecondPassword(e.target.value);
         }}
