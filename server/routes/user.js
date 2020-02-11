@@ -51,4 +51,62 @@ router.post(
   }
 );
 
+router.post(
+  "/login",
+  [
+    check("email", "Enter your account email address to login")
+      .not()
+      .isEmpty(),
+    check("password", "Please enter a password to login")
+      .not()
+      .isEmpty()
+  ],
+  (req,
+  res => {
+    const errors = validationResult(req);
+    if (errors.length) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+
+    // Find if user exists
+    User.findOne({ email })
+      .then(user => {
+        if (!user) {
+          return res.status(404).json({ errors: ["Email not found"] });
+        }
+        // User exists, compare hashed password
+        bcrypt
+          .compare(password, user.password)
+          .then(isMatch => {
+            if (isMatch) {
+              // Create JWT Payload
+              const payload = {
+                email: user.email,
+                name: user.name
+              };
+              jwt.sign(
+                payload,
+                process.env.SECRET,
+                {
+                  expiresIn: 2628000 //1 month
+                },
+                (err, token) => {
+                  res.json({
+                    success: true,
+                    token: "Bearer " + token
+                  });
+                }
+              );
+            } else {
+              return res.status(400).json({ errors: ["Password incorrect"] });
+            }
+          })
+          .catch(err => console.log(err));
+      })
+      .catch(err => console.log(err));
+  })
+);
+
 module.exports = router;
