@@ -5,7 +5,8 @@ import { makeStyles } from "@material-ui/styles";
 const useStyles = makeStyles({
   root: {
     padding: "10vh",
-    backgroundImage: "linear-gradient(#6E3ADB, #501CBD)",
+    backgroundImage:
+      "linear-gradient(to top, rgba(87,40,184,1) 25%, rgba(119,140,255,1) 100%)",
     height: "80vh"
   },
   signUp: {
