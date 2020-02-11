@@ -12,7 +12,7 @@ const useStyles = makeStyles({
   text: {
     fontSize: "3vw",
     fontWeight: "800",
-    margin: "2vh"
+    marginBottom: "2vh"
   },
   button: {
     backgroundColor: "#43DDC1",
@@ -22,14 +22,20 @@ const useStyles = makeStyles({
     marginBottom: "2vh",
     width: "30%"
   },
+  switch: {
+    marginTop: "2vh",
+    fontWeight: "700"
+  },
   link: {
-    marginTop: "2vh"
+    marginLeft: "1vh",
+    textDecoration: "none"
   }
 });
 
 const Signup = () => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [secondPassword, setSecondPassword] = useState("");
 
@@ -37,6 +43,12 @@ const Signup = () => {
     if (email === "") {
       return false;
     } else return !/\S+@\S+\.\S+/.test(email);
+  };
+
+  const validateName = () => {
+    if (email === "") {
+      return false;
+    } else return true;
   };
 
   const validatePassword = () => {
@@ -69,6 +81,15 @@ const Signup = () => {
       />
       <TextField
         className={classes.input}
+        error={validateName()}
+        label="name"
+        variant="outlined"
+        onChange={e => {
+          setName(e.target.value);
+        }}
+      />
+      <TextField
+        className={classes.input}
         error={validatePassword() ? true : false}
         label="password"
         type="password"
@@ -97,8 +118,11 @@ const Signup = () => {
       >
         Sign Up
       </Button>
-      <Typography className={classes.link}>
-        Already have an account? <Link to="/login">login</Link>
+      <Typography className={classes.switch}>
+        Already have an account?
+        <Link className={classes.link} to="/login">
+          login
+        </Link>
       </Typography>
     </SignUpContainer>
   );
