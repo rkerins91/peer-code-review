@@ -16,14 +16,14 @@ router.post(
     check("password", "Choose a password at least 6 characters long").isLength({
       min: 6
     }),
-    body("password2").custom((value, { req }) => {
+    body("confirmPassword").custom((value, { req }) => {
       if (value !== req.body.password) {
         throw new Error("Password confirmation does not match password");
       }
       return true;
     })
   ],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (errors.length > 0) {
       return res.status(400).json({ errors: errors.array() });
@@ -31,53 +31,44 @@ router.post(
 
     const { name, email, password } = req.body;
 
-    //Check for an existing user
-    User.findOne({ email: email }).then(user => {
+    try {
+      //Check for an existing user
+      var user = await User.findOne({ email: email })
       if (user) {
         return res.status(400).json({ errors: ["Email already exists"] });
-      } else {
+      } 
+      else {
         const newUser = new User({
           name: name,
           email: email,
           password: password,
           experience: {}
         });
-
-        //hash the incoming password and save to DB
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            newUser
-              .save()
-              .then(user => {
-                //On successful save, log user in and send JW token
-                const payload = {
-                  email: user.email,
-                  name: user.name
-                };
-                jwt.sign(
-                  payload,
-                  process.env.SECRET,
-                  {
-                    expiresIn: 2628000 //1 month
-                  },
-                  (err, token) => {
-                    res.status(201).json({
-                      success: true,
-                      token: "Bearer " + token,
-                      user: user
-                    });
-                  }
-                );
-              })
-              .catch(err => console.log(err));
-          });
-        });
+        user = await User.create(newUser)
+      //On successful save, create payload and send response token with user
+        const payload = {
+          id: user._id
+      };
+        jwt.sign(
+          payload,
+          process.env.SECRET,
+          {
+            expiresIn: Number(process.env.TOKEN_EXPIRATION)
+          },
+          (err, token) => {
+            res.status(201).json({
+              success: true,
+              token: "Bearer " + token,
+              user: user
+            });
+          }
+        );
       }
-    });
-  }
-);
+    }
+    catch (err) {
+      console.log(err);
+    }
+  },
 
 router.post(
   "/login",
