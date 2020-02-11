@@ -82,7 +82,6 @@ const Signup = () => {
     };
 
     signup(user);
-    return; // placeholder
   };
 
   return (
@@ -90,9 +89,9 @@ const Signup = () => {
       <Typography className={classes.text}> Create An Account </Typography>
       <TextField
         className={classes.input}
-        error={validateEmail()}
         label="email address"
         variant="outlined"
+        error={validateEmail()}
         onChange={e => {
           setEmail(e.target.value);
         }}
@@ -107,10 +106,10 @@ const Signup = () => {
       />
       <TextField
         className={classes.input}
-        error={validatePassword() ? true : false}
         label="password"
         type="password"
         variant="outlined"
+        error={validatePassword() ? true : false}
         helperText={validatePassword()}
         onChange={e => {
           setPassword(e.target.value);
@@ -118,10 +117,10 @@ const Signup = () => {
       />
       <TextField
         className={classes.input}
-        error={validateSecondPassword() ? true : false}
         label="re-enter password"
         type="password"
         variant="outlined"
+        error={validateSecondPassword() ? true : false}
         helperText={validateSecondPassword()}
         onChange={e => {
           setSecondPassword(e.target.value);
