@@ -3,13 +3,14 @@ import { InputLabel, Select, MenuItem, makeStyles } from "@material-ui/core";
 
 const NewExperienceForm = ({
   updateExperience,
-  languagesAvailable,
+  availableLanguages,
+  language,
   index,
   deleteExperience,
   deletable
 }) => {
   const [selected, setSelected] = useState({
-    language: languagesAvailable[0],
+    language: language,
     level: 1
   });
 
@@ -21,24 +22,27 @@ const NewExperienceForm = ({
     updateExperience(index, { [selected.language]: Number(selected.level) });
   }, [selected]);
 
-  // Todo: add functionality for not allowing 0 experiences
-
   return (
     <>
       <InputLabel id="label">Language</InputLabel>
       <Select
-        labelId="label"
+        labelid="label"
         id="select"
         onChange={handleChange("language")}
         value={selected.language}
         name="language"
       >
-        {languagesAvailable.map(ele => (
-          <MenuItem value={ele}>{ele}</MenuItem>
-        ))}
+        {[language]
+          .concat(availableLanguages)
+          .sort()
+          .map(ele => (
+            <MenuItem value={ele} key={ele}>
+              {ele}
+            </MenuItem>
+          ))}
       </Select>
       <Select
-        labelId="label"
+        labelid="label"
         id="select"
         onChange={handleChange("level")}
         value={selected.level}

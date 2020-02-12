@@ -2,26 +2,37 @@ import React, { useState, useEffect } from "react";
 import SignUpContainer from "../../components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import AddExperienceButton from "./AddExperienceButton";
+import { availableLanguages } from "../../utils";
 
-// TO-DO: ADD FUNCTIONALITY TO FILTER LANGUAGES ALREADY SELECTED
-const Experience = props => {
+const Experience = () => {
   const [experience, setExperience] = useState([{ C: 1 }]);
+  const [unselectedLanguages, setUnselectedLanguages] = useState(
+    availableLanguages.slice(1)
+  );
 
-  const languagesAvailable = [
-    "C",
-    "C++",
-    "Java",
-    "JavaScript",
-    "Python",
-    "Ruby"
-  ];
+  useEffect(() => {
+    // 'knownLanguages' variable is used to have a O(1) lookup when filtering
+    // for unselected languages, preventing nested looping by having to search through
+    // 'experience' state on each pass of filter
+    const knownLanguages = {};
+    experience.forEach(ele => {
+      knownLanguages[Object.keys(ele)[0]] = true;
+    });
+
+    // Make array of languages from copy of availableLanguages array if they are
+    // not already selected
+    const newUnselectedLanguages = availableLanguages.slice().filter(ele => {
+      return !knownLanguages.hasOwnProperty(ele);
+    });
+    setUnselectedLanguages(newUnselectedLanguages);
+  }, [experience]);
 
   const addExperience = () => {
-    setExperience([...experience, { [languagesAvailable[0]]: 1 }]);
+    setExperience([...experience, { [availableLanguages[0]]: 1 }]);
   };
 
   const updateExperience = async (index, newExperience) => {
-    let newExperienceList = experience;
+    let newExperienceList = experience.slice();
     newExperienceList[index] = newExperience;
     setExperience(newExperienceList);
   };
@@ -37,9 +48,10 @@ const Experience = props => {
       <p>Add your experience here</p>
       {experience.map((_, idx) => (
         <NewExperienceForm
+          key={Object.keys(experience[idx])[0]}
           updateExperience={updateExperience}
-          language={languagesAvailable[0]}
-          languagesAvailable={languagesAvailable}
+          language={Object.keys(experience[idx])[0]}
+          availableLanguages={unselectedLanguages}
           deleteExperience={deleteExperience}
           index={idx}
           experience={experience}
