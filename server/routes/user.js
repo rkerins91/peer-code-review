@@ -29,23 +29,35 @@ router.post(
 );
 
 router.put("/:id/experience", async (req, res) => {
-  // Get language data from body of request, userID from params
   const languages = { ...req.body };
   const user = await User.findById(req.params.id);
-  try {
-    const languagesToSet = {};
+  const availableLanguages = [
+    "C",
+    "C++",
+    "Java",
+    "JavaScript",
+    "Python",
+    "Ruby"
+  ];
+  if (Object.keys(languages).every(ele => availableLanguages.includes(ele))) {
+    // Set make values of languages obj numbers
     for (let language in languages) {
       if (languages.hasOwnProperty(language)) {
-        languagesToSet[language] = Number(languages[language]);
+        languages[language] = Number(languages[language]);
       }
     }
-    user.experience = languagesToSet;
-    user.markModified("experience");
-    user.save();
-    res.send(200);
-  } catch (err) {
-    res.sendStatus(400);
+
+    try {
+      // Set user experience to new languages obj and save
+      user.experience = languages;
+      user.markModified("experience");
+      user.save();
+      return res.sendStatus(200);
+    } catch (err) {
+      return res.sendStatus(500);
+    }
   }
+  res.status(400).send("Invalid language sent");
 });
 
 module.exports = router;
