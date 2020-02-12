@@ -138,7 +138,6 @@ const Login = () => {
             setPassword(e.target.value);
           }}
         />
-        <p> {JSON.stringify(user)} </p>
         <Button
           className={classes.button}
           variant="contained"
