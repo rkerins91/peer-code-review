@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, Redirect } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import { SignUpContainer } from "../components";
+import { UserContext } from "../context/UserContext";
 
 const useStyles = makeStyles({
   input: {
@@ -39,6 +40,8 @@ const Login = () => {
   const [error, setError] = useState("");
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
+  // user context
+  const { user, setUser } = useContext(UserContext);
 
   const checkEmailError = () => {
     if (emailError) {
@@ -92,7 +95,7 @@ const Login = () => {
         } else {
           if ((json.success = true)) {
             localStorage.setItem("peercode-auth-token", json.token);
-            console.log(json.user);
+            setUser(json.user);
           }
         }
       } catch (e) {
@@ -107,46 +110,51 @@ const Login = () => {
     login(user);
   };
 
-  return (
-    <SignUpContainer>
-      <Typography className={classes.text}> Sign In </Typography>
-      <TextField
-        className={classes.input}
-        label="email address"
-        variant="outlined"
-        error={checkEmailError() ? true : false}
-        helperText={emailError}
-        onChange={e => {
-          setEmail(e.target.value);
-        }}
-      />
-      <TextField
-        className={classes.input}
-        label="password"
-        type="password"
-        variant="outlined"
-        error={checkPasswordError() ? true : false}
-        helperText={passwordError}
-        onChange={e => {
-          setPassword(e.target.value);
-        }}
-      />
-      <Button
-        className={classes.button}
-        variant="contained"
-        color="primary"
-        onClick={submit}
-      >
-        Login
-      </Button>
-      <Typography className={classes.switch}>
-        Don't have an account?
-        <Link className={classes.link} to="/signup">
-          sign up
-        </Link>
-      </Typography>
-    </SignUpContainer>
-  );
+  // if the user is signed in, redirect them to the home page
+  if (user) {
+    return <Redirect to="/" />;
+  } else
+    return (
+      <SignUpContainer>
+        <Typography className={classes.text}> Sign In </Typography>
+        <TextField
+          className={classes.input}
+          label="email address"
+          variant="outlined"
+          error={checkEmailError() ? true : false}
+          helperText={emailError}
+          onChange={e => {
+            setEmail(e.target.value);
+          }}
+        />
+        <TextField
+          className={classes.input}
+          label="password"
+          type="password"
+          variant="outlined"
+          error={checkPasswordError() ? true : false}
+          helperText={passwordError}
+          onChange={e => {
+            setPassword(e.target.value);
+          }}
+        />
+        <p> {JSON.stringify(user)} </p>
+        <Button
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          onClick={submit}
+        >
+          Login
+        </Button>
+        <Typography className={classes.switch}>
+          Don't have an account?
+          <Link className={classes.link} to="/signup">
+            sign up
+          </Link>
+        </Typography>
+      </SignUpContainer>
+    );
 };
 
 export default Login;
