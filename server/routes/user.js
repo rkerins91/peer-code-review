@@ -2,7 +2,6 @@ const express = require("express");
 const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 const { User } = require("../database");
 
@@ -47,23 +46,14 @@ router.post(
         user = await newUser.save();
 
         //On successful save, create payload and send response token with user
-        const payload = {
-          id: user._id
-        };
-        jwt.sign(
-          payload,
-          process.env.SECRET,
-          {
-            expiresIn: Number(process.env.TOKEN_EXPIRATION)
-          },
-          (err, token) => {
-            res.status(201).json({
-              success: true,
-              token: "Bearer " + token,
-              user: user
-            });
-          }
-        );
+        user.login(user._id, (err, token) => {
+          if (err) throw err;
+          res.status(201).json({
+            success: true,
+            token: "Bearer " + token,
+            user: user
+          });
+        });
       }
     } catch (err) {
       console.log(err);
@@ -100,24 +90,14 @@ router.post(
 
           if (isMatch) {
             // Passwords match, create JWT Payload, and send it in response with user object
-            const payload = {
-              id: user._id
-            };
-
-            jwt.sign(
-              payload,
-              process.env.SECRET,
-              {
-                expiresIn: Number(process.env.TOKEN_EXPIRATION)
-              },
-              (err, token) => {
-                res.status(200).json({
-                  success: true,
-                  token: "Bearer " + token,
-                  user: user
-                });
-              }
-            );
+            user.login(user._id, (err, token) => {
+              if (err) throw err;
+              res.status(201).json({
+                success: true,
+                token: "Bearer " + token,
+                user: user
+              });
+            });
           } else {
             return res.status(400).json({ errors: ["Password incorrect"] });
           }

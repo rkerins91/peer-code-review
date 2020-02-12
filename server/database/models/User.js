@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 var userSchema = new Schema({
   name: {
@@ -34,6 +35,23 @@ userSchema.pre("save", async function(next) {
   } catch (err) {
     return next(err);
   }
+});
+
+userSchema.method("login", async function(id, callback) {
+  const payload = {
+    id: id
+  };
+
+  jwt.sign(
+    payload,
+    process.env.SECRET,
+    {
+      expiresIn: Number(process.env.TOKEN_EXPIRATION)
+    },
+    (err, token) => {
+      callback(err, token);
+    }
+  );
 });
 
 module.exports = model("user", userSchema);
