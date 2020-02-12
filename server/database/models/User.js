@@ -24,15 +24,16 @@ var userSchema = new Schema({
   }
 });
 
-// run before every schema.save() call
-userSchema.pre("save", (this) => {
-  return bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(this.password, salt, (err, hash) => {
-      if (err) throw err;
-      this.password = hash;
-    });
-  });
+// run before every model.save() call
+userSchema.pre("save", async function(next) {
+  if (!this.isModified("password")) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 });
-d;
 
 module.exports = model("user", userSchema);
