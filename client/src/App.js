@@ -6,6 +6,7 @@ import { UserContext } from "./context/UserContext";
 import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import Home from "./pages/Home";
 
 import "./App.css";
 
@@ -32,6 +33,7 @@ function App() {
         <BrowserRouter>
           <Route path="/signup" component={Signup} />
           <Route path="/login" component={Login} />
+          <Route exact path="/" component={Home} />
         </BrowserRouter>
       </MuiThemeProvider>
     </UserContext.Provider>
