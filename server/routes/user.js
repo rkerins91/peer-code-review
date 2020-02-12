@@ -24,7 +24,7 @@ router.post(
   ],
   async (req, res) => {
     const errors = validationResult(req);
-    if (errors.length > 0) {
+    if (errors) {
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -34,7 +34,15 @@ router.post(
       //Check for an existing user
       var user = await User.findOne({ email: email });
       if (user) {
-        return res.status(400).json({ errors: ["Email already exists"] });
+        return res.status(400).json({
+          errors: [
+            {
+              value: email,
+              msg: "An account with this email address already exists",
+              param: "email"
+            }
+          ]
+        });
       } else {
         const newUser = new User({
           name: name,
@@ -73,7 +81,7 @@ router.post(
     async (req, res) => {
       const errors = validationResult(req);
 
-      if (errors.length > 0) {
+      if (errors) {
         return res.status(400).json({ errors: errors.array() });
       }
 
@@ -83,7 +91,15 @@ router.post(
       try {
         var user = await User.findOne({ email });
         if (!user) {
-          return res.status(404).json({ errors: ["Email not found"] });
+          return res.status(404).json({
+            errors: [
+              {
+                value: email,
+                msg: "Cannot find a user with this email",
+                param: "email"
+              }
+            ]
+          });
         } else {
           // User exists, compare hashed password
           let isMatch = await bcrypt.compare(password, user.password);
@@ -99,7 +115,14 @@ router.post(
               });
             });
           } else {
-            return res.status(400).json({ errors: ["Password incorrect"] });
+            return res.status(400).json({
+              errors: [
+                {
+                  msg: "The password you entered did not match our records",
+                  param: "password"
+                }
+              ]
+            });
           }
         }
       } catch (err) {
