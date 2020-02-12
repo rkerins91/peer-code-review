@@ -5,6 +5,7 @@ import { BrowserRouter, Route } from "react-router-dom";
 import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import CodeUpload from "./pages/CodeUpload";
 
 import "./App.css";
 
@@ -14,6 +15,7 @@ function App() {
       <BrowserRouter>
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
+        <Route path="/upload-code" component={CodeUpload} />
       </BrowserRouter>
     </MuiThemeProvider>
   );
