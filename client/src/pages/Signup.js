@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, Redirect } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import { SignUpContainer } from "../components";
+import { UserContext } from "../context/UserContext";
 
 const useStyles = makeStyles({
   input: {
@@ -38,6 +39,8 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [secondPassword, setSecondPassword] = useState("");
+  // user context
+  const { user, setUser } = useContext(UserContext);
 
   const validateEmail = () => {
     if (email === "") {
@@ -46,7 +49,7 @@ const Signup = () => {
   };
 
   const validatePassword = () => {
-    if (password.length > 6 || password.length === 0) {
+    if (password.length > 5 || password.length === 0) {
       return null;
     } else return "password must be at least 6 characters";
   };
@@ -69,6 +72,14 @@ const Signup = () => {
         });
         let json = await res.json();
         console.log(json);
+        if (json.errors) {
+          console.log(json.errors[0]);
+        } else {
+          if ((json.success = true)) {
+            localStorage.setItem("peercode-auth-token", json.token);
+            setUser(json.user);
+          }
+        }
       } catch (err) {
         console.log(err);
       }
@@ -78,70 +89,74 @@ const Signup = () => {
       email: email,
       name: name,
       password: password,
-      password2: secondPassword
+      password2: secondPassword // confirmPassword instead of password2 once updated
     };
 
     signup(user);
   };
 
-  return (
-    <SignUpContainer>
-      <Typography className={classes.text}> Create An Account </Typography>
-      <TextField
-        className={classes.input}
-        label="email address"
-        variant="outlined"
-        error={validateEmail()}
-        onChange={e => {
-          setEmail(e.target.value);
-        }}
-      />
-      <TextField
-        className={classes.input}
-        label="name"
-        variant="outlined"
-        onChange={e => {
-          setName(e.target.value);
-        }}
-      />
-      <TextField
-        className={classes.input}
-        label="password"
-        type="password"
-        variant="outlined"
-        error={validatePassword() ? true : false}
-        helperText={validatePassword()}
-        onChange={e => {
-          setPassword(e.target.value);
-        }}
-      />
-      <TextField
-        className={classes.input}
-        label="re-enter password"
-        type="password"
-        variant="outlined"
-        error={validateSecondPassword() ? true : false}
-        helperText={validateSecondPassword()}
-        onChange={e => {
-          setSecondPassword(e.target.value);
-        }}
-      />
-      <Button
-        className={classes.button}
-        variant="contained"
-        color="primary"
-        onClick={submit}
-      >
-        Sign Up
-      </Button>
-      <Typography className={classes.switch}>
-        Already have an account?
-        <Link className={classes.link} to="/login">
-          login
-        </Link>
-      </Typography>
-    </SignUpContainer>
-  );
+  // if the user is signed in, redirect them to the home page
+  if (user) {
+    return <Redirect to="/" />;
+  } else
+    return (
+      <SignUpContainer>
+        <Typography className={classes.text}> Create An Account </Typography>
+        <TextField
+          className={classes.input}
+          label="email address"
+          variant="outlined"
+          error={validateEmail()}
+          onChange={e => {
+            setEmail(e.target.value);
+          }}
+        />
+        <TextField
+          className={classes.input}
+          label="name"
+          variant="outlined"
+          onChange={e => {
+            setName(e.target.value);
+          }}
+        />
+        <TextField
+          className={classes.input}
+          label="password"
+          type="password"
+          variant="outlined"
+          error={validatePassword() ? true : false}
+          helperText={validatePassword()}
+          onChange={e => {
+            setPassword(e.target.value);
+          }}
+        />
+        <TextField
+          className={classes.input}
+          label="re-enter password"
+          type="password"
+          variant="outlined"
+          error={validateSecondPassword() ? true : false}
+          helperText={validateSecondPassword()}
+          onChange={e => {
+            setSecondPassword(e.target.value);
+          }}
+        />
+        <Button
+          className={classes.button}
+          variant="contained"
+          color="primary"
+          onClick={submit}
+        >
+          Sign Up
+        </Button>
+        <Typography className={classes.switch}>
+          Already have an account?
+          <Link className={classes.link} to="/login">
+            login
+          </Link>
+        </Typography>
+      </SignUpContainer>
+    );
 };
 
 export default Signup;
