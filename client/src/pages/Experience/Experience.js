@@ -28,7 +28,7 @@ const Experience = () => {
   }, [experience]);
 
   const addExperience = () => {
-    setExperience([...experience, { [availableLanguages[0]]: 1 }]);
+    setExperience([...experience, { [unselectedLanguages[0]]: 1 }]);
   };
 
   const updateExperience = async (index, newExperience) => {
