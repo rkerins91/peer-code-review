@@ -30,14 +30,19 @@ router.post(
 
 router.put("/:id/experience", async (req, res) => {
   // Get language data from body of request, userID from params
-  const languages = req.body;
+  const languages = { ...req.body };
   const user = await User.findById(req.params.id);
   try {
-    // loop through body of request, setting user experience for each key
+    const languagesToSet = {};
     for (let language in languages) {
-      await user.experience.set(language, Number(languages[language]));
+      if (languages.hasOwnProperty(language)) {
+        languagesToSet[language] = Number(languages[language]);
+      }
     }
-    res.sendStatus(200);
+    user.experience = languagesToSet;
+    user.markModified("experience");
+    user.save();
+    res.send(200);
   } catch (err) {
     res.sendStatus(400);
   }
