@@ -79,26 +79,28 @@ const Login = () => {
   const submit = () => {
     async function login(user) {
       try {
-        let res = await fetch("/login", {
+        const res = await fetch("/login", {
           method: "post",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify(user)
         });
-        let json = await res.json();
-        console.log(json);
+        const json = await res.json();
         if (json.errors) {
           setError(json.errors[0]);
         } else {
-          console.log(json.user);
+          if ((json.success = true)) {
+            localStorage.setItem("peercode-auth-token", json.token);
+            console.log(json.user);
+          }
         }
       } catch (e) {
         console.log(e);
       }
     }
 
-    let user = {
+    const user = {
       email: email,
       password: password
     };
