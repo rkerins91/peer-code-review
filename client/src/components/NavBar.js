@@ -39,6 +39,9 @@ const useStyles = makeStyles({
   },
   profileButton: {
     color: "white"
+  },
+  user: {
+    marginLeft: "1vw"
   }
 });
 
@@ -85,7 +88,9 @@ const NavBar = () => {
             ></IconButton>
             <Button className={classes.profileButton}>
               <AccountCircle />
-              <Typography>{user ? user.name : "profile"}</Typography>
+              <Typography className={classes.user}>
+                {user ? user.name : "profile"}
+              </Typography>
             </Button>
             <Menu
               id="menu-appbar"
