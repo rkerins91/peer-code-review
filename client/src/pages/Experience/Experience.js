@@ -3,7 +3,10 @@ import SignUpContainer from "../../components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import AddExperienceButton from "./AddExperienceButton";
 import { availableLanguages } from "../../utils";
+import { Typography } from "@material-ui/core";
+import axios from "axios";
 
+// TO-DO: ALLOW USER TO CHANGE EXPERIENCE FROM PREVIOUS EXPERIENCE
 const Experience = () => {
   const [experience, setExperience] = useState([{ C: 1 }]);
   const [unselectedLanguages, setUnselectedLanguages] = useState(
@@ -45,9 +48,23 @@ const Experience = () => {
     setExperience(newExperienceList);
   };
 
+  const handleSubmit = async () => {
+    let experienceToSubmit = {};
+    experience.forEach(ele => {
+      experienceToSubmit = { ...experienceToSubmit, ...ele };
+    });
+    console.log(experienceToSubmit);
+    // TO-DO, use context for user ID instead of hardcoding
+    const submitted = axios.put(
+      `user/5e4360e68c40114a421ae7e0/experience`,
+      experienceToSubmit
+    );
+    console.log(submitted);
+  };
+
   return (
     <SignUpContainer>
-      <p>Add your experience here</p>
+      <Typography>Add your experience here</Typography>
       {experience.map((_, idx) => {
         const currLanguage = Object.keys(experience[idx])[0];
         return (
@@ -66,6 +83,7 @@ const Experience = () => {
       {experience.length < availableLanguages.length && (
         <AddExperienceButton addExperience={addExperience} />
       )}
+      <button onClick={handleSubmit}>Submit</button>
     </SignUpContainer>
   );
 };

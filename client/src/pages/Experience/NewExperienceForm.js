@@ -20,7 +20,7 @@ const NewExperienceForm = ({
 
   useEffect(() => {
     updateExperience(index, { [selected.language]: Number(selected.level) });
-  }, [selected]);
+  }, [index, selected, updateExperience]);
 
   return (
     <>
