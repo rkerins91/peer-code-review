@@ -15,7 +15,7 @@ function App() {
       <BrowserRouter>
         <Route path="/signup" component={Signup} />
         <Route path="/login" component={Login} />
-        <Route path="/upload-code" component={CodeUpload} />
+        <Route path="/code-upload" component={CodeUpload} />
       </BrowserRouter>
     </MuiThemeProvider>
   );
