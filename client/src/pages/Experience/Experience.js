@@ -29,7 +29,6 @@ const Experience = () => {
       return !knownLanguages.hasOwnProperty(ele);
     });
     setUnselectedLanguages(newUnselectedLanguages);
-    console.log(experience);
   }, [experience]);
 
   const addExperience = () => {
@@ -55,13 +54,11 @@ const Experience = () => {
     experience.forEach(ele => {
       experienceToSubmit = { ...experienceToSubmit, ...ele };
     });
-    console.log(experienceToSubmit);
     // TO-DO, use context for user ID instead of hardcoding
     const submitted = axios.put(
       `user/5e4360e68c40114a421ae7e0/experience`,
       experienceToSubmit
     );
-    console.log(submitted);
   };
 
   return (
