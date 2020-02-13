@@ -24,7 +24,7 @@ router.post(
   ],
   async (req, res) => {
     const errors = validationResult(req);
-    if (errors) {
+    if (errors.length > 0) {
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -76,7 +76,7 @@ router.post(
     async (req, res) => {
       const errors = validationResult(req);
 
-      if (errors) {
+      if (errors.length > 0) {
         return res.status(400).json({ errors: errors.array() });
       }
 
