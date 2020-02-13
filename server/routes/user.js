@@ -31,15 +31,11 @@ router.post(
 router.put("/:id/experience", async (req, res) => {
   const languages = { ...req.body };
   const user = await User.findById(req.params.id);
-  const availableLanguages = [
-    "C",
-    "C++",
-    "Java",
-    "JavaScript",
-    "Python",
-    "Ruby"
-  ];
-  if (Object.keys(languages).every(ele => availableLanguages.includes(ele))) {
+  if (
+    Object.keys(languages).every(ele =>
+      process.env.availableLanguages.includes(ele)
+    )
+  ) {
     // Set make values of languages obj numbers
     for (let language in languages) {
       if (languages.hasOwnProperty(language)) {
