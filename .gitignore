@@ -5,8 +5,7 @@ node_modules/
 
 
 # production
-/build/
-client/build
+build/
 
 # misc
 .DS_Store
@@ -14,6 +13,7 @@ client/build
 .env.development.local
 .env.test.local
 .env.production.local
+.vscode/
 
 npm-debug.log*
 yarn-debug.log*
