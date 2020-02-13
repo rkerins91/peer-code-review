@@ -1,3 +1,4 @@
 import SignUpContainer from "./SignUpContainer";
+import ErrorMessage from "./ErrorMessage";
 
-export { SignUpContainer as default };
+export { SignUpContainer, ErrorMessage };
