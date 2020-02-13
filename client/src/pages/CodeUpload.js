@@ -23,13 +23,16 @@ const useStlyes = makeStyles({
     height: "80%",
     margin: "20px auto"
   },
+  header: {
+    margin: "4vh",
+    fontWeight: "800"
+  },
   textInput: {
     textAlign: "center",
-    width: "60%",
-    display: "inline"
+    width: "100%"
   },
   languageSelect: {
-    width: "20%"
+    width: "80%"
   }
 });
 
@@ -53,10 +56,10 @@ const CodeUpload = () => {
   return (
     <div className={classes.root}>
       <Grid className={classes.wrapper} container justify="center" spacing={3}>
-        <Grid item xs={12}>
-          <Typography variant="h2" align="center">
-            Request a Code Review
-          </Typography>
+        <Typography className={classes.header} variant="h2" align="center">
+          Request a Code Review
+        </Typography>
+        <Grid item xs={8}>
           <TextField
             className={classes.textInput}
             align="left"
@@ -64,6 +67,8 @@ const CodeUpload = () => {
             variant="outlined"
             onChange={handleTitleChange}
           />
+        </Grid>
+        <Grid item xs={4}>
           <InputLabel id="language-select-label">Language</InputLabel>
           <Select
             className={classes.languageSelect}
