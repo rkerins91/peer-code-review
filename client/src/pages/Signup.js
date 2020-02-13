@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import { SignUpContainer } from "../components";
@@ -39,26 +39,58 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [secondPassword, setSecondPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [emailError, setEmailError] = useState(null);
+  const [nameError, setNameError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(null);
   // user context
   const { user, setUser } = useContext(UserContext);
 
   const validateEmail = () => {
-    if (email === "") {
+    if (emailError) {
+      return emailError;
+    } else if (email === "") {
       return false;
     } else return !/\S+@\S+\.\S+/.test(email);
   };
 
   const validatePassword = () => {
-    if (password.length > 5 || password.length === 0) {
+    if (passwordError) {
+      return passwordError;
+    } else if (password.length > 5 || password.length === 0) {
       return null;
     } else return "password must be at least 6 characters";
   };
 
   const validateSecondPassword = () => {
-    if (secondPassword === password || secondPassword === "") {
+    if (confirmPasswordError) {
+      return confirmPasswordError;
+    } else if (secondPassword === password || secondPassword === "") {
       return null;
     } else return "passwords must match";
   };
+
+  useEffect(() => {
+    if (error) {
+      for (let i in error) {
+        if (error[i].param === "email") {
+          setEmailError(error[i].msg);
+        } else if (error[i].param === "name") {
+          setNameError(error[i].msg);
+        } else if (error[i].param === "password") {
+          setPasswordError(error[i].msg);
+        } else if (error[i].param === "confirmPassword") {
+          setConfirmPasswordError(error[i].msg);
+        } else {
+          setEmailError(null);
+          setNameError(null);
+          setPasswordError(null);
+          setConfirmPasswordError(null);
+        }
+      }
+    }
+  }, [error]);
 
   const submit = () => {
     async function signup(user) {
@@ -71,9 +103,8 @@ const Signup = () => {
           body: JSON.stringify(user)
         });
         let json = await res.json();
-        console.log(json);
         if (json.errors) {
-          console.log(json.errors[0]);
+          setError(json.errors);
         } else {
           if ((json.success = true)) {
             localStorage.setItem("peercode-auth-token", json.token);
@@ -107,6 +138,7 @@ const Signup = () => {
           label="email address"
           variant="outlined"
           error={validateEmail()}
+          helperText={emailError}
           onChange={e => {
             setEmail(e.target.value);
           }}
@@ -115,6 +147,8 @@ const Signup = () => {
           className={classes.input}
           label="name"
           variant="outlined"
+          error={nameError ? true : false}
+          helperText={nameError}
           onChange={e => {
             setName(e.target.value);
           }}

@@ -37,7 +37,7 @@ const Login = () => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
   // user context
@@ -56,13 +56,17 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (error.includes("Email")) {
-      setEmailError(error);
-    } else if (error.includes("Password")) {
-      setPasswordError(error);
-    } else {
-      setEmailError(null);
-      setPasswordError(null);
+    if (error) {
+      for (let i in error) {
+        if (error[i].param === "email") {
+          setEmailError(error[i].msg);
+        } else if (error[i].param === "password") {
+          setPasswordError(error[i].msg);
+        } else {
+          setEmailError(null);
+          setPasswordError(null);
+        }
+      }
     }
   }, [error]);
 
@@ -91,7 +95,7 @@ const Login = () => {
         });
         const json = await res.json();
         if (json.errors) {
-          setError(json.errors[0]);
+          setError(json.errors);
         } else {
           if ((json.success = true)) {
             localStorage.setItem("peercode-auth-token", json.token);
@@ -107,6 +111,7 @@ const Login = () => {
       email: email,
       password: password
     };
+
     login(user);
   };
 
