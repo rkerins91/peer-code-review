@@ -16,7 +16,7 @@ var userSchema = new Schema({
     required: true
   },
   experience: {
-    type: Map,
+    type: Schema.Types.Mixed,
     of: Number
   },
   registeredDate: {
