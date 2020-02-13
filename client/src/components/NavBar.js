@@ -85,7 +85,7 @@ const NavBar = () => {
             ></IconButton>
             <Button className={classes.profileButton}>
               <AccountCircle />
-              {user ? user.name : "profile"}
+              <Typography>{user ? user.name : "profile"}</Typography>
             </Button>
             <Menu
               id="menu-appbar"
