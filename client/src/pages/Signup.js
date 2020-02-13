@@ -89,7 +89,7 @@ const Signup = () => {
       email: email,
       name: name,
       password: password,
-      password2: secondPassword // confirmPassword instead of password2 once updated
+      confirmPassword: secondPassword
     };
 
     signup(user);
