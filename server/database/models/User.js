@@ -8,6 +8,10 @@ var userSchema = new Schema({
   email: {
     type: String,
     required: true
+  },
+  experience: {
+    type: Schema.Types.Mixed,
+    of: Number
   }
 });
 
