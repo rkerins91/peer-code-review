@@ -37,9 +37,9 @@ userSchema.pre("save", async function(next) {
   }
 });
 
-userSchema.method("login", async function(id, callback) {
+userSchema.method("login", async function(user, callback) {
   const payload = {
-    id: id
+    user
   };
 
   jwt.sign(

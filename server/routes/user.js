@@ -44,17 +44,12 @@ router.post(
           ]
         });
       } else {
-        const newUser = new User({
-          name: name,
-          email: email,
-          password: password,
-          experience: {}
-        });
+        const newUser = new User({ name, email, password });
 
         user = await newUser.save();
 
         //On successful save, create payload and send response token with user
-        user.login(user._id, (err, token) => {
+        user.login(user, (err, token) => {
           if (err) throw err;
           res.status(201).json({
             success: true,
@@ -106,7 +101,7 @@ router.post(
 
           if (isMatch) {
             // Passwords match, create JWT Payload, and send it in response with user object
-            user.login(user._id, (err, token) => {
+            user.login(user, (err, token) => {
               if (err) throw err;
               res.status(201).json({
                 success: true,
