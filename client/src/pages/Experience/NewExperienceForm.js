@@ -10,7 +10,7 @@ const NewExperienceForm = ({
   deletable
 }) => {
   const [selected, setSelected] = useState({
-    language: language,
+    language,
     level: 1
   });
 

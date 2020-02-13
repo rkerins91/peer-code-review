@@ -28,7 +28,9 @@ const Experience = () => {
   }, [experience]);
 
   const addExperience = () => {
-    setExperience([...experience, { [unselectedLanguages[0]]: 1 }]);
+    if (experience.length < availableLanguages.length) {
+      setExperience([...experience, { [unselectedLanguages[0]]: 1 }]);
+    }
   };
 
   const updateExperience = async (index, newExperience) => {
@@ -46,19 +48,24 @@ const Experience = () => {
   return (
     <SignUpContainer>
       <p>Add your experience here</p>
-      {experience.map((_, idx) => (
-        <NewExperienceForm
-          key={Object.keys(experience[idx])[0]}
-          updateExperience={updateExperience}
-          language={Object.keys(experience[idx])[0]}
-          availableLanguages={unselectedLanguages}
-          deleteExperience={deleteExperience}
-          index={idx}
-          experience={experience}
-          deletable={experience.length > 1}
-        />
-      ))}
-      <AddExperienceButton addExperience={addExperience} />
+      {experience.map((_, idx) => {
+        const currLanguage = Object.keys(experience[idx])[0];
+        return (
+          <NewExperienceForm
+            key={currLanguage}
+            updateExperience={updateExperience}
+            language={currLanguage}
+            availableLanguages={unselectedLanguages}
+            deleteExperience={deleteExperience}
+            index={idx}
+            experience={experience}
+            deletable={experience.length > 1}
+          />
+        );
+      })}
+      {experience.length < availableLanguages.length && (
+        <AddExperienceButton addExperience={addExperience} />
+      )}
     </SignUpContainer>
   );
 };
