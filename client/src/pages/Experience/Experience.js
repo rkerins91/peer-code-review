@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import useDeepCompareEffect from "use-deep-compare-effect";
 import SignUpContainer from "../../components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import AddExperienceButton from "./AddExperienceButton";
@@ -13,7 +14,7 @@ const Experience = () => {
     availableLanguages.slice(1)
   );
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     // 'knownLanguages' variable is used to have a O(1) lookup when filtering
     // for unselected languages, preventing nested looping by having to search through
     // 'experience' state on each pass of filter
@@ -28,6 +29,7 @@ const Experience = () => {
       return !knownLanguages.hasOwnProperty(ele);
     });
     setUnselectedLanguages(newUnselectedLanguages);
+    console.log(experience);
   }, [experience]);
 
   const addExperience = () => {

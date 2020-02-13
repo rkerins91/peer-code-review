@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { InputLabel, Select, MenuItem, makeStyles } from "@material-ui/core";
+import { InputLabel, Select, MenuItem } from "@material-ui/core";
+import { levels } from "../../utils";
 
 const NewExperienceForm = ({
   updateExperience,
@@ -48,10 +49,11 @@ const NewExperienceForm = ({
         value={selected.level}
         name="level"
       >
-        <MenuItem value="1">Beginner</MenuItem>
-        <MenuItem value="2">Intermediate</MenuItem>
-        <MenuItem value="3">Advanced</MenuItem>
-        <MenuItem value="4">Expert</MenuItem>
+        {levels.map((ele, idx) => (
+          <MenuItem key={ele} value={idx + 1}>
+            {ele}
+          </MenuItem>
+        ))}
       </Select>
       {deletable && (
         <button onClick={() => deleteExperience(index)}> Delete </button>

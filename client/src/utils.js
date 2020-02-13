@@ -6,3 +6,5 @@ export const availableLanguages = [
   "Python",
   "Ruby"
 ];
+
+export const levels = ["Beginner", "Intermediate", "Advanced", "Expert"];
