@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
-
+import { authJWT } from "./functions/jwt";
 import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
@@ -26,6 +26,14 @@ function App() {
     }),
     [user, setUser]
   );
+
+  // On mount, check local token for user
+  useEffect(() => {
+    let token = localStorage.getItem("peercode-auth-token");
+    let decodedToken = authJWT(token);
+    let user = decodedToken.user;
+    setUser(user);
+  }, []);
 
   return (
     <UserContext.Provider value={value}>
