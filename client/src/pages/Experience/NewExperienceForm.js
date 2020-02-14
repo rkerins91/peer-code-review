@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { InputLabel, Select, MenuItem } from "@material-ui/core";
-import { levels } from "../../utils";
+import { levels } from "utils";
 
 const NewExperienceForm = ({
   updateExperience,

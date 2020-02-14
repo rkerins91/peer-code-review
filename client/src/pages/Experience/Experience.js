@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import SignUpContainer from "../../components/SignUpContainer";
+import SignUpContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import AddExperienceButton from "./AddExperienceButton";
-import { availableLanguages } from "../../utils";
+import { availableLanguages } from "utils";
 import { Typography } from "@material-ui/core";
 import axios from "axios";
 
