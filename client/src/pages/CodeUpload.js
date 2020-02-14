@@ -10,7 +10,7 @@ import {
   Typography,
   makeStyles
 } from "@material-ui/core";
-import { TextEditor } from "components";
+import { TextEditor } from "components/index";
 
 const useStlyes = makeStyles({
   root: {

@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Grid, makeStyles } from "@material-ui/core";
-import { ToggleButton, ToggleButtonGroup } from "@material-ui/lab";
-import {
-  FormatBold,
-  FormatItalic,
-  FormatUnderlined,
-  FormatListBulleted,
-  DeveloperMode,
-  FormatQuote
-} from "@material-ui/icons";
+import Toolbar from "./components/Toolbar";
 
 import { Editor, getDefaultKeyBinding, EditorState, RichUtils } from "draft-js";
 import CodeUtils from "draft-js-code";
@@ -21,7 +13,6 @@ const TextEditor = props => {
     root: {
       width: "100%"
     },
-    toolBar: {},
     editor: {
       border: "2px solid grey",
       padding: "10px",
@@ -43,10 +34,13 @@ const TextEditor = props => {
   useEffect(() => {
     if (props.selectedLanguage !== "") {
       setLanguageState(props.selectedLanguage);
+    } else {
+      //Null is a fallback grammar for Prism
+      setLanguageState(null);
     }
   }, [props.selectedLanguage]);
 
-  var decorator = new PrismDecorator({
+  const decorator = new PrismDecorator({
     prism: Prism,
     defaultSyntax: languageState
   });
@@ -54,8 +48,9 @@ const TextEditor = props => {
   const [editorState, setEditorState] = useState(
     EditorState.createEmpty(decorator)
   );
-  const [inlineFormatButtonState, setInlineFormatButtonState] = useState();
-  const [blockFormatButtonState, setBlockFormatButtonState] = useState();
+
+  const [currentInlineStyles, setInlineStyles] = useState([]);
+  const [currentBlockType, setBlockType] = useState("");
 
   //Pass language data through into the editor state
   useEffect(() => {
@@ -87,28 +82,43 @@ const TextEditor = props => {
     focusEditor();
   }, []);
 
-  //Toggle button group controllers
-  //TODO move these buttons into a controlled toolbar component.
-  const handleInlineFormatChange = (event, newFormats) => {
-    event.preventDefault();
-    setInlineFormatButtonState(newFormats);
-    const style = event.currentTarget.getAttribute("value");
-    setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+  //Toggle button group controller
+  const handleFormatChange = style => {
+    if (
+      style == "BOLD" ||
+      style == "ITALIC" ||
+      style == "UNDERLINE" ||
+      style == "CODE"
+    ) {
+      setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+    } else {
+      setEditorState(RichUtils.toggleBlockType(editorState, style));
+    }
   };
 
-  const handleBlockFormatChange = (event, newFormats) => {
-    event.preventDefault();
-    setBlockFormatButtonState(newFormats);
+  useEffect(() => {
+    const prevContentState = editorState.getCurrentContent();
+    if (!prevContentState.hasText()) {
+      setBlockType(RichUtils.getCurrentBlockType(editorState));
+    }
+  }, [editorState]);
 
-    const style = event.currentTarget.getAttribute("value");
-    setEditorState(RichUtils.toggleBlockType(editorState, style));
-  };
-
-  //When changing editor state always pass the decorator back in or it will be cleared
+  //Run on any change to the editor, updates the editorState
   const handleChange = newEditorState => {
-    setEditorState(EditorState.set(newEditorState, { decorator }));
+    const prevContentState = editorState.getCurrentContent();
+
+    if (!prevContentState.hasText()) {
+      setEditorState(EditorState.set(newEditorState, { decorator }));
+      return;
+    } //Editor has text, update toolbar buttons
+    else {
+      setInlineStyles(newEditorState.getCurrentInlineStyle().toArray());
+      setBlockType(RichUtils.getCurrentBlockType(newEditorState));
+      setEditorState(EditorState.set(newEditorState, { decorator }));
+    }
   };
 
+  //Add CSS class to code-blocks
   const getBlockStyle = block => {
     switch (block.getType()) {
       case "code-block":
@@ -116,11 +126,6 @@ const TextEditor = props => {
       default:
         return null;
     }
-  };
-
-  //Prevent toolbar buttons from taking focus from the editor
-  const preventDefault = event => {
-    event.preventDefault();
   };
 
   //Key press handlers
@@ -166,47 +171,11 @@ const TextEditor = props => {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={4} justify="flex-start">
-        <Grid item xs={3}>
-          <ToggleButtonGroup
-            value={inlineFormatButtonState}
-            onChange={handleInlineFormatChange}
-          >
-            <ToggleButton value="BOLD" onMouseDown={preventDefault}>
-              <FormatBold />
-            </ToggleButton>
-            <ToggleButton value="ITALIC" onMouseDown={preventDefault}>
-              <FormatItalic />
-            </ToggleButton>
-            <ToggleButton value="UNDERLINE" onMouseDown={preventDefault}>
-              <FormatUnderlined />
-            </ToggleButton>
-            <ToggleButton value="CODE" onMouseDown={preventDefault}>
-              CODE
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Grid>
-        <Grid item xs={3}>
-          <ToggleButtonGroup
-            value={blockFormatButtonState}
-            onChange={handleBlockFormatChange}
-            exclusive
-          >
-            <ToggleButton
-              value="unordered-list-item"
-              onMouseDown={preventDefault}
-            >
-              <FormatListBulleted />
-            </ToggleButton>
-            <ToggleButton value="code-block" onMouseDown={preventDefault}>
-              <DeveloperMode />
-            </ToggleButton>
-            <ToggleButton value="blockquote" onMouseDown={preventDefault}>
-              <FormatQuote />
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Grid>
-      </Grid>
+      <Toolbar
+        onChange={style => handleFormatChange(style)}
+        InlineStyle={currentInlineStyles}
+        BlockStyle={currentBlockType}
+      />
       <div className={classes.editor} onClick={focusEditor}>
         <Editor
           ref={editor}
