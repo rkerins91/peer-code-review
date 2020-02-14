@@ -8,10 +8,9 @@ import {
   MenuItem,
   TextField,
   Typography,
-  Paper,
   makeStyles
 } from "@material-ui/core";
-import TextEditor from "../components/TextEditor";
+import { TextEditor } from "components";
 
 const useStlyes = makeStyles({
   root: {
@@ -39,7 +38,7 @@ const useStlyes = makeStyles({
 const CodeUpload = () => {
   const classes = useStlyes();
   const [requestTitle, setRequestTitle] = useState();
-  const [requestLanguage, setRequestLanguage] = useState();
+  const [requestLanguage, setRequestLanguage] = useState("");
 
   const handleTitleChange = event => {
     setRequestTitle(event.target.value);
@@ -72,18 +71,18 @@ const CodeUpload = () => {
           <InputLabel id="language-select-label">Language</InputLabel>
           <Select
             className={classes.languageSelect}
-            labelId="language-select-label"
+            labelid="language-select-label"
             id="language-select"
             value={requestLanguage}
             onChange={handleLanguageChange}
           >
-            <MenuItem value="Language1">Language1</MenuItem>
-            <MenuItem value="Language2">Language2</MenuItem>
-            <MenuItem value="Language3">Language3</MenuItem>
+            <MenuItem value="javascript">Javascript</MenuItem>
+            <MenuItem value="cpp">C++</MenuItem>
+            <MenuItem value="python">Python</MenuItem>
           </Select>
         </Grid>
         <Grid item xs={12}>
-          <TextEditor></TextEditor>
+          <TextEditor selectedLanguage={requestLanguage}></TextEditor>
         </Grid>
       </Grid>
     </div>
