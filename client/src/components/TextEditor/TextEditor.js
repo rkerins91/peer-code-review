@@ -32,8 +32,12 @@ const TextEditor = props => {
 
   const editorStyleMap = {
     CODE: {
-      background: "lightgrey",
-      fontFamily: "'Inconsolata', 'Menlo', 'Consolas', monospace"
+      background: "#414239",
+      fontFamily:
+        "'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace",
+      fontSize: "1em",
+      textShadow: "0 1px rgba(0, 0, 0, 0.3)",
+      color: "#f8f8f2"
     }
   };
 
