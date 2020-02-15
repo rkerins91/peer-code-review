@@ -10,30 +10,21 @@ import axios from "axios";
 // TO-DO: ALLOW USER TO CHANGE EXPERIENCE FROM PREVIOUS EXPERIENCE
 const Experience = () => {
   const [experience, setExperience] = useState([{ C: 1 }]);
-  const [unselectedLanguages, setUnselectedLanguages] = useState(
-    availableLanguages.slice(1)
-  );
 
-  useDeepCompareEffect(() => {
-    // 'knownLanguages' variable is used to have a O(1) lookup when filtering
-    // for unselected languages, preventing nested looping by having to search through
-    // 'experience' state on each pass of filter
-    const knownLanguages = {};
-    experience.forEach(ele => {
-      knownLanguages[Object.keys(ele)[0]] = true;
-    });
-
-    // Make array of languages from copy of availableLanguages array if they are
-    // not already selected
-    const newUnselectedLanguages = availableLanguages.slice().filter(ele => {
-      return !knownLanguages.hasOwnProperty(ele);
-    });
-    setUnselectedLanguages(newUnselectedLanguages);
-  }, [experience]);
+  // Put language keys from state into knownLanguages object
+  const knownLanguages = {};
+  experience.forEach(ele => {
+    // Set key to true if language is in experience object
+    knownLanguages[Object.keys(ele)[0]] = true;
+  });
+  // Filter all available languages list for elements not in known languages object
+  const newUnselectedLanguages = availableLanguages.filter(ele => {
+    return !knownLanguages.hasOwnProperty(ele);
+  });
 
   const addExperience = () => {
     if (experience.length < availableLanguages.length) {
-      setExperience([...experience, { [unselectedLanguages[0]]: 1 }]);
+      setExperience([...experience, { [newUnselectedLanguages[0]]: 1 }]);
     }
   };
 
@@ -51,14 +42,15 @@ const Experience = () => {
 
   const handleSubmit = async () => {
     let experienceToSubmit = {};
+    // Flatten array of objects into single object
     experience.forEach(ele => {
-      experienceToSubmit = { ...experienceToSubmit, ...ele };
+      // Object.keys(ele)[0] is they key for each experience, set experience to submit at that key in
+      // experienceToSubmt object
+      const key = Object.keys(ele)[0];
+      experienceToSubmit[key] = ele[key];
     });
     // TO-DO, use context for user ID instead of hardcoding
-    const submitted = axios.put(
-      `user/5e4360e68c40114a421ae7e0/experience`,
-      experienceToSubmit
-    );
+    axios.put(`user/5e4360e68c40114a421ae7e0/experience`, experienceToSubmit);
   };
 
   return (
@@ -71,7 +63,7 @@ const Experience = () => {
             key={currLanguage}
             updateExperience={updateExperience}
             language={currLanguage}
-            availableLanguages={unselectedLanguages}
+            availableLanguages={newUnselectedLanguages}
             deleteExperience={deleteExperience}
             index={idx}
             experience={experience}
