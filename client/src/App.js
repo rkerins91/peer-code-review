@@ -32,7 +32,7 @@ function App() {
     <UserContext.Provider value={value}>
       <MuiThemeProvider theme={theme}>
         <BrowserRouter>
-          <Route path="/signup" component={Signup} />
+          <Route path="/signup" component={Signup} signupUser={setUser} />
           <Route path="/login" component={Login} />
           <Route path="/experience" component={Experience} />
           <Route exact path="/" component={Home} />
