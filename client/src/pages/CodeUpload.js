@@ -52,6 +52,7 @@ const CodeUpload = () => {
   const classes = useStlyes();
   const [requestTitle, setRequestTitle] = useState("");
   const [requestLanguage, setRequestLanguage] = useState("");
+  const [editorHasContent, setEditorHasContent] = useState(false);
   const [submitState, setSubmitState] = useState(false);
   const [pageErrors, setPageErrors] = useState(new Set());
 
@@ -70,16 +71,17 @@ const CodeUpload = () => {
     let languageError = requestLanguage === "";
     let titleError = requestTitle === "";
     let errorSet = new Set();
-    if (languageError || titleError) {
+    if (languageError || titleError || !editorHasContent) {
       if (languageError) {
-        console.log("Language error");
         errorSet.add(
           "Please select a language for your request before submitting"
         );
       }
       if (titleError) {
-        console.log("Title error");
         errorSet.add("Please add a title for your request before submitting");
+      }
+      if (!editorHasContent) {
+        errorSet.add("Please add some content to your review request");
       }
       setPageErrors(errorSet);
     } else {
@@ -87,6 +89,11 @@ const CodeUpload = () => {
       setPageErrors(new Set());
       setSubmitState(true);
     }
+  };
+
+  //check if user has typed into editor
+  const handleHasContent = value => {
+    setEditorHasContent(value);
   };
 
   //get data from editor component
@@ -150,6 +157,7 @@ const CodeUpload = () => {
             selectedLanguage={requestLanguage}
             onSubmit={handleSubmit}
             didSubmit={submitState}
+            hasContent={handleHasContent}
           ></TextEditor>
         </Grid>
         <Grid item xs={12} className={classes.submit}>

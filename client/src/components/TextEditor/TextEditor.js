@@ -116,6 +116,13 @@ const TextEditor = props => {
   //Run on any change to the editor, updates the editorState
   const handleChange = newEditorState => {
     const prevContentState = editorState.getCurrentContent();
+    const currentContentState = newEditorState.getCurrentContent();
+
+    if (currentContentState.hasText()) {
+      props.hasContent(true);
+    } else {
+      props.hasContent(false);
+    }
 
     if (!prevContentState.hasText()) {
       setEditorState(EditorState.set(newEditorState, { decorator }));
