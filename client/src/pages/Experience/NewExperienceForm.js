@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useDeepCompareEffect from "use-deep-compare-effect";
 import { InputLabel, Select, MenuItem, makeStyles } from "@material-ui/core";
 import { levels } from "utils";

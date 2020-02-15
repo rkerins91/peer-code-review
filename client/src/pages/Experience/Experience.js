@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import useDeepCompareEffect from "use-deep-compare-effect";
+import React, { useState } from "react";
 import SignUpContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import AddExperienceButton from "./AddExperienceButton";
