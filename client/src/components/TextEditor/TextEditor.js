@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Button, Grid, makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 import Toolbar from "./components/Toolbar";
 
-import { Editor, getDefaultKeyBinding, EditorState, RichUtils } from "draft-js";
+import {
+  Editor,
+  getDefaultKeyBinding,
+  EditorState,
+  RichUtils,
+  convertToRaw
+} from "draft-js";
+
 import CodeUtils from "draft-js-code";
 import Prism from "prismjs";
 import PrismDecorator from "draft-js-prism";
@@ -17,7 +24,8 @@ const TextEditor = props => {
       border: "2px solid grey",
       padding: "10px",
       margin: "0",
-      height: "50vh"
+      height: "50vh",
+      overflow: "auto"
     }
   });
   const classes = useStlyes();
@@ -49,6 +57,7 @@ const TextEditor = props => {
     EditorState.createEmpty(decorator)
   );
 
+  //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
   const [currentBlockType, setBlockType] = useState("");
 
@@ -85,10 +94,10 @@ const TextEditor = props => {
   //Toggle button group controller
   const handleFormatChange = style => {
     if (
-      style == "BOLD" ||
-      style == "ITALIC" ||
-      style == "UNDERLINE" ||
-      style == "CODE"
+      style === "BOLD" ||
+      style === "ITALIC" ||
+      style === "UNDERLINE" ||
+      style === "CODE"
     ) {
       setEditorState(RichUtils.toggleInlineStyle(editorState, style));
     } else {
@@ -96,6 +105,7 @@ const TextEditor = props => {
     }
   };
 
+  //Sets content block type state to send to toolbar
   useEffect(() => {
     const prevContentState = editorState.getCurrentContent();
     if (!prevContentState.hasText()) {
@@ -110,7 +120,7 @@ const TextEditor = props => {
     if (!prevContentState.hasText()) {
       setEditorState(EditorState.set(newEditorState, { decorator }));
       return;
-    } //Editor has text, update toolbar buttons
+    } //Update toolbar buttons
     else {
       setInlineStyles(newEditorState.getCurrentInlineStyle().toArray());
       setBlockType(RichUtils.getCurrentBlockType(newEditorState));
@@ -135,6 +145,10 @@ const TextEditor = props => {
       newState = CodeUtils.handleKeyCommand(editorState, command);
     }
 
+    if (!newState && command === "soft-return") {
+      newState = RichUtils.insertSoftNewline(editorState);
+    }
+
     if (!newState) {
       newState = RichUtils.handleKeyCommand(editorState, command);
     }
@@ -147,19 +161,14 @@ const TextEditor = props => {
   };
 
   const bindKeys = event => {
-    if (!CodeUtils.hasSelectionInBlock(editorState))
+    if (event.shiftKey && event.key === "Enter") {
+      return "soft-return";
+    }
+
+    if (!CodeUtils.hasSelectionInBlock(editorState)) {
       return getDefaultKeyBinding(event);
-
-    const command = CodeUtils.getKeyBinding(event);
-
-    return command || getDefaultKeyBinding(event);
-  };
-
-  const handleReturn = event => {
-    if (!CodeUtils.hasSelectionInBlock(editorState)) return "not-handled";
-
-    setEditorState(CodeUtils.handleReturn(event, editorState));
-    return "handled";
+    }
+    return getDefaultKeyBinding(event);
   };
 
   const onTab = event => {
@@ -168,6 +177,15 @@ const TextEditor = props => {
     setEditorState(CodeUtils.onTab(event, editorState));
     return "handled";
   };
+
+  //Send data to parent page if button was pressed and no errors
+  useEffect(() => {
+    if (props.didSubmit) {
+      const content = editorState.getCurrentContent();
+      const rawJs = convertToRaw(content);
+      props.onSubmit(rawJs);
+    }
+  }, [props.didSubmit]);
 
   return (
     <div className={classes.root}>
@@ -184,7 +202,6 @@ const TextEditor = props => {
           customStyleMap={editorStyleMap}
           keyBindingFn={bindKeys}
           handleKeyCommand={handleKeyCommand}
-          handleReturn={handleReturn}
           onTab={onTab}
           blockStyleFn={getBlockStyle}
         />

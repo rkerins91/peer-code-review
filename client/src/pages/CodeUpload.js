@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext, useEffect } from "react";
+import axios from "axios";
 import {
   Grid,
   Button,
@@ -10,7 +10,10 @@ import {
   Typography,
   makeStyles
 } from "@material-ui/core";
+import { UserContext } from "context/UserContext";
 import { TextEditor } from "components/index";
+import ErrorMessage from "components/ErrorMessage";
+import SubmitButton from "components/TextEditor/components/SubmitButton";
 
 const useStlyes = makeStyles({
   root: {
@@ -32,13 +35,25 @@ const useStlyes = makeStyles({
   },
   languageSelect: {
     width: "80%"
+  },
+  submit: {
+    justifyContent: "center",
+    display: "flex"
+  },
+  errorDisplay: {
+    margin: "auto",
+    padding: "0"
   }
 });
 
 const CodeUpload = () => {
+  const user = useContext(UserContext);
+
   const classes = useStlyes();
-  const [requestTitle, setRequestTitle] = useState();
+  const [requestTitle, setRequestTitle] = useState("");
   const [requestLanguage, setRequestLanguage] = useState("");
+  const [submitState, setSubmitState] = useState(false);
+  const [pageErrors, setPageErrors] = useState(new Set());
 
   const handleTitleChange = event => {
     setRequestTitle(event.target.value);
@@ -48,13 +63,62 @@ const CodeUpload = () => {
     setRequestLanguage(event.target.value);
   };
 
-  //Get user context
-  //const user = useContext(UserContext);
   //TODO: Map over userContext object to get languages and create a select component with options populated by the context.
+
+  //Handle page errors and update submission state
+  const startSubmit = () => {
+    let languageError = requestLanguage === "";
+    let titleError = requestTitle === "";
+    let errorSet = new Set();
+    if (languageError || titleError) {
+      if (languageError) {
+        console.log("Language error");
+        errorSet.add(
+          "Please select a language for your request before submitting"
+        );
+      }
+      if (titleError) {
+        console.log("Title error");
+        errorSet.add("Please add a title for your request before submitting");
+      }
+      setPageErrors(errorSet);
+    } else {
+      //No errors, begin submitting
+      setPageErrors(new Set());
+      setSubmitState(true);
+    }
+  };
+
+  //get data from editor component
+  const handleSubmit = async data => {
+    //Wrap up editor data with user and language data and send to server.
+    const requestData = {
+      title: requestTitle,
+      language: requestLanguage,
+      content: data,
+      user: user
+    };
+
+    try {
+      const response = await axios({
+        method: "post",
+        url: "/create-request",
+        data: {
+          dataObj: JSON.stringify(requestData)
+        }
+      });
+      const success = response.success;
+      if (success) {
+        //redirect user to their reviews page
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className={classes.root}>
-      <Grid className={classes.wrapper} container justify="center" spacing={3}>
+      <Grid className={classes.wrapper} container justify="center" spacing={2}>
         <Typography className={classes.header} variant="h2" align="center">
           Request a Code Review
         </Typography>
@@ -82,7 +146,19 @@ const CodeUpload = () => {
           </Select>
         </Grid>
         <Grid item xs={12}>
-          <TextEditor selectedLanguage={requestLanguage}></TextEditor>
+          <TextEditor
+            selectedLanguage={requestLanguage}
+            onSubmit={handleSubmit}
+            didSubmit={submitState}
+          ></TextEditor>
+        </Grid>
+        <Grid item xs={12} className={classes.submit}>
+          <SubmitButton onChange={startSubmit} />
+        </Grid>
+        <Grid item xs={12} className={classes.errorDisplay}>
+          {[...pageErrors].map((msg, index) => {
+            return <ErrorMessage message={msg} key={index}></ErrorMessage>;
+          })}
         </Grid>
       </Grid>
     </div>

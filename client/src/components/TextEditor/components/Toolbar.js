@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, makeStyles } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { ToggleButton, ToggleButtonGroup } from "@material-ui/lab";
 import {
   FormatBold,
@@ -41,7 +41,7 @@ const Toolbar = props => {
 
   return (
     <Grid container spacing={4} justify="flex-start">
-      <Grid item xs={3}>
+      <Grid item xs={3} lg="auto">
         <ToggleButtonGroup
           value={inlineFormatButtonState}
           onChange={handleInlineFormatChange}
@@ -60,7 +60,7 @@ const Toolbar = props => {
           </ToggleButton>
         </ToggleButtonGroup>
       </Grid>
-      <Grid item xs={1}>
+      <Grid item xs={1} lg={1}>
         <ToggleButtonGroup
           value={blockFormatButtonState}
           onChange={handleBlockFormatChange}
