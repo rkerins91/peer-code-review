@@ -43,7 +43,6 @@ const NewExperienceForm = ({
   useDeepCompareEffect(() => {
     // update experience at current index of experience section, with selected language as key
     // and level as property
-    console.log("ran effect");
     updateExperience(index, { [selected.language]: Number(selected.level) });
   }, [index, selected]);
 
