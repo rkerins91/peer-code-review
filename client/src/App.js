@@ -29,8 +29,7 @@ function App() {
 
   // On mount, check local token for user
   useEffect(() => {
-    let token = localStorage.getItem("peercode-auth-token");
-    let decodedToken = authJWT(token);
+    let decodedToken = authJWT();
     let user = decodedToken.user;
     setUser(user);
   }, []);
