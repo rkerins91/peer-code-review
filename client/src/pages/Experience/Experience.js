@@ -103,19 +103,14 @@ const Experience = () => {
   }
   return (
     <ExperienceContainer>
-      <Grid container spacing={1} direction="column" alignItems="space-evenly">
+      <Grid container spacing={1} direction="column" justify="space-evenly">
         <Grid item xs={12}>
           <Typography className={classes.text}>
             Add your experience here
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Grid
-            container
-            spacing={3}
-            direction="column"
-            alignItems="space-evenly"
-          >
+          <Grid container spacing={3} direction="column" justify="space-evenly">
             {experience.map((ele, idx) => {
               const currLanguage = Object.keys(experience[idx])[0];
               return (
