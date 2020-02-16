@@ -4,6 +4,7 @@ import { BrowserRouter, Route } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
 
 import { theme } from "./themes/theme";
+import Experience from "./pages/Experience";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -31,8 +32,9 @@ function App() {
     <UserContext.Provider value={value}>
       <MuiThemeProvider theme={theme}>
         <BrowserRouter>
-          <Route path="/signup" component={Signup} />
+          <Route path="/signup" component={Signup} signupUser={setUser} />
           <Route path="/login" component={Login} />
+          <Route path="/experience" component={Experience} />
           <Route exact path="/" component={Home} />
         </BrowserRouter>
       </MuiThemeProvider>
