@@ -22,6 +22,10 @@ var userSchema = new Schema({
   registeredDate: {
     type: Date,
     default: Date.now
+  },
+  credits: {
+    type: Number,
+    default: 3
   }
 });
 

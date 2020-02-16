@@ -126,34 +126,45 @@ router.post(
     }
   );
 
-router.put("/:id/experience", async (req, res) => {
+router.put("/user/:id/experience", async (req, res) => {
   const languages = { ...req.body };
-  const user = await User.findById(req.params.id);
-  if (
-    Object.keys(languages).every(ele =>
-      process.env.availableLanguages.includes(ele)
-    )
-  ) {
-    // Set make values of languages obj numbers
-    for (let language in languages) {
-      if (languages.hasOwnProperty(language)) {
-        languages[language] = Number(languages[language]);
+  try {
+    const user = await User.findById(req.params.id);
+    console.log(user);
+    if (
+      Object.keys(languages).every(ele =>
+        process.env.availableLanguages.includes(ele)
+      )
+    ) {
+      // Set make values of languages obj numbers
+      for (let language in languages) {
+        if (languages.hasOwnProperty(language)) {
+          languages[language] = Number(languages[language]);
+        }
       }
     }
-
-    try {
-      // Set user experience to new languages obj and save
-      user.experience = languages;
-      user.markModified("experience");
-      user.save();
-      return res
-        .status(200)
-        .send({ message: "Successfully updated experience!" });
-    } catch (err) {
-      return res.sendStatus(500);
-    }
+    // Set user experience to new languages obj and save
+    user.experience = languages;
+    user.markModified("experience");
+    user.save();
+    return res
+      .status(200)
+      .send({ message: "Successfully updated experience!" });
+  } catch (err) {
+    return res.status(400).send({ message: err.message });
   }
-  res.status(400).send("Invalid language sent");
+});
+
+router.put("/user/:id/add-credit", async (req, res) => {
+  try {
+    const { creditsToAdd } = req.body;
+    const user = await User.findById(req.params.id);
+    user.credits += Number(creditsToAdd);
+    user.save();
+    return res.status(200).send({ message: "Successfully added credits!" });
+  } catch (err) {
+    return res.status(400);
+  }
 });
 
 module.exports = router;

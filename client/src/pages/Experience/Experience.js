@@ -92,7 +92,7 @@ const Experience = () => {
     });
     // TO-DO, use context for user ID instead of hardcoding
     const { data } = await axios.put(
-      `/${user._id}/experience`,
+      `user/${user._id}/experience`,
       experienceToSubmit
     );
     setSuccessful(data.message);
