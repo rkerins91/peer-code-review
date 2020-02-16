@@ -146,7 +146,9 @@ router.put("/:id/experience", async (req, res) => {
       user.experience = languages;
       user.markModified("experience");
       user.save();
-      return res.sendStatus(200);
+      return res
+        .status(200)
+        .send({ message: "Successfully updated experience!" });
     } catch (err) {
       return res.sendStatus(500);
     }

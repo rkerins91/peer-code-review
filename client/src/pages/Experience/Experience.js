@@ -2,16 +2,55 @@ import React, { useState, useContext } from "react";
 import { UserContext } from "context/UserContext";
 import ExperienceContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
-import AddExperienceButton from "./AddExperienceButton";
 import { availableLanguages } from "utils";
-import { Typography } from "@material-ui/core";
+import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
+import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 
-// TO-DO: ALLOW USER TO CHANGE EXPERIENCE FROM PREVIOUS EXPERIENCE
+const useStyles = makeStyles({
+  text: {
+    fontSize: "3vw",
+    fontWeight: "800",
+    margin: "2vh"
+  },
+  button: {
+    backgroundColor: "#43DDC1",
+    marginLeft: "30%",
+    marginRight: "30%",
+    marginTop: "1vh",
+    marginBottom: "1vh",
+    width: "30%"
+  },
+  add: {
+    color: "#43DDC1",
+    fontSize: "4vw",
+    cursor: "pointer",
+    marginTop: "1vh"
+  },
+  success: {
+    color: "#43DDC1",
+    fontSize: "2vw"
+  }
+});
 const Experience = () => {
-  const [experience, setExperience] = useState([{ C: 1 }]);
+  const classes = useStyles();
   const { user } = useContext(UserContext);
+  const defaultExperiences = [];
+
+  // Set default experience shown to whatever user currently has on database
+  if (user && user.experience) {
+    for (let key in user.experience) {
+      defaultExperiences.push({ [key]: user.experience[key] });
+    }
+    defaultExperiences.sort(
+      (a, b) => a[Object.keys(a)[0]] - b[Object.keys(b)[0]]
+    );
+  } else {
+    defaultExperiences.push({ C: 1 });
+  }
+  const [experience, setExperience] = useState(defaultExperiences);
+  const [successful, setSuccessful] = useState(false);
 
   // Put language keys from state into knownLanguages object
   const knownLanguages = {};
@@ -52,7 +91,11 @@ const Experience = () => {
       experienceToSubmit[key] = ele[key];
     });
     // TO-DO, use context for user ID instead of hardcoding
-    axios.put(`/${user._id}/experience`, experienceToSubmit);
+    const { data } = await axios.put(
+      `/${user._id}/experience`,
+      experienceToSubmit
+    );
+    setSuccessful(data.message);
   };
 
   if (!user) {
@@ -60,26 +103,61 @@ const Experience = () => {
   }
   return (
     <ExperienceContainer>
-      <Typography>Add your experience here</Typography>
-      {experience.map((_, idx) => {
-        const currLanguage = Object.keys(experience[idx])[0];
-        return (
-          <NewExperienceForm
-            key={currLanguage}
-            updateExperience={updateExperience}
-            language={currLanguage}
-            availableLanguages={newUnselectedLanguages}
-            deleteExperience={deleteExperience}
-            index={idx}
-            experience={experience}
-            deletable={experience.length > 1}
-          />
-        );
-      })}
-      {experience.length < availableLanguages.length && (
-        <AddExperienceButton addExperience={addExperience} />
-      )}
-      <button onClick={handleSubmit}>Submit</button>
+      <Grid container spacing={1} direction="column" alignItems="space-evenly">
+        <Grid item xs={12}>
+          <Typography className={classes.text}>
+            Add your experience here
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid
+            container
+            spacing={3}
+            direction="column"
+            alignItems="space-evenly"
+          >
+            {experience.map((ele, idx) => {
+              const currLanguage = Object.keys(experience[idx])[0];
+              return (
+                <Grid item>
+                  <NewExperienceForm
+                    key={currLanguage}
+                    updateExperience={updateExperience}
+                    language={currLanguage}
+                    level={ele[currLanguage]}
+                    availableLanguages={newUnselectedLanguages}
+                    deleteExperience={deleteExperience}
+                    index={idx}
+                    experience={experience}
+                    deletable={experience.length > 1}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Grid>
+        {/* <Grid className={classes.buttonContainer}> */}
+        {experience.length < availableLanguages.length && (
+          <Grid item>
+            <AddCircleOutlineOutlinedIcon
+              className={classes.add}
+              onClick={addExperience}
+            />
+          </Grid>
+        )}
+        <Grid item xs={12}>
+          <Button className={classes.button} onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Grid>
+        {/* if user updates successfully, show message for 5 seconds */}
+        {successful &&
+          setTimeout(() => {
+            setSuccessful(false);
+          }, 5000) && (
+            <Typography className={classes.success}>{successful}</Typography>
+          )}
+      </Grid>
     </ExperienceContainer>
   );
 };
