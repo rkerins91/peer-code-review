@@ -82,11 +82,10 @@ const NavBar = () => {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleMenu}
               color="inherit"
               fontSize="large"
             ></IconButton>
-            <Button className={classes.profileButton}>
+            <Button className={classes.profileButton} onClick={handleMenu}>
               <AccountCircle />
               <Typography className={classes.user}>
                 {user ? user.name : "profile"}
@@ -109,6 +108,7 @@ const NavBar = () => {
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
               <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem onClick={handleClose}>Logout</MenuItem>
             </Menu>
           </div>
         </Toolbar>
