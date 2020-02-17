@@ -1,14 +1,14 @@
 import React from "react";
-import logo from "assets/images/logo.png";
+import logo from "../assets/images/logo.svg";
 
 export const Logo = () => {
   const style = {
     backgroundImage: "url(" + logo + ")",
-    backgroundSize: "contain",
+    backgroundSize: "120px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
-    height: "6vh",
-    width: "6vh"
+    height: "50px",
+    width: "50px"
   };
   return <div style={style} />;
 };
