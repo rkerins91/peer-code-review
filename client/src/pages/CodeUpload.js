@@ -13,6 +13,7 @@ import {
 import { UserContext } from "context/UserContext";
 import { TextEditor } from "components/index";
 import ErrorMessage from "components/ErrorMessage";
+import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
 
 const useStlyes = makeStyles({
@@ -21,6 +22,7 @@ const useStlyes = makeStyles({
   },
   wrapper: {
     background: "white",
+    borderRadius: "6px",
     width: "80%",
     height: "80%",
     margin: "20px auto"
@@ -55,6 +57,7 @@ const CodeUpload = () => {
   const [editorHasContent, setEditorHasContent] = useState(false);
   const [submitState, setSubmitState] = useState(false);
   const [pageErrors, setPageErrors] = useState(new Set());
+  const [alertState, setAlertState] = useState(false);
 
   const handleTitleChange = event => {
     setRequestTitle(event.target.value);
@@ -84,11 +87,17 @@ const CodeUpload = () => {
         errorSet.add("Please add some content to your review request");
       }
       setPageErrors(errorSet);
+      setAlertState(true);
     } else {
       //No errors, begin submitting
       setPageErrors(new Set());
       setSubmitState(true);
     }
+  };
+
+  //reset alerts
+  const resetAlerts = () => {
+    setAlertState(false);
   };
 
   //check if user has typed into editor
@@ -109,7 +118,7 @@ const CodeUpload = () => {
     try {
       const response = await axios({
         method: "post",
-        url: "/create-request",
+        url: `/${user._id}/create-request`,
         data: {
           dataObj: JSON.stringify(requestData)
         }
@@ -164,9 +173,13 @@ const CodeUpload = () => {
           <SubmitButton onChange={startSubmit} />
         </Grid>
         <Grid item xs={12} className={classes.errorDisplay}>
-          {[...pageErrors].map((msg, index) => {
-            return <ErrorMessage message={msg} key={index}></ErrorMessage>;
-          })}
+          <AlertSnackbar
+            openAlert={alertState}
+            messages={[...pageErrors]}
+            alertsClosed={resetAlerts}
+            variant="error"
+            autoHideDuration="6000"
+          ></AlertSnackbar>
         </Grid>
       </Grid>
     </div>
