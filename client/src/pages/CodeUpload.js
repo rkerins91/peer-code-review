@@ -15,6 +15,7 @@ import { TextEditor } from "components/index";
 import ErrorMessage from "components/ErrorMessage";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
+import { languageGrammar } from "utils";
 
 const useStlyes = makeStyles({
   root: {
@@ -49,14 +50,18 @@ const useStlyes = makeStyles({
 });
 
 const CodeUpload = () => {
-  const user = useContext(UserContext);
+  //const { user } = useContext(UserContext);
+  const testUser = {
+    _id: "userID",
+    experience: { C: 1, "C++": 4, Python: 3, Ruby: 1 }
+  };
 
   const classes = useStlyes();
   const [requestTitle, setRequestTitle] = useState("");
   const [requestLanguage, setRequestLanguage] = useState("");
   const [editorHasContent, setEditorHasContent] = useState(false);
   const [submitState, setSubmitState] = useState(false);
-  const [pageErrors, setPageErrors] = useState(new Set());
+  const [pageAlerts, setPageAlerts] = useState(new Set());
   const [alertState, setAlertState] = useState(false);
 
   const handleTitleChange = event => {
@@ -68,6 +73,7 @@ const CodeUpload = () => {
   };
 
   //TODO: Map over userContext object to get languages and create a select component with options populated by the context.
+  const getLanguages = Object.keys(testUser.experience);
 
   //Handle page errors and update submission state
   const startSubmit = () => {
@@ -86,11 +92,11 @@ const CodeUpload = () => {
       if (!editorHasContent) {
         errorSet.add("Please add some content to your review request");
       }
-      setPageErrors(errorSet);
+      setPageAlerts(errorSet);
       setAlertState(true);
     } else {
       //No errors, begin submitting
-      setPageErrors(new Set());
+      setPageAlerts(new Set());
       setSubmitState(true);
     }
   };
@@ -112,13 +118,13 @@ const CodeUpload = () => {
       title: requestTitle,
       language: requestLanguage,
       content: data,
-      user: user
+      user: testUser
     };
 
     try {
       const response = await axios({
         method: "post",
-        url: `/${user._id}/create-request`,
+        url: `/${testUser._id}/create-request`,
         data: {
           dataObj: JSON.stringify(requestData)
         }
@@ -126,6 +132,7 @@ const CodeUpload = () => {
       const success = response.success;
       if (success) {
         //redirect user to their reviews page
+        //success snackbar?
       }
     } catch (err) {
       console.log(err);
@@ -156,9 +163,13 @@ const CodeUpload = () => {
             value={requestLanguage}
             onChange={handleLanguageChange}
           >
-            <MenuItem value="javascript">Javascript</MenuItem>
-            <MenuItem value="cpp">C++</MenuItem>
-            <MenuItem value="python">Python</MenuItem>
+            {getLanguages.map(language => {
+              return (
+                <MenuItem value={languageGrammar[language]} key={language}>
+                  {language}
+                </MenuItem>
+              );
+            })}
           </Select>
         </Grid>
         <Grid item xs={12}>
@@ -175,7 +186,7 @@ const CodeUpload = () => {
         <Grid item xs={12} className={classes.errorDisplay}>
           <AlertSnackbar
             openAlert={alertState}
-            messages={[...pageErrors]}
+            messages={[...pageAlerts]}
             alertsClosed={resetAlerts}
             variant="error"
             autoHideDuration="6000"
