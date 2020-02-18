@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 const { postSchema } = require("./Post");
 
-var threadSchema = new Schema(
+const threadSchema = new Schema(
   {
     creator_id: {
       type: String,

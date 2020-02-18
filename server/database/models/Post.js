@@ -1,12 +1,12 @@
 const { Schema, model } = require("mongoose");
 
-var postSchema = new Schema(
+const postSchema = new Schema(
   {
     u_id: {
       type: String,
       required: true
     },
-    tite: {
+    title: {
       type: String,
       required: true
     },
