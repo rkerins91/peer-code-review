@@ -19,10 +19,7 @@ var userSchema = new Schema({
     type: Schema.Types.Mixed,
     of: Number
   },
-  registeredDate: {
-    type: Date,
-    default: Date.now
-  }
+  timestamps: {}
 });
 
 // run before every model.save() call
