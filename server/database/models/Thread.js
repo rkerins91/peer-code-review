@@ -1,24 +1,25 @@
 const { Schema, model } = require("mongoose");
-const postSchema = require("./Post");
+const { postSchema } = require("./Post");
 
-var threadSchema = Schema({
-  creator_id: {
-    type: String,
-    required: true
+var threadSchema = new Schema(
+  {
+    creator_id: {
+      type: String,
+      required: true
+    },
+    status: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    reviewer_id: String,
+    language: {
+      name: String,
+      experience: Number
+    },
+    posts: [postSchema]
   },
-  timestamps: {},
-  status: {
-    type: Number,
-    default: 0,
-    required: true
-  },
-  reviewer_id: String,
-  language: {
-    name: String,
-    experience: Number,
-    required: true
-  },
-  posts: [postSchema]
-});
+  { timestamps: true }
+);
 
 module.exports = model("Thread", threadSchema);
