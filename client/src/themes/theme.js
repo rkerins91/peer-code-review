@@ -10,6 +10,7 @@ export const theme = createMuiTheme({
   },
   palette: {
     primary: { main: "#6E3ADB" }, // purple
-    secondary: { main: "#43DDC1" } // turquoise
+    secondary: { main: "#43DDC1" }, // turquoise
+    background: { default: "#E7EBFB" }
   }
 });
