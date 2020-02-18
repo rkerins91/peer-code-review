@@ -3,28 +3,27 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../../config/config");
 
-var userSchema = new Schema({
-  name: {
-    type: String,
-    required: true
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    experience: {
+      type: Schema.Types.Mixed,
+      of: Number
+    }
   },
-  email: {
-    type: String,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  experience: {
-    type: Schema.Types.Mixed,
-    of: Number
-  },
-  registeredDate: {
-    type: Date,
-    default: Date.now
-  }
-});
+  { timestamps: true }
+);
 
 // run before every model.save() call
 userSchema.pre("save", async function(next) {
