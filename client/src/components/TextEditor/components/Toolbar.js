@@ -41,7 +41,7 @@ const Toolbar = props => {
 
   return (
     <Grid container spacing={4} justify="flex-start">
-      <Grid item xs={3} lg="auto">
+      <Grid item xs={6} sm="auto" lg="auto">
         <ToggleButtonGroup
           value={inlineFormatButtonState}
           onChange={handleInlineFormatChange}
@@ -60,7 +60,7 @@ const Toolbar = props => {
           </ToggleButton>
         </ToggleButtonGroup>
       </Grid>
-      <Grid item xs={1} lg={1}>
+      <Grid item xs={6} sm={4} lg={1}>
         <ToggleButtonGroup
           value={blockFormatButtonState}
           onChange={handleBlockFormatChange}
