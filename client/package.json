@@ -5,7 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.9.3",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.43",
+    "@material-ui/lab": "^4.0.0-alpha.39",
     "axios": "^0.19.2",
     "jwt-decode": "^2.2.0",
     "babel-plugin-prismjs": "^2.0.1",
