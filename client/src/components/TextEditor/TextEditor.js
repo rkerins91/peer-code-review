@@ -15,46 +15,46 @@ import Prism from "prismjs";
 import PrismDecorator from "draft-js-prism";
 import "prismjs/themes/prism-okaidia.css";
 
-const TextEditor = props => {
-  const useStlyes = makeStyles({
-    root: {
-      width: "100%"
-    },
-    editor: {
-      border: "2px solid grey",
-      padding: "10px",
-      margin: "0",
-      height: "50vh",
-      overflow: "auto"
-    }
-  });
-  const classes = useStlyes();
+const useStyles = makeStyles({
+  root: {
+    width: "100%"
+  },
+  editor: {
+    border: "2px solid grey",
+    padding: "10px",
+    margin: "0",
+    height: "50vh",
+    overflow: "auto"
+  }
+});
 
-  const editorStyleMap = {
-    CODE: {
-      background: "#414239",
-      fontFamily:
-        "'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace",
-      fontSize: "1em",
-      textShadow: "0 1px rgba(0, 0, 0, 0.3)",
-      color: "#f8f8f2"
-    }
-  };
+const editorStyleMap = {
+  CODE: {
+    background: "#414239",
+    fontFamily: "'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace",
+    fontSize: "1em",
+    textShadow: "0 1px rgba(0, 0, 0, 0.3)",
+    color: "#f8f8f2"
+  }
+};
 
-  const [languageState, setLanguageState] = useState(null);
+const inlineStyles = {
+  BOLD: "BOLD",
+  ITALIC: "ITALIC",
+  UNDERLINE: "UNDERLINE",
+  CODE: "CODE"
+};
 
-  useEffect(() => {
-    if (props.selectedLanguage !== "") {
-      setLanguageState(props.selectedLanguage);
-    } else {
-      //Null is a fallback grammar for Prism
-      setLanguageState(null);
-    }
-  }, [props.selectedLanguage]);
+const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
+  const classes = useStyles();
+
+  if (selectedLanguage === "") {
+    selectedLanguage = null;
+  }
 
   const decorator = new PrismDecorator({
     prism: Prism,
-    defaultSyntax: languageState
+    defaultSyntax: selectedLanguage
   });
 
   const [editorState, setEditorState] = useState(
@@ -67,11 +67,12 @@ const TextEditor = props => {
 
   //Pass language data through into the editor state
   useEffect(() => {
+    console.log(selectedLanguage);
     const selection = editorState.getSelection();
     const block = editorState
       .getCurrentContent()
       .getBlockForKey(selection.getStartKey());
-    const data = block.getData().merge({ syntax: languageState });
+    const data = block.getData().merge({ syntax: selectedLanguage });
     const newBlock = block.merge({ data });
     const newContentState = editorState.getCurrentContent().merge({
       blockMap: editorState
@@ -83,7 +84,7 @@ const TextEditor = props => {
     setEditorState(
       EditorState.push(editorState, newContentState, "change-block-data")
     );
-  }, [languageState]);
+  }, [selectedLanguage]);
 
   //Triggers editor's focus method
   const editor = React.useRef(null);
@@ -97,12 +98,7 @@ const TextEditor = props => {
 
   //Toggle button group controller
   const handleFormatChange = style => {
-    if (
-      style === "BOLD" ||
-      style === "ITALIC" ||
-      style === "UNDERLINE" ||
-      style === "CODE"
-    ) {
+    if (inlineStyles.hasOwnProperty(style)) {
       setEditorState(RichUtils.toggleInlineStyle(editorState, style));
     } else {
       setEditorState(RichUtils.toggleBlockType(editorState, style));
@@ -123,9 +119,9 @@ const TextEditor = props => {
     const currentContentState = newEditorState.getCurrentContent();
 
     if (currentContentState.hasText()) {
-      props.hasContent(true);
+      hasContent(true);
     } else {
-      props.hasContent(false);
+      hasContent(false);
     }
 
     if (!prevContentState.hasText()) {
@@ -143,7 +139,7 @@ const TextEditor = props => {
   const getBlockStyle = block => {
     switch (block.getType()) {
       case "code-block":
-        return "language-".concat(props.selectedLanguage);
+        return "language-".concat(selectedLanguage);
       default:
         return null;
     }
@@ -191,19 +187,19 @@ const TextEditor = props => {
 
   //Send data to parent page if button was pressed and no errors
   useEffect(() => {
-    if (props.didSubmit) {
+    if (didSubmit) {
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
-      props.onSubmit(rawJs);
+      onSubmit(rawJs);
     }
-  }, [props.didSubmit]);
+  }, [didSubmit]);
 
   return (
     <div className={classes.root}>
       <Toolbar
         onChange={style => handleFormatChange(style)}
-        InlineStyle={currentInlineStyles}
-        BlockStyle={currentBlockType}
+        inlineStyle={currentInlineStyles}
+        blockStyle={currentBlockType}
       />
       <div className={classes.editor} onClick={focusEditor}>
         <Editor

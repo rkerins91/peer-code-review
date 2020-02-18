@@ -11,25 +11,12 @@ import {
 } from "@material-ui/icons";
 
 const Toolbar = props => {
-  const [inlineFormatButtonState, setInlineFormatButtonState] = useState();
-  const [blockFormatButtonState, setBlockFormatButtonState] = useState();
-
-  useEffect(() => {
-    setInlineFormatButtonState(props.InlineStyle);
-  }, [props.InlineStyle]);
-
-  useEffect(() => {
-    setBlockFormatButtonState(props.BlockStyle);
-  }, [props.BlockStyle]);
-
-  const handleInlineFormatChange = (event, newFormats) => {
-    setInlineFormatButtonState(newFormats);
+  const handleInlineFormatChange = event => {
     const style = event.currentTarget.getAttribute("value");
     props.onChange(style);
   };
 
-  const handleBlockFormatChange = (event, newFormats) => {
-    setBlockFormatButtonState(newFormats);
+  const handleBlockFormatChange = event => {
     const style = event.currentTarget.getAttribute("value");
     props.onChange(style);
   };
@@ -43,7 +30,7 @@ const Toolbar = props => {
     <Grid container spacing={4} justify="flex-start">
       <Grid item xs={6} sm="auto" lg="auto">
         <ToggleButtonGroup
-          value={inlineFormatButtonState}
+          value={props.inlineStyle}
           onChange={handleInlineFormatChange}
         >
           <ToggleButton value="BOLD" onMouseDown={preventDefault}>
@@ -62,7 +49,7 @@ const Toolbar = props => {
       </Grid>
       <Grid item xs={6} sm={4} lg={1}>
         <ToggleButtonGroup
-          value={blockFormatButtonState}
+          value={props.blockStyle}
           onChange={handleBlockFormatChange}
           exclusive
         >
