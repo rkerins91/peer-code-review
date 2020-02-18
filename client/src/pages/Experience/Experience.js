@@ -3,7 +3,7 @@ import { UserContext } from "context/UserContext";
 import ExperienceContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import { availableLanguages } from "utils";
-import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
+import { Grid, Button, Typography, makeStyles, Paper } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
@@ -31,6 +31,10 @@ const useStyles = makeStyles({
   success: {
     color: "#43DDC1",
     fontSize: "2vw"
+  },
+  experienceCard: {
+    rounded: true,
+    backgroundColor: "#F0F0F0"
   }
 });
 const Experience = () => {
@@ -119,18 +123,19 @@ const Experience = () => {
             {experience.map((ele, idx) => {
               const currLanguage = Object.keys(experience[idx])[0];
               return (
-                <Grid item>
-                  <NewExperienceForm
-                    key={currLanguage}
-                    updateExperience={updateExperience}
-                    language={currLanguage}
-                    level={ele[currLanguage]}
-                    availableLanguages={newUnselectedLanguages}
-                    deleteExperience={deleteExperience}
-                    index={idx}
-                    experience={experience}
-                    deletable={experience.length > 1}
-                  />
+                <Grid item key={currLanguage}>
+                  <Paper className={classes.experienceCard}>
+                    <NewExperienceForm
+                      updateExperience={updateExperience}
+                      language={currLanguage}
+                      level={ele[currLanguage]}
+                      availableLanguages={newUnselectedLanguages}
+                      deleteExperience={deleteExperience}
+                      index={idx}
+                      experience={experience}
+                      deletable={experience.length > 1}
+                    />
+                  </Paper>
                 </Grid>
               );
             })}
@@ -146,7 +151,12 @@ const Experience = () => {
           </Grid>
         )}
         <Grid item xs={12}>
-          <Button className={classes.button} onClick={handleSubmit}>
+          <Button
+            className={classes.button}
+            onClick={handleSubmit}
+            color="primary"
+            variant="contained"
+          >
             Submit
           </Button>
         </Grid>

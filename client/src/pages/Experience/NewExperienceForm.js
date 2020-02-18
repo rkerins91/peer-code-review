@@ -71,12 +71,12 @@ const NewExperienceForm = ({
           alignItems="center"
           justify="center"
         >
-          <Grid item xs={2}>
+          <Grid item md={2} sm={12}>
             <InputLabel id="label" className={classes.label}>
               Language
             </InputLabel>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item md={4} sm={12}>
             <Select
               labelid="label"
               id="select"
@@ -97,10 +97,10 @@ const NewExperienceForm = ({
             </Select>
           </Grid>
 
-          <Grid item xs={2}>
+          <Grid item md={2} sm={12}>
             <InputLabel id="label">Level</InputLabel>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item md={4} sm={12}>
             <Select
               labelid="label"
               id="select"

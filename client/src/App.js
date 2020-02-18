@@ -8,6 +8,7 @@ import Experience from "./pages/Experience";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
+import PurchaseCredits from "./pages/PurchaseCredits";
 
 import "./App.css";
 
@@ -35,6 +36,7 @@ function App() {
           <Route path="/signup" component={Signup} signupUser={setUser} />
           <Route path="/login" component={Login} />
           <Route path="/experience" component={Experience} />
+          <Route path="/purchase-credits" component={PurchaseCredits} />
           <Route exact path="/" component={Home} />
         </BrowserRouter>
       </MuiThemeProvider>
