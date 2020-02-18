@@ -114,9 +114,8 @@ const Experience = () => {
             {experience.map((ele, idx) => {
               const currLanguage = Object.keys(experience[idx])[0];
               return (
-                <Grid item>
+                <Grid item key={currLanguage}>
                   <NewExperienceForm
-                    key={currLanguage}
                     updateExperience={updateExperience}
                     language={currLanguage}
                     level={ele[currLanguage]}
