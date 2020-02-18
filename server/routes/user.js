@@ -2,6 +2,7 @@ const express = require("express");
 const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
+const config = require("../config/config");
 
 const { User } = require("../database");
 
@@ -131,7 +132,7 @@ router.put("/:id/experience", async (req, res) => {
   const user = await User.findById(req.params.id);
   if (
     Object.keys(languages).every(ele =>
-      process.env.availableLanguages.includes(ele)
+      config.server.availableLanguages.includes(ele)
     )
   ) {
     // Set make values of languages obj numbers

@@ -1,6 +1,7 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const config = require("../../config/config");
 
 const userSchema = new Schema(
   {
@@ -43,9 +44,9 @@ userSchema.method("login", async function(user, callback) {
 
   jwt.sign(
     payload,
-    process.env.SECRET,
+    config.jwt.tokenExpirationPolicy,
     {
-      expiresIn: Number(process.env.TOKEN_EXPIRATION)
+      expiresIn: Number(config.jwt.tokenExpirationPolicy)
     },
     (err, token) => {
       callback(err, token);
