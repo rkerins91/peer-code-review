@@ -4,17 +4,18 @@ import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles({
   container: {
-    backgroundColor: "red",
+    backgroundColor: "#e8176e",
     marginLeft: "20%",
     marginRight: "20%",
-    marginTop: "2vh",
-    marginBottom: "2vh",
+    marginTop: "1vh",
+    marginBottom: "1vh",
     borderRadius: "1vh",
-    boxShadow: "0.1vh 0.1vh 0.5vh grey"
+    boxShadow: "0.1vh 0.1vh 0.5vh grey",
+    padding: ".5em"
   },
   text: {
     color: "white",
-    lineHeight: "5vh",
+    lineHeight: "3vh",
     fontWeight: "800"
   }
 });
