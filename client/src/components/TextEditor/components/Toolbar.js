@@ -26,6 +26,9 @@ const Toolbar = props => {
     event.preventDefault();
   };
 
+  if (props.readOnly) {
+    return <div></div>;
+  }
   return (
     <Grid container spacing={4} justify="flex-start">
       <Grid item xs={6} sm="auto" lg="auto">

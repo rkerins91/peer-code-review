@@ -7,7 +7,8 @@ import {
   getDefaultKeyBinding,
   EditorState,
   RichUtils,
-  convertToRaw
+  convertToRaw,
+  convertFromRaw
 } from "draft-js";
 
 import CodeUtils from "draft-js-code";
@@ -45,7 +46,14 @@ const inlineStyles = {
   CODE: "CODE"
 };
 
-const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
+const TextEditor = ({
+  selectedLanguage,
+  onSubmit,
+  didSubmit,
+  hasContent,
+  readOnly,
+  existingContent
+}) => {
   const classes = useStyles();
 
   if (selectedLanguage === "") {
@@ -60,6 +68,11 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
   const [editorState, setEditorState] = useState(
     EditorState.createEmpty(decorator)
   );
+
+  if (existingContent && readOnly) {
+    const currentContent = convertFromRaw(existingContent);
+    setEditorState(EditorState.createWithContent(currentContent, decorator));
+  }
 
   //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
@@ -200,6 +213,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
         onChange={style => handleFormatChange(style)}
         inlineStyle={currentInlineStyles}
         blockStyle={currentBlockType}
+        readOnly={readOnly}
       />
       <div className={classes.editor} onClick={focusEditor}>
         <Editor
@@ -211,6 +225,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
           handleKeyCommand={handleKeyCommand}
           onTab={onTab}
           blockStyleFn={getBlockStyle}
+          readOnly={readOnly}
         />
       </div>
     </div>
