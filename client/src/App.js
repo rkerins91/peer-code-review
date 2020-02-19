@@ -48,10 +48,10 @@ function App() {
       <MuiThemeProvider theme={theme}>
         <SnackbarProvider maxSnack={4}>
           <BrowserRouter>
+            <Route exact path="/" component={Home} />
             <Route path="/signup" component={Signup} signupUser={setUser} />
             <Route path="/login" component={Login} />
             <Route path="/experience" component={Experience} />
-            <Route exact path="/" component={Home} />
             <Route path="/code-upload" component={CodeUpload} />
           </BrowserRouter>
         </SnackbarProvider>

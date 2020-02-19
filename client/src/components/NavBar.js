@@ -27,8 +27,14 @@ const useStyles = makeStyles({
     color: "#43DDC1",
     border: "solid 2px #43DDC1",
     borderRadius: "3vh",
-    fontWeight: "800",
-    marginLeft: "2vw"
+    fontWeight: "500",
+    marginLeft: "2vw",
+    padding: "5px 20px"
+  },
+  codeLink: {
+    color: "#43DDC1",
+    textDecoration: "none",
+    textTransform: "none"
   },
   iconButton: {
     padding: "6px",
