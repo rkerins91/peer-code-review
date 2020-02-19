@@ -1,11 +1,10 @@
-const { Schema, model, mongoose } = require("mongoose");
-const User = require("./User");
+const { Schema, model } = require("mongoose");
 
 const postSchema = new Schema(
   {
-    u_id: {
+    author: {
       type: Schema.Types.ObjectId,
-      ref: User,
+      ref: "User",
       required: true
     },
     title: {

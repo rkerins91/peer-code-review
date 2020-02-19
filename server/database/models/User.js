@@ -2,6 +2,7 @@ const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../../config/config");
+const Thread = require("./Thread");
 
 const userSchema = new Schema(
   {
@@ -20,7 +21,8 @@ const userSchema = new Schema(
     experience: {
       type: Schema.Types.Mixed,
       of: Number
-    }
+    },
+    assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }]
   },
   { timestamps: true }
 );
