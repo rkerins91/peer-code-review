@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import {
   Grid,
@@ -11,6 +11,7 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { UserContext } from "context/UserContext";
+import { NavBar } from "components";
 import { TextEditor } from "components/index";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
@@ -18,7 +19,7 @@ import { languageGrammar } from "utils";
 
 const useStlyes = makeStyles({
   root: {
-    padding: "5%"
+    padding: "8% 5%"
   },
   wrapper: {
     background: "white",
@@ -29,7 +30,7 @@ const useStlyes = makeStyles({
   },
   header: {
     margin: "4vh",
-    fontWeight: "800"
+    fontWeight: "500"
   },
   textInput: {
     textAlign: "center",
@@ -49,11 +50,7 @@ const useStlyes = makeStyles({
 });
 
 const CodeUpload = () => {
-  //const { user } = useContext(UserContext);
-  const testUser = {
-    _id: "userID",
-    experience: { C: 1, "C++": 4, Python: 3, Ruby: 1 }
-  };
+  const { user } = useContext(UserContext);
 
   const classes = useStlyes();
   const [requestTitle, setRequestTitle] = useState("");
@@ -62,6 +59,7 @@ const CodeUpload = () => {
   const [submitState, setSubmitState] = useState(false);
   const [pageAlerts, setPageAlerts] = useState(new Set());
   const [alertState, setAlertState] = useState(false);
+  const [postSuccess, setPostSuccess] = useState(false);
 
   const handleTitleChange = event => {
     setRequestTitle(event.target.value);
@@ -71,8 +69,11 @@ const CodeUpload = () => {
     setRequestLanguage(event.target.value);
   };
 
-  //TODO: Map over userContext object to get languages and create a select component with options populated by the context.
-  const getLanguages = Object.keys(testUser.experience);
+  var getLanguages = [];
+
+  if (user) {
+    getLanguages = Object.keys(user.experience);
+  }
 
   //Handle page errors and update submission state
   const startSubmit = () => {
@@ -101,6 +102,7 @@ const CodeUpload = () => {
   //reset alerts
   const resetAlerts = () => {
     setAlertState(false);
+    setPostSuccess(false);
   };
 
   //check if user has typed into editor
@@ -115,21 +117,22 @@ const CodeUpload = () => {
       title: requestTitle,
       language: requestLanguage,
       content: data,
-      user: testUser
+      user: user
     };
 
     try {
       const response = await axios({
         method: "post",
-        url: `/${testUser._id}/create-request`,
-        data: {
-          dataObj: JSON.stringify(requestData)
-        }
+        url: "/create-request",
+        headers: { "content-type": "application/json" },
+        data: JSON.stringify(requestData)
       });
-      const success = response.success;
-      if (success) {
-        //redirect user to their reviews page
-        //success snackbar?
+      //redirect user to their reviews page
+      if (response.data.success) {
+        var alerts = new Set();
+        alerts.add("Code upload successful!");
+        setPageAlerts(alerts);
+        setPostSuccess(true);
       }
     } catch (err) {
       console.log(err);
@@ -138,9 +141,10 @@ const CodeUpload = () => {
 
   return (
     <div className={classes.root}>
+      <NavBar></NavBar>
       <Grid className={classes.wrapper} container justify="center" spacing={2}>
-        <Typography className={classes.header} variant="h2" align="center">
-          Request a Code Review
+        <Typography className={classes.header} variant="h3" align="center">
+          Request a code review
         </Typography>
         <Grid item xs={8}>
           <TextField
@@ -188,6 +192,12 @@ const CodeUpload = () => {
             alertsClosed={resetAlerts}
             variant="error"
             autoHideDuration="6000"
+          ></AlertSnackbar>
+          <AlertSnackbar
+            openAlert={postSuccess}
+            messages={[...pageAlerts]}
+            alertsClosed={resetAlerts}
+            variant="success"
           ></AlertSnackbar>
         </Grid>
       </Grid>

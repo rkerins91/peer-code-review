@@ -7,7 +7,8 @@ const config = {
     tokenExpirationPolicy: "31536000" //one year in seconds
   },
   server: {
-    availableLanguages: ["C", "C++", "Java", "JavaScript", "Python", "Ruby"]
+    availableLanguages: ["C", "C++", "Java", "JavaScript", "Python", "Ruby"],
+    threadStatus: ["open", "assigned", "ongoing", "complete"]
   }
 };
 

@@ -80,7 +80,6 @@ const TextEditor = ({
 
   //Pass language data through into the editor state
   useEffect(() => {
-    console.log(selectedLanguage);
     const selection = editorState.getSelection();
     const block = editorState
       .getCurrentContent()

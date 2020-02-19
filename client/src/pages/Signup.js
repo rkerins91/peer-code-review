@@ -128,7 +128,7 @@ const Signup = () => {
 
   // if the user is signed in, redirect them to the add experience page
   if (user) {
-    return <Redirect to="/experience" />;
+    return <Redirect to="/" />;
   } else
     return (
       <SignUpContainer>
