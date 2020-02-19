@@ -1,12 +1,11 @@
 const { Schema, model } = require("mongoose");
 const { postSchema } = require("./Post");
-const { User } = require("./User");
 
 const threadSchema = new Schema(
   {
-    creator_id: {
+    creator: {
       type: Schema.Types.ObjectId,
-      ref: User,
+      ref: "User",
       required: true
     },
     status: {
@@ -14,18 +13,22 @@ const threadSchema = new Schema(
       default: 0,
       required: true
     },
-    reviewer_id: {
+    reviewer: {
       type: Schema.Types.ObjectId,
-      ref: User
+      ref: "User"
     },
     language: {
       name: String,
       experience: Number
     },
     posts: [postSchema],
-    no_assign: [{ type: Schema.Types.ObjectId, ref: User }]
+    no_assign: [{ type: Schema.Types.ObjectId, ref: "User" }]
   },
   { timestamps: true }
 );
+
+/* postSchema.path("creator").ref(User);
+postSchema.path("reviewer").ref(User);
+postSchema.path("no_assign").ref(User); */
 
 module.exports = model("Thread", threadSchema);
