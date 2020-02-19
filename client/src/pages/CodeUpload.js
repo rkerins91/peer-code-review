@@ -175,6 +175,7 @@ const CodeUpload = () => {
             onSubmit={handleSubmit}
             didSubmit={submitState}
             hasContent={handleHasContent}
+            readOnly={false}
           ></TextEditor>
         </Grid>
         <Grid item xs={12} className={classes.submit}>
