@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
-import { authJWT } from "./functions/jwt";
+import { authJWT, removeToken } from "./functions/jwt";
 import { SnackbarProvider } from "notistack";
 import { theme } from "./themes/theme";
 import Experience from "./pages/Experience";
@@ -18,7 +18,7 @@ function App() {
 
   const logout = () => {
     setUser(null);
-    // TODO: delete token from localStorage as well
+    removeToken();
   };
 
   const value = useMemo(
@@ -33,8 +33,12 @@ function App() {
   // On mount, check local token for user
   useEffect(() => {
     let decodedToken = authJWT();
-    let user = decodedToken.user;
-    setUser(user);
+    if (!decodedToken) {
+      setUser(null);
+    } else {
+      let user = decodedToken.user;
+      setUser(user);
+    }
   }, []);
 
   return (
@@ -42,10 +46,10 @@ function App() {
       <MuiThemeProvider theme={theme}>
         <SnackbarProvider maxSnack={4}>
           <BrowserRouter>
+            <Route exact path="/" component={Home} />
             <Route path="/signup" component={Signup} signupUser={setUser} />
             <Route path="/login" component={Login} />
             <Route path="/experience" component={Experience} />
-            <Route exact path="/" component={Home} />
             <Route path="/code-upload" component={CodeUpload} />
           </BrowserRouter>
         </SnackbarProvider>

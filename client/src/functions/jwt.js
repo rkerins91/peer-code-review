@@ -5,6 +5,10 @@ const getToken = () => {
   return token;
 };
 
+export const removeToken = () => {
+  localStorage.removeItem("peercode-auth-token");
+};
+
 const decodeToken = token => {
   var decodedToken = jwtDecode(token);
   return decodedToken;
@@ -12,5 +16,8 @@ const decodeToken = token => {
 
 export const authJWT = () => {
   let token = getToken();
-  return decodeToken(token);
+  if (token) {
+    return decodeToken(token);
+  }
+  return null;
 };

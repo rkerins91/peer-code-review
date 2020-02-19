@@ -5,7 +5,7 @@ const { Post, Thread } = require("../database");
 const config = require("../config/config");
 
 router.post(
-  "/:id/create-request",
+  "/create-request",
   [
     check("title", "Please add a title to your request")
       .not()
@@ -40,11 +40,12 @@ router.post(
     try {
       const post = await newPost.save();
       newThread.posts.push(post);
+      newThread.no_assign.push(user._id);
       const thread = await newThread.save();
       //Success, add this thread to the matching queue
       return res.status(201).json({
         success: true,
-        thread: thread
+        threadId: thread._id
       });
     } catch (err) {
       return res.status(500);
@@ -52,4 +53,4 @@ router.post(
   }
 );
 
-module.exports(router);
+module.exports = router;

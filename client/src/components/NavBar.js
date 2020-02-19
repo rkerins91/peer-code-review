@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Link, Redirect } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import {
   AppBar,
@@ -27,8 +27,14 @@ const useStyles = makeStyles({
     color: "#43DDC1",
     border: "solid 2px #43DDC1",
     borderRadius: "3vh",
-    fontWeight: "800",
-    marginLeft: "2vw"
+    fontWeight: "500",
+    marginLeft: "2vw",
+    padding: "5px 20px"
+  },
+  codeLink: {
+    color: "#43DDC1",
+    textDecoration: "none",
+    textTransform: "none"
   },
   iconButton: {
     padding: "6px",
@@ -50,7 +56,8 @@ const NavBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // user context
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser, logout } = useContext(UserContext);
+  const [redirect, setRedirect] = useState(false);
 
   const handleMenu = e => {
     setAnchorEl(e.currentTarget);
@@ -60,6 +67,14 @@ const NavBar = () => {
     setAnchorEl(null);
   };
 
+  const handleLogout = () => {
+    logout();
+    setRedirect(true);
+  };
+
+  if (redirect) {
+    return <Redirect to="/login" />;
+  }
   return (
     <AppBar>
       <Toolbar className={classes.bar}>
@@ -75,7 +90,11 @@ const NavBar = () => {
               fontSize="large"
             />
           </IconButton>
-          <Button className={classes.codeButton}> Upload Code </Button>
+          <Button className={classes.codeButton}>
+            <Link className={classes.codeLink} to="/code-upload">
+              Upload code
+            </Link>
+          </Button>
           <div>
             <IconButton
               className={classes.iconButton}
@@ -108,7 +127,7 @@ const NavBar = () => {
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
               <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleClose}>Logout</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>
         </Toolbar>

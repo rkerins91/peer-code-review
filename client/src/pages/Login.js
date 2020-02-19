@@ -117,7 +117,7 @@ const Login = () => {
 
   // if the user is signed in, redirect them to the home page
   if (user) {
-    return <Redirect to="/experience" />;
+    return <Redirect to="/" />;
   } else
     return (
       <SignUpContainer>
