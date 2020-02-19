@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
-import { authJWT } from "./functions/jwt";
+import { authJWT, removeToken } from "./functions/jwt";
 import { SnackbarProvider } from "notistack";
 import { theme } from "./themes/theme";
 import Experience from "./pages/Experience";
@@ -19,7 +19,7 @@ function App() {
 
   const logout = () => {
     setUser(null);
-    // TODO: delete token from localStorage as well
+    removeToken();
   };
 
   const value = useMemo(

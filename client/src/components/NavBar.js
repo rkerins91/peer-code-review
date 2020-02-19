@@ -50,13 +50,18 @@ const NavBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // user context
-  const { user, isLoading } = useContext(UserContext);
+  const { user, isLoading, logout } = useContext(UserContext);
 
   const handleMenu = e => {
     setAnchorEl(e.currentTarget);
   };
 
   const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    logout();
     setAnchorEl(null);
   };
 
@@ -73,6 +78,8 @@ const NavBar = () => {
   } else if (user && !user.experience) {
     // if the user has no experience set, redirect
     return <Redirect to="/experience" />;
+  } else if (!user && !isLoading) {
+    return <Redirect to="/login" />;
   } else
     return (
       <AppBar>
@@ -122,7 +129,7 @@ const NavBar = () => {
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>
           </Toolbar>
