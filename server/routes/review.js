@@ -27,12 +27,12 @@ router.post(
 
     const newPost = new Post({
       author: user._id,
-      title,
       data: content
     });
 
     const newThread = new Thread({
       creator: user._id,
+      title,
       status: 0,
       language: { name: language, experience: user.experience[language] }
     });

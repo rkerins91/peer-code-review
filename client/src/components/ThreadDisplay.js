@@ -8,15 +8,15 @@ import {
   makeStyles
 } from "@material-ui/core";
 
-import { TextEditor } from "components/index";
-
 const useStlyes = makeStyles({
   root: {
     padding: "5%"
   },
   backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+    zIndex: 2,
+    color: "#fff",
+    width: "70%",
+    left: "30%"
   },
   wrapper: {
     background: "white",
@@ -33,16 +33,27 @@ const useStlyes = makeStyles({
 
 const ThreadDisplay = ({ threadData }) => {
   const classes = useStlyes();
+  const [posts, setPosts] = useState(threadData.posts);
 
-  if (threadData) {
-    <div className={classes.root}>
-    <Backdrop className={classes.backdrop} open={true}>
-        <CircularProgress color="secondary"></CircularProgress>
+  if (!threadData) {
+    return (
+      <div className={classes.root}>
+        <Backdrop className={classes.backdrop} open={true}>
+          <CircularProgress color="secondary"></CircularProgress>
         </Backdrop>
-    </div>;
-  };
+      </div>
+    );
+  } else {
+    return (
+      <div className={classes.root}>
+        <Grid container xs={12}>
+          <Typography className={classes.header} variant="h3" align="center">
+            {threadData.title}
+          </Typography>
+        </Grid>
+      </div>
+    );
   }
-  return <div className={classes.root}>
-
-  </div>;
 };
+
+export default ThreadDisplay;
