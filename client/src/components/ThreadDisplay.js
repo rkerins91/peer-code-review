@@ -1,43 +1,50 @@
 import React, { useState, useEffect } from "react";
 import {
   Grid,
-  Button,
   Typography,
   Backdrop,
   CircularProgress,
   makeStyles
 } from "@material-ui/core";
 
-const useStlyes = makeStyles({
-  root: {
-    padding: "5%"
-  },
+const useStyles = makeStyles({
+  root: { padding: "5%" },
   backdrop: {
-    zIndex: 2,
+    zIndex: 1000,
     color: "#fff",
-    width: "70%",
-    left: "30%"
+    left: "25%"
   },
-  wrapper: {
+  header: {
     background: "white",
     borderRadius: "6px",
-    width: "80%",
-    height: "80%",
-    margin: "10px auto"
+    width: "100%",
+    marginTop: "60px",
+    padding: "2em 2em"
   },
-  textInput: {
-    textAlign: "center",
-    width: "100%"
+  postWrapper: {
+    background: "white",
+    borderRadius: "6px",
+    width: "100%",
+    height: "2000px",
+    marginTop: "2px",
+    padding: "2em 2em"
+  },
+  threadTitle: {
+    fontWeight: "500"
+  },
+  threadDate: {
+    fontWeight: "500",
+    color: "grey"
   }
 });
 
 const ThreadDisplay = ({ threadData }) => {
-  const classes = useStlyes();
-  const [posts, setPosts] = useState(threadData.posts);
+  const classes = useStyles();
+  //const [posts, setPosts] = useState(threadData.posts);
 
   if (!threadData) {
     return (
-      <div className={classes.root}>
+      <div>
         <Backdrop className={classes.backdrop} open={true}>
           <CircularProgress color="secondary"></CircularProgress>
         </Backdrop>
@@ -46,10 +53,26 @@ const ThreadDisplay = ({ threadData }) => {
   } else {
     return (
       <div className={classes.root}>
-        <Grid container xs={12}>
-          <Typography className={classes.header} variant="h3" align="center">
-            {threadData.title}
-          </Typography>
+        <Grid container>
+          <Grid item className={classes.header} xs={12}>
+            <Typography
+              className={classes.threadTitle}
+              variant="h4"
+              align="left"
+            >
+              Thread Title
+            </Typography>
+            <Typography
+              className={classes.threadDate}
+              variant="subtitle1"
+              align="left"
+            >
+              Thread Created at
+            </Typography>
+          </Grid>
+          <Grid item className={classes.postWrapper} xs={12}>
+            POST CONTENT GOES HERE
+          </Grid>
         </Grid>
       </div>
     );

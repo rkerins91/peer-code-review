@@ -4,6 +4,7 @@ import NavBar from "./NavBar";
 import TextEditor from "./TextEditor/TextEditor";
 import AlertSnackbar from "./AlertSnackbar";
 import ThreadDisplay from "./ThreadDisplay";
+import PostDisplay from "./PostDisplay";
 
 export {
   SignUpContainer,
@@ -11,5 +12,6 @@ export {
   TextEditor,
   AlertSnackbar,
   NavBar,
-  ThreadDisplay
+  ThreadDisplay,
+  PostDisplay
 };

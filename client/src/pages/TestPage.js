@@ -2,27 +2,27 @@ import React from "react";
 import { NavBar, ThreadDisplay } from "components";
 import { Grid, makeStyles } from "@material-ui/core";
 
-const useStlyes = makeStyles({
-  root: {
-    padding: "5%"
-  },
+const useStyles = makeStyles({
+  root: {},
   sidebar: {
-    height: "100%",
-    width: "30%"
+    background: "white",
+    height: "1000px",
+    width: "30%",
+    padding: "60px"
   }
 });
 
 const TestPage = () => {
-  const classes = useStlyes();
+  const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <NavBar></NavBar>
       <Grid container spacing={0}>
-        <Grid item lg={3}>
+        <Grid className={classes.sidebar} item xs={3} lg={3}>
           This is the sidebar
         </Grid>
-        <Grid item lg={9}>
+        <Grid item xs={9} lg="auto">
           <ThreadDisplay threadData={null}></ThreadDisplay>
         </Grid>
       </Grid>

@@ -17,7 +17,7 @@ import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
 import { languageGrammar } from "utils";
 
-const useStlyes = makeStyles({
+const useStyles = makeStyles({
   root: {
     padding: "8% 5%"
   },
@@ -52,7 +52,7 @@ const useStlyes = makeStyles({
 const CodeUpload = () => {
   const { user } = useContext(UserContext);
 
-  const classes = useStlyes();
+  const classes = useStyles();
   const [requestTitle, setRequestTitle] = useState("");
   const [requestLanguage, setRequestLanguage] = useState("");
   const [editorHasContent, setEditorHasContent] = useState(false);
