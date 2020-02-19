@@ -70,7 +70,7 @@ const CardSection = ({ setEditCredit }) => {
             securityCode={securityCode}
             setSecurityCode={setSecurityCode}
             securityCodeError={setSecurityCodeError}
-          ></CardForm>
+          />
         </Grid>
         <Grid
           item
