@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import {
@@ -56,8 +56,7 @@ const NavBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // user context
-  const { user, setUser, logout } = useContext(UserContext);
-  const [redirect, setRedirect] = useState(false);
+  const { user, isLoading, logout } = useContext(UserContext);
 
   const handleMenu = e => {
     setAnchorEl(e.currentTarget);
@@ -69,71 +68,80 @@ const NavBar = () => {
 
   const handleLogout = () => {
     logout();
-    setRedirect(true);
+    setAnchorEl(null);
   };
 
-  if (redirect) {
-    return <Redirect to="/login" />;
-  }
-  return (
-    <AppBar>
-      <Toolbar className={classes.bar}>
-        <Link to="/">
-          <Logo />
-        </Link>
-        <Toolbar className={classes.right}>
-          <Button className={classes.linkButton}> Reviews </Button>
-          <Button className={classes.linkButton}> Balance </Button>
-          <IconButton className={classes.iconButton}>
-            <NotificationsNoneRoundedIcon
-              className={classes.notificationIcon}
-              fontSize="large"
-            />
-          </IconButton>
-          <Button className={classes.codeButton}>
-            <Link className={classes.codeLink} to="/code-upload">
-              Upload code
-            </Link>
-          </Button>
-          <div>
-            <IconButton
-              className={classes.iconButton}
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              color="inherit"
-              fontSize="large"
-            ></IconButton>
-            <Button className={classes.profileButton} onClick={handleMenu}>
-              <AccountCircle />
-              <Typography className={classes.user}>
-                {user ? user.name : "profile"}
-              </Typography>
-            </Button>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right"
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right"
-              }}
-              open={open}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
-              <MenuItem onClick={handleLogout}>Logout</MenuItem>
-            </Menu>
-          </div>
+  if (isLoading) {
+    return (
+      <AppBar>
+        <Toolbar className={classes.bar}>
+          <Link to="/">
+            <Logo />
+          </Link>
         </Toolbar>
-      </Toolbar>
-    </AppBar>
-  );
+      </AppBar>
+    );
+  } else if (user && !user.experience) {
+    // if the user has no experience set, redirect
+    return <Redirect to="/experience" />;
+  } else if (!user && !isLoading) {
+    return <Redirect to="/login" />;
+  } else
+    return (
+      <AppBar>
+        <Toolbar className={classes.bar}>
+          <Link to="/">
+            <Logo />
+          </Link>
+          <Toolbar className={classes.right}>
+            <Button className={classes.linkButton}> Reviews </Button>
+            <Button className={classes.linkButton}> Balance </Button>
+            <IconButton className={classes.iconButton}>
+              <NotificationsNoneRoundedIcon
+                className={classes.notificationIcon}
+                fontSize="large"
+              />
+            </IconButton>
+            <Button className={classes.codeButton}> Upload Code </Button>
+            <div>
+              <IconButton
+                className={classes.iconButton}
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="inherit"
+                fontSize="large"
+              ></IconButton>
+              <Button className={classes.profileButton} onClick={handleMenu}>
+                <AccountCircle />
+                <Typography className={classes.user}>
+                  {user ? user.name : "profile"}
+                </Typography>
+              </Button>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right"
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right"
+                }}
+                open={open}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </Menu>
+            </div>
+          </Toolbar>
+        </Toolbar>
+      </AppBar>
+    );
 };
 
 export default NavBar;

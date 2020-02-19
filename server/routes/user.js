@@ -126,6 +126,30 @@ router.post(
       }
     }
   );
+router.get("/user/:id", async (req, res) => {
+  const _id = req.params.id;
+  // Find if user exists
+  try {
+    var user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({
+        errors: [
+          {
+            value: _id,
+            msg: "Cannot find the user",
+            param: "id"
+          }
+        ]
+      });
+    } else {
+      res.status(201).json({
+        user: user
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 router.put("/:id/experience", async (req, res) => {
   const languages = { ...req.body };

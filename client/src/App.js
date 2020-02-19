@@ -15,6 +15,7 @@ import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
 
   const logout = () => {
     setUser(null);
@@ -24,21 +25,22 @@ function App() {
   const value = useMemo(
     () => ({
       user: user,
+      isLoading: userLoading,
       setUser: setUser,
       logout: logout
     }),
-    [user, setUser]
+    [user, userLoading, setUser]
   );
 
   // On mount, check local token for user
   useEffect(() => {
-    let decodedToken = authJWT();
-    if (!decodedToken) {
-      setUser(null);
-    } else {
-      let user = decodedToken.user;
+    async function getUser() {
+      setUserLoading(true);
+      let user = await authJWT();
       setUser(user);
+      setUserLoading(false);
     }
+    getUser();
   }, []);
 
   return (
