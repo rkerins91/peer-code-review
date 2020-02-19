@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
+import { authJWT } from "./functions/jwt";
 import { SnackbarProvider } from "notistack";
-
 import { theme } from "./themes/theme";
 import Experience from "./pages/Experience";
 import Signup from "./pages/Signup";
@@ -29,6 +29,13 @@ function App() {
     }),
     [user, setUser]
   );
+
+  // On mount, check local token for user
+  useEffect(() => {
+    let decodedToken = authJWT();
+    let user = decodedToken.user;
+    setUser(user);
+  }, []);
 
   return (
     <UserContext.Provider value={value}>

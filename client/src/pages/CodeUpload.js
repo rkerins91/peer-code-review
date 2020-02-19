@@ -12,7 +12,6 @@ import {
 } from "@material-ui/core";
 import { UserContext } from "context/UserContext";
 import { TextEditor } from "components/index";
-import ErrorMessage from "components/ErrorMessage";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
 import { languageGrammar } from "utils";
@@ -82,15 +81,13 @@ const CodeUpload = () => {
     let errorSet = new Set();
     if (languageError || titleError || !editorHasContent) {
       if (languageError) {
-        errorSet.add(
-          "Please select a language for your request before submitting"
-        );
+        errorSet.add("Please select a language for your request");
       }
       if (titleError) {
-        errorSet.add("Please add a title for your request before submitting");
+        errorSet.add("Please add a title to your request");
       }
       if (!editorHasContent) {
-        errorSet.add("Please add some content to your review request");
+        errorSet.add("Please add some content to your request");
       }
       setPageAlerts(errorSet);
       setAlertState(true);

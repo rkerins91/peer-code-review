@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
-import { SignUpContainer } from "../components";
-import { UserContext } from "../context/UserContext";
+import { SignUpContainer } from "components";
+import { UserContext } from "context/UserContext";
 
 const useStyles = makeStyles({
   input: {
