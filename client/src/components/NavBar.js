@@ -94,7 +94,9 @@ const NavBar = () => {
             <Logo />
           </Link>
           <Toolbar className={classes.right}>
-            <Button className={classes.linkButton}> Reviews </Button>
+            <Link to="/reviews">
+              <Button className={classes.linkButton}> Reviews </Button>
+            </Link>
             <Button className={classes.linkButton}> Balance </Button>
             <IconButton className={classes.iconButton}>
               <NotificationsNoneRoundedIcon
