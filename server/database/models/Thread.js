@@ -27,8 +27,4 @@ const threadSchema = new Schema(
   { timestamps: true }
 );
 
-/* postSchema.path("creator").ref(User);
-postSchema.path("reviewer").ref(User);
-postSchema.path("no_assign").ref(User); */
-
 module.exports = model("Thread", threadSchema);
