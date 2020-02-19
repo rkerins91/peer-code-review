@@ -126,11 +126,11 @@ router.post(
       }
     }
   );
-router.post("/user", async (req, res) => {
-  const { _id, email } = req.body;
+router.get("/user/:id", async (req, res) => {
+  const _id = req.params.id;
   // Find if user exists
   try {
-    var user = await User.findOne({ _id });
+    var user = await User.findById(_id);
     if (!user) {
       return res.status(404).json({
         errors: [

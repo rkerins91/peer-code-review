@@ -11,16 +11,17 @@ const decodeToken = token => {
 };
 
 async function fetchUser(decodedToken) {
-  async function loginUser(user) {
+  async function getUser(id) {
     try {
-      const res = await fetch("/user", {
-        method: "post",
+      const res = await fetch(`/user/${id}`, {
+        method: "get",
         headers: {
           "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user)
+        }
       });
+      console.log(res);
       const json = await res.json();
+      console.log(json);
       if (json.errors) {
         console.log(json.errors);
         return {}; // if there is an error, return empty user object
@@ -34,17 +35,24 @@ async function fetchUser(decodedToken) {
     }
   }
 
-  let user = {
-    _id: decodedToken.user._id,
-    email: decodedToken.user.email
-  };
-  let userObject = await loginUser(user);
-  return userObject;
+  // check for empty token
+  if (!decodedToken) {
+    return null;
+  } else {
+    let id = decodedToken.user._id;
+    let userObject = await getUser(id);
+    return userObject;
+  }
 }
+
+export const removeToken = () => {
+  localStorage.removeItem("peercode-auth-token");
+};
 
 export const authJWT = () => {
   let token = getToken();
-  // todo - verify token not expired
-  let decodedToken = decodeToken(token);
-  return fetchUser(decodedToken);
+  if (token) {
+    let decodedToken = decodeToken(token);
+    return fetchUser(decodedToken);
+  } else return null;
 };
