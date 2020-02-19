@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
 import { BrowserRouter, Route } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
-import { authJWT } from "./functions/jwt";
+import { authJWT, removeToken } from "./functions/jwt";
 import { SnackbarProvider } from "notistack";
 import { theme } from "./themes/theme";
 import Experience from "./pages/Experience";
@@ -15,26 +15,32 @@ import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
 
   const logout = () => {
     setUser(null);
-    // TODO: delete token from localStorage as well
+    removeToken();
   };
 
   const value = useMemo(
     () => ({
       user: user,
+      isLoading: userLoading,
       setUser: setUser,
       logout: logout
     }),
-    [user, setUser]
+    [user, userLoading, setUser]
   );
 
   // On mount, check local token for user
   useEffect(() => {
-    let decodedToken = authJWT();
-    let user = decodedToken.user;
-    setUser(user);
+    async function getUser() {
+      setUserLoading(true);
+      let user = await authJWT();
+      setUser(user);
+      setUserLoading(false);
+    }
+    getUser();
   }, []);
 
   return (
