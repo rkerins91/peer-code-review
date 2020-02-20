@@ -4,33 +4,32 @@ const jwt = require("jsonwebtoken");
 const config = require("../../config/config");
 const Thread = require("./Thread");
 
-const userSchema = new Schema({
-  name: {
-    type: String,
-    required: true
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    experience: {
+      type: Schema.Types.Mixed,
+      of: Number
+    },
+    assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }],
+    credits: {
+      type: Number,
+      default: 3
+    }
   },
-  email: {
-    type: String,
-    required: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  experience: {
-    type: Schema.Types.Mixed,
-    of: Number
-  },
-  assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }],
-  registeredDate: {
-    type: Date,
-    default: Date.now
-  },
-  credits: {
-    type: Number,
-    default: 3
-  }
-});
+  { timestamps: true }
+);
 
 // run before every model.save() call
 userSchema.pre("save", async function(next) {
