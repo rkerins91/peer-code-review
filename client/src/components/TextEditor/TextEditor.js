@@ -65,14 +65,15 @@ const TextEditor = ({
     defaultSyntax: selectedLanguage
   });
 
-  const [editorState, setEditorState] = useState(
-    EditorState.createEmpty(decorator)
-  );
+  const createEditorState = () => {
+    if (existingContent && readOnly) {
+      const currentContent = convertFromRaw(existingContent);
+      return EditorState.createWithContent(currentContent, decorator);
+    }
+    return EditorState.createEmpty(decorator);
+  };
 
-  if (existingContent && readOnly) {
-    const currentContent = convertFromRaw(existingContent);
-    setEditorState(EditorState.createWithContent(currentContent, decorator));
-  }
+  const [editorState, setEditorState] = useState(createEditorState());
 
   //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
@@ -202,6 +203,7 @@ const TextEditor = ({
     if (didSubmit) {
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
+      console.log(rawJs);
       onSubmit(rawJs);
     }
   }, [didSubmit]);

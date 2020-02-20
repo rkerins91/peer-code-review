@@ -6,6 +6,7 @@ import {
   CircularProgress,
   makeStyles
 } from "@material-ui/core";
+import PostDisplay from "./PostDisplay";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
@@ -25,9 +26,8 @@ const useStyles = makeStyles({
     background: "white",
     borderRadius: "6px",
     width: "100%",
-    height: "2000px",
     marginTop: "2px",
-    padding: "2em 2em"
+    padding: "0 3em"
   },
   threadTitle: {
     fontWeight: "500"
@@ -40,7 +40,6 @@ const useStyles = makeStyles({
 
 const ThreadDisplay = ({ threadData }) => {
   const classes = useStyles();
-  //const [posts, setPosts] = useState(threadData.posts);
 
   if (!threadData) {
     return (
@@ -60,18 +59,26 @@ const ThreadDisplay = ({ threadData }) => {
               variant="h4"
               align="left"
             >
-              Thread Title
+              {threadData.title}
             </Typography>
             <Typography
               className={classes.threadDate}
               variant="subtitle1"
               align="left"
             >
-              Thread Created at
+              {threadData.createdAt}
             </Typography>
           </Grid>
           <Grid item className={classes.postWrapper} xs={12}>
-            POST CONTENT GOES HERE
+            {threadData.posts.map(post => {
+              return (
+                <PostDisplay
+                  postData={post}
+                  postLanguage={threadData.language.name}
+                  key={post._id}
+                ></PostDisplay>
+              );
+            })}
           </Grid>
         </Grid>
       </div>

@@ -4,12 +4,14 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import { TextEditor } from "components";
 
 const useStyles = makeStyles({
-  root: {}
+  root: {
+    margin: "4vh 0"
+  }
 });
 
-const PostDisplay = ({ postData }) => {
+const PostDisplay = ({ postData, postLanguage }) => {
   const classes = useStyles();
-  const [readPost, setReadPost] = useState(true);
+  const [readOnly, setReadOnly] = useState(true);
   const [submitState, setSubmitState] = useState(false);
   const [editorHasContent, setEditorHasContent] = useState(false);
 
@@ -17,25 +19,28 @@ const PostDisplay = ({ postData }) => {
     return;
   };
 
-  const handleEditorHasContent = value => {
+  const handleHasContent = value => {
     setEditorHasContent(value);
   };
+
+  postData.data.entityMap = {};
 
   return (
     <div className={classes.root}>
       <Grid container>
         <Grid item xs={12}>
           <AccountCircle />
-          <Typography>Author Name</Typography>
+          <Typography>{postData.author}</Typography>
         </Grid>
         <Grid item xs={12}>
-          <TextEditor>
-            selectedLanguage="javascript" onSubmit={handleSaveEdit}
+          <TextEditor
+            selectedLanguage={postLanguage}
+            onSubmit={handleSaveEdit}
             didSubmit={submitState}
-            hasContent={handleEditorHasContent}
-            readOnly={readPost}
+            hasContent={handleHasContent}
+            readOnly={readOnly}
             existingContent={postData.data}
-          </TextEditor>
+          ></TextEditor>
         </Grid>
       </Grid>
     </div>
