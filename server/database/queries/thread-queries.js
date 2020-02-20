@@ -3,7 +3,6 @@ const User = require("../models/User");
 
 module.exports = {
   getAllUserRequests: async userId => {
-    console.log(typeof Thread);
     const results = await Thread.find({ creator: userId }, null, {
       sort: { updatedAt: -1 }
     });

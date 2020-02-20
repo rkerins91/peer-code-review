@@ -87,13 +87,23 @@ router.get("/thread/:id", async (req, res) => {
   }
 });
 
-router.get("/requests/all/:id", async (req, res) => {
+router.get("/requests/:status/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       throw "invalidUserIdError";
     }
     const userId = req.params.id;
-    const threads = await threadQueries.getAllUserRequests(userId);
+    var threads;
+    switch (req.params.status) {
+      case config.server.threadStatus[0]:
+        threads = await threadQueries.getOpenUserRequests(userId);
+        break;
+      case "all":
+        threads = await threadQueries.getAllUserRequests(userId);
+        break;
+      default:
+        throw "invalidStatusError";
+    }
     return res.status(200).json({
       success: true,
       threads: threads
@@ -107,6 +117,16 @@ router.get("/requests/all/:id", async (req, res) => {
             value: req.params.id,
             msg: "User not found",
             param: "id"
+          }
+        ]
+      });
+    } else if (err === "invalidStatusError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.status,
+            msg: "Invalid status parameter",
+            param: "status"
           }
         ]
       });
