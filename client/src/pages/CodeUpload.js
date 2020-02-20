@@ -49,6 +49,10 @@ const useStyles = makeStyles({
   }
 });
 
+const getKeyByValue = (object, value) => {
+  return Object.keys(object).find(key => object[key] === value);
+};
+
 const CodeUpload = () => {
   const { user } = useContext(UserContext);
 
@@ -70,7 +74,6 @@ const CodeUpload = () => {
   };
 
   var getLanguages = [];
-
   if (user) {
     getLanguages = Object.keys(user.experience);
   }
@@ -115,7 +118,11 @@ const CodeUpload = () => {
     //Wrap up editor data with user and language data and send to server.
     const requestData = {
       title: requestTitle,
-      language: requestLanguage,
+      language: {
+        name: requestLanguage,
+        experience:
+          user.experience[getKeyByValue(languageGrammar, requestLanguage)]
+      },
       content: data,
       user: user
     };
