@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -10,7 +10,8 @@ import {
   Typography,
   Grid
 } from "@material-ui/core";
-import { NavBar } from "../components";
+import { NavBar, ThreadDisplay } from "components";
+import { UserContext } from "context/UserContext";
 
 const useStyles = makeStyles({
   header: {
@@ -36,7 +37,8 @@ const useStyles = makeStyles({
     height: "90vh"
   },
   gridItem: {
-    margin: "5vh",
+    marginLeft: "5vh",
+    marginRight: "5vh",
     height: "80vh"
   }
 });
@@ -44,21 +46,45 @@ const useStyles = makeStyles({
 const ReviewPage = () => {
   const classes = useStyles();
   const [reviews, setReviews] = useState([]);
-  const [selectedReview, setSelectedReview] = useState({});
+  const [selectedReview, setSelectedReview] = useState(null);
+  // user context
+  const { user } = useContext(UserContext);
 
   const getReviews = () => {
-    // dummy for now
-    setSelectedReview({ title: "App for tall people" });
-    return [
-      { title: "App for tall people", date: "2020-02-18" },
-      { title: "Test Python", date: "2020-02-11" },
-      { title: "Javascript function", date: "2020-01-24" }
-    ];
+    async function getRequests() {
+      try {
+        const res = await fetch(`/requests/all/${user._id}`, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const json = await res.json();
+        if (json.errors) {
+          console.log(json.errors);
+          return {}; // if there is an error, return empty user object
+        } else {
+          if ((json.success = true)) {
+            console.log(json);
+            setReviews(json.threads);
+            if (json.threads[0]) {
+              setSelectedReview(json.threads[0]);
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    getRequests();
   };
 
   useEffect(() => {
-    setReviews(getReviews());
-  }, []);
+    if (!user) {
+      return;
+    } else getReviews();
+  }, [user]);
 
   return (
     <>
@@ -72,17 +98,22 @@ const ReviewPage = () => {
         >
           <List>
             <Typography className={classes.header}>
-              {reviews.length > 0
-                ? "Reviews (" + reviews.length + ")"
-                : "No Reviews To Display"}
+              {reviews.length > 0 ? (
+                <span>
+                  {" "}
+                  Reviews{" "}
+                  <span style={{ color: "#43DDC1" }}>
+                    {"(" + reviews.length + ")"}
+                  </span>
+                </span>
+              ) : (
+                "No Reviews To Display"
+              )}
             </Typography>
             {reviews.map(review => (
               <ListItem
                 button
-                title={review.title}
-                onClick={e => {
-                  setSelectedReview({ title: e.currentTarget.title });
-                }}
+                onClick={() => setSelectedReview(review)}
                 key={review.title}
               >
                 <ListItemText primary={review.title} secondary={review.date} />
@@ -101,8 +132,7 @@ const ReviewPage = () => {
       </Drawer>
       <Grid container className={classes.container}>
         <Grid item xs={12} className={classes.gridItem}>
-          {/* PUT HERE */}
-          <div> {selectedReview.title} </div>
+          <ThreadDisplay threadData={selectedReview} />
         </Grid>
       </Grid>
     </>
