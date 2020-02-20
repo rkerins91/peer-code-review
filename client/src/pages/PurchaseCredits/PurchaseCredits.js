@@ -7,7 +7,7 @@ import NameForm from "./NameForm";
 // import Cart from "./Cart";
 import SelectAmount from "./SelectAmount";
 // import CheckoutForm from "./CheckoutForm";
-import CardSection from "./CardSection";
+// import CardSection from "./CardSection";
 
 const PurchaseCredits = () => {
   const { user } = useContext(UserContext);
@@ -16,7 +16,7 @@ const PurchaseCredits = () => {
   let [checkout, setCheckout] = useState(false);
 
   const decrementCredits = () => {
-    credits > 0 && setCredits(--credits);
+    credits > 1 && setCredits(--credits);
   };
   const incrementCredits = () => {
     setCredits(++credits);

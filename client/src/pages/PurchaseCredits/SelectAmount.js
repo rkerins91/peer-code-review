@@ -67,10 +67,10 @@ const SelectAmount = ({
               <Grid item xs={1}>
                 <RemoveCircleOutlineIcon
                   className={
-                    credits !== 0 ? classes.subtract : classes.subtractDisabled
+                    credits !== 1 ? classes.subtract : classes.subtractDisabled
                   }
                   onClick={decrement}
-                  disabled={credits === 0}
+                  disabled={credits === 1}
                 />
               </Grid>
               <Grid item xs={1}>

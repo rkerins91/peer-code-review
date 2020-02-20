@@ -28,4 +28,3 @@ client/.env
 
 client/src/pages/PurchaseCredits/CardForm.js
 client/src/pages/PurchaseCredits/CardSection.js
-client/package-lock.json
