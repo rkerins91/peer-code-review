@@ -9,7 +9,6 @@ import Experience from "./pages/Experience";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import CodeUpload from "./pages/CodeUpload";
-import TestPage from "./pages/TestPage";
 import ReviewPage from "./pages/Review";
 import Home from "./pages/Home";
 
@@ -55,7 +54,6 @@ function App() {
             <Route path="/login" component={Login} />
             <Route path="/experience" component={Experience} />
             <Route path="/code-upload" component={CodeUpload} />
-            <Route path="/testpage" component={TestPage} />
             <Route path="/reviews" component={ReviewPage} />
           </BrowserRouter>
         </SnackbarProvider>

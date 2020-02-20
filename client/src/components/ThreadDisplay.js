@@ -40,6 +40,11 @@ const useStyles = makeStyles({
 const ThreadDisplay = ({ threadData }) => {
   const classes = useStyles();
 
+  const getLocalDate = mongoDate => {
+    const localDate = new Date(mongoDate);
+    return localDate.toLocaleDateString();
+  };
+
   if (!threadData) {
     return (
       <div>
@@ -65,7 +70,7 @@ const ThreadDisplay = ({ threadData }) => {
               variant="subtitle1"
               align="left"
             >
-              {threadData.createdAt}
+              {getLocalDate(threadData.createdAt)}
             </Typography>
           </Grid>
           <Grid item className={classes.postWrapper} xs={12}>

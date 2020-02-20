@@ -86,6 +86,11 @@ const ReviewPage = () => {
     getRequests();
   };
 
+  const getLocalDate = mongoDate => {
+    const localDate = new Date(mongoDate);
+    return localDate.toLocaleDateString();
+  };
+
   const isSelected = id => {
     if (selectedReview) {
       if (id === selectedReview._id) {
@@ -132,7 +137,7 @@ const ReviewPage = () => {
                 <ListItemText
                   className={isSelected(review._id)}
                   primary={review.title}
-                  secondary={review.createdAt.split("T")[0]}
+                  secondary={getLocalDate(review.createdAt)}
                 />
               </ListItem>
             ))}
