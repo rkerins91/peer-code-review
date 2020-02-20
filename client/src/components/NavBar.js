@@ -17,7 +17,8 @@ import { Logo } from "./Logo";
 
 const useStyles = makeStyles({
   bar: {
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    height: "10vh"
   },
   linkButton: {
     color: "white",
