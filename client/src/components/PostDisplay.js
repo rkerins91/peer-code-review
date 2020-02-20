@@ -6,6 +6,11 @@ import { TextEditor } from "components";
 const useStyles = makeStyles({
   root: {
     margin: "4vh 0"
+  },
+  posterInfo: {
+    display: "inline",
+    fontSize: "1.5em",
+    margin: "0 1vh"
   }
 });
 
@@ -29,8 +34,10 @@ const PostDisplay = ({ postData, postLanguage }) => {
     <div className={classes.root}>
       <Grid container>
         <Grid item xs={12}>
-          <AccountCircle />
-          <Typography>{postData.author}</Typography>
+          <AccountCircle className={classes.posterInfo} />
+          <Typography className={classes.posterInfo}>
+            {postData.authorName}
+          </Typography>
         </Grid>
         <Grid item xs={12}>
           <TextEditor
