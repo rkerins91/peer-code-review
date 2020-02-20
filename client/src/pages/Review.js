@@ -6,7 +6,8 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  Typography
+  Typography,
+  Grid
 } from "@material-ui/core";
 import { NavBar } from "../components";
 
@@ -26,18 +27,31 @@ const useStyles = makeStyles({
   },
   fullList: {
     width: "20vw"
+  },
+  container: {
+    marginLeft: "20vw",
+    marginTop: "10vh",
+    width: "80vw",
+    height: "90vh"
+  },
+  gridItem: {
+    margin: "5vh",
+    height: "80vh"
   }
 });
 
 const ReviewPage = () => {
   const classes = useStyles();
   const [reviews, setReviews] = useState([]);
+  const [selectedReview, setSelectedReview] = useState({});
 
   const getReviews = () => {
+    // dummy for now
+    setSelectedReview({ title: "App for tall people" });
     return [
-      { title: "My Review" },
-      { title: "Test" },
-      { title: "Javascript function" }
+      { title: "App for tall people", date: "2020-02-18" },
+      { title: "Test Python", date: "2020-02-11" },
+      { title: "Javascript function", date: "2020-01-24" }
     ];
   };
 
@@ -57,12 +71,20 @@ const ReviewPage = () => {
         >
           <List>
             <Typography className={classes.header}>
-              {" "}
-              {"Reviews (" + reviews.length + ")"}{" "}
+              {reviews.length > 0
+                ? "Reviews (" + reviews.length + ")"
+                : "No Reviews To Display"}
             </Typography>
             {reviews.map(review => (
-              <ListItem button key={review.title}>
-                <ListItemText primary={review.title} />
+              <ListItem
+                button
+                title={review.title}
+                onClick={e => {
+                  setSelectedReview({ title: e.currentTarget.title });
+                }}
+                key={review.title}
+              >
+                <ListItemText primary={review.title} secondary={review.date} />
               </ListItem>
             ))}
           </List>
@@ -74,6 +96,12 @@ const ReviewPage = () => {
           </List>
         </div>
       </Drawer>
+      <Grid container className={classes.container}>
+        <Grid item xs={12} className={classes.gridItem}>
+          {/* PUT HERE */}
+          <div> {selectedReview.title} </div>
+        </Grid>
+      </Grid>
     </>
   );
 };
