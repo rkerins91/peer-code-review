@@ -7,7 +7,8 @@ import {
   getDefaultKeyBinding,
   EditorState,
   RichUtils,
-  convertToRaw
+  convertToRaw,
+  convertFromRaw
 } from "draft-js";
 
 import CodeUtils from "draft-js-code";
@@ -45,7 +46,14 @@ const inlineStyles = {
   CODE: "CODE"
 };
 
-const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
+const TextEditor = ({
+  selectedLanguage,
+  onSubmit,
+  didSubmit,
+  hasContent,
+  readOnly,
+  existingContent
+}) => {
   const classes = useStyles();
 
   if (selectedLanguage === "") {
@@ -57,9 +65,15 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     defaultSyntax: selectedLanguage
   });
 
-  const [editorState, setEditorState] = useState(
-    EditorState.createEmpty(decorator)
-  );
+  const createEditorState = () => {
+    if (existingContent && readOnly) {
+      const currentContent = convertFromRaw(existingContent);
+      return EditorState.createWithContent(currentContent, decorator);
+    }
+    return EditorState.createEmpty(decorator);
+  };
+
+  const [editorState, setEditorState] = useState(createEditorState());
 
   //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
@@ -189,6 +203,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     if (didSubmit) {
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
+      console.log(rawJs);
       onSubmit(rawJs);
     }
   }, [didSubmit]);
@@ -199,6 +214,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
         onChange={style => handleFormatChange(style)}
         inlineStyle={currentInlineStyles}
         blockStyle={currentBlockType}
+        readOnly={readOnly}
       />
       <div className={classes.editor} onClick={focusEditor}>
         <Editor
@@ -210,6 +226,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
           handleKeyCommand={handleKeyCommand}
           onTab={onTab}
           blockStyleFn={getBlockStyle}
+          readOnly={readOnly}
         />
       </div>
     </div>

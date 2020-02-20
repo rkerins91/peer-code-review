@@ -35,7 +35,7 @@ router.post(
       creator: user._id,
       title,
       status: 0,
-      language: { name: language, experience: user.experience[language] }
+      language: { name: language.name, experience: language.experience }
     });
 
     try {

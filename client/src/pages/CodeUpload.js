@@ -17,7 +17,7 @@ import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
 import { languageGrammar } from "utils";
 
-const useStlyes = makeStyles({
+const useStyles = makeStyles({
   root: {
     padding: "8% 5%"
   },
@@ -49,10 +49,14 @@ const useStlyes = makeStyles({
   }
 });
 
+const getKeyByValue = (object, value) => {
+  return Object.keys(object).find(key => object[key] === value);
+};
+
 const CodeUpload = () => {
   const { user } = useContext(UserContext);
 
-  const classes = useStlyes();
+  const classes = useStyles();
   const [requestTitle, setRequestTitle] = useState("");
   const [requestLanguage, setRequestLanguage] = useState("");
   const [editorHasContent, setEditorHasContent] = useState(false);
@@ -70,7 +74,6 @@ const CodeUpload = () => {
   };
 
   var getLanguages = [];
-
   if (user) {
     getLanguages = Object.keys(user.experience);
   }
@@ -115,7 +118,11 @@ const CodeUpload = () => {
     //Wrap up editor data with user and language data and send to server.
     const requestData = {
       title: requestTitle,
-      language: requestLanguage,
+      language: {
+        name: requestLanguage,
+        experience:
+          user.experience[getKeyByValue(languageGrammar, requestLanguage)]
+      },
       content: data,
       user: user
     };
@@ -179,6 +186,7 @@ const CodeUpload = () => {
             onSubmit={handleSubmit}
             didSubmit={submitState}
             hasContent={handleHasContent}
+            readOnly={false}
           ></TextEditor>
         </Grid>
         <Grid item xs={12} className={classes.submit}>

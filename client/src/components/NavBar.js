@@ -22,7 +22,8 @@ const useStyles = makeStyles({
   },
   linkButton: {
     color: "white",
-    marginLeft: "2vw"
+    marginLeft: "2vw",
+    textTransform: "none"
   },
   codeButton: {
     color: "#43DDC1",
@@ -48,7 +49,8 @@ const useStyles = makeStyles({
     color: "white"
   },
   user: {
-    marginLeft: "1vw"
+    marginLeft: "1vw",
+    textTransform: "none"
   }
 });
 
@@ -105,7 +107,11 @@ const NavBar = () => {
                 fontSize="large"
               />
             </IconButton>
-            <Button className={classes.codeButton}> Upload Code </Button>
+            <Button className={classes.codeButton}>
+              <Link className={classes.codeLink} to="/code-upload">
+                Upload code
+              </Link>
+            </Button>
             <div>
               <IconButton
                 className={classes.iconButton}
