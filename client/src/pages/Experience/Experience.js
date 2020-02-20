@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   },
   add: {
     color: "#43DDC1",
-    fontSize: "4vw",
+    fontSize: "3vw",
     cursor: "pointer",
     marginTop: "1vh"
   },
@@ -151,7 +151,12 @@ const Experience = () => {
             </Grid>
           )}
           <Grid item xs={12}>
-            <Button className={classes.button} onClick={handleSubmit}>
+            <Button
+              className={classes.button}
+              onClick={handleSubmit}
+              variant="contained"
+              color="primary"
+            >
               Submit
             </Button>
           </Grid>
