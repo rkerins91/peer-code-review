@@ -10,7 +10,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import CodeUpload from "./pages/CodeUpload";
 import Home from "./pages/Home";
-import PurchaseCredits from "./pages/PurchaseCredits";
+import Balance from "./pages/Balance";
 
 import "./App.css";
 
@@ -53,7 +53,7 @@ function App() {
             <Route path="/signup" component={Signup} signupUser={setUser} />
             <Route path="/login" component={Login} />
             <Route path="/experience" component={Experience} />
-            <Route path="/purchase-credits" component={PurchaseCredits} />
+            <Route path="/balance" component={Balance} />
             <Route exact path="/" component={Home} />
           </BrowserRouter>
         </SnackbarProvider>
