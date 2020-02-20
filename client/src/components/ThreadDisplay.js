@@ -13,13 +13,12 @@ const useStyles = makeStyles({
   backdrop: {
     zIndex: 1000,
     color: "#fff",
-    left: "25%"
+    left: "20vw" // same width as the sidebar
   },
   header: {
     background: "white",
     borderRadius: "6px",
     width: "100%",
-    marginTop: "60px",
     padding: "2em 2em"
   },
   postWrapper: {
