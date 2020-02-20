@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   },
   add: {
     color: "#43DDC1",
-    fontSize: "4vw",
+    fontSize: "3vw",
     cursor: "pointer",
     marginTop: "1vh"
   },
@@ -102,7 +102,7 @@ const Experience = () => {
     return <Redirect to="/login" />;
   } else if (user && user.experience) {
     return <Redirect to="/" />;
-  } else {
+  } else
     return (
       <ExperienceContainer>
         <Grid container spacing={1} direction="column" justify="space-evenly">
@@ -137,7 +137,15 @@ const Experience = () => {
               })}
             </Grid>
           </Grid>
-
+          {/* <Grid className={classes.buttonContainer}> */}
+          {experience.length < availableLanguages.length && (
+            <Grid item>
+              <AddCircleOutlineOutlinedIcon
+                className={classes.add}
+                onClick={addExperience}
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <Button
               className={classes.button}
@@ -155,22 +163,9 @@ const Experience = () => {
             }, 5000) && (
               <Typography className={classes.success}>{successful}</Typography>
             )}
-          <Grid item xs={12}>
-            <Button className={classes.button} onClick={handleSubmit}>
-              Submit
-            </Button>
-          </Grid>
-          {/* if user updates successfully, show message for 5 seconds */}
-          {successful &&
-            setTimeout(() => {
-              setSuccessful(false);
-            }, 5000) && (
-              <Typography className={classes.success}>{successful}</Typography>
-            )}
         </Grid>
       </ExperienceContainer>
     );
-  }
 };
 
 export default Experience;
