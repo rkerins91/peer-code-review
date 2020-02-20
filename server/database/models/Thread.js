@@ -3,8 +3,9 @@ const { postSchema } = require("./Post");
 
 const threadSchema = new Schema(
   {
-    creator_id: {
-      type: String,
+    creator: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
       required: true
     },
     status: {
@@ -12,12 +13,16 @@ const threadSchema = new Schema(
       default: 0,
       required: true
     },
-    reviewer_id: String,
+    reviewer: {
+      type: Schema.Types.ObjectId,
+      ref: "User"
+    },
     language: {
       name: String,
       experience: Number
     },
-    posts: [postSchema]
+    posts: [postSchema],
+    no_assign: [{ type: Schema.Types.ObjectId, ref: "User" }]
   },
   { timestamps: true }
 );
