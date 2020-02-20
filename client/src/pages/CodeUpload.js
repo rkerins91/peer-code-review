@@ -50,7 +50,7 @@ const useStlyes = makeStyles({
 });
 
 const CodeUpload = () => {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const classes = useStlyes();
   const [requestTitle, setRequestTitle] = useState("");
@@ -137,6 +137,8 @@ const CodeUpload = () => {
         alerts.add("Code upload successful!");
         setPageAlerts(alerts);
         setPostSuccess(true);
+        user.credits += -1;
+        setUser(user);
       }
     } catch (err) {
       if (err.message.includes("403")) {
