@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Drawer,
@@ -90,9 +91,11 @@ const ReviewPage = () => {
           </List>
           <Divider />
           <List>
-            <ListItem button>
-              <ListItemText primary={"Upload Code"} />
-            </ListItem>
+            <Link to="/code-upload">
+              <ListItem button>
+                <ListItemText primary={"Upload Code"} />
+              </ListItem>
+            </Link>
           </List>
         </div>
       </Drawer>
