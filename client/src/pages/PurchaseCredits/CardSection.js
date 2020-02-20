@@ -48,6 +48,10 @@ const CardSection = ({ setEditCredit }) => {
     }
   };
 
+  useEffect(() => {
+    console.log(cardNumber);
+  }, [cardNumber]);
+
   return (
     <CreditCardContainer>
       <Grid container direction="column" alignItems="center">

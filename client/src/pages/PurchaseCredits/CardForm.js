@@ -44,7 +44,10 @@ const CardForm = ({
   const classes = useStyles();
   return (
     <Grid item container xs={12} direction="row" alignItems="center">
-      <CardNumberElement className={classes.cardElement} />
+      <CardNumberElement
+        className={classes.cardElement}
+        handleChange={setCardNumber}
+      />
       <CardExpiryElement className={classes.cardElement} />
       <CardCvcElement className={classes.cardElement} />
       {/* <PostalCodeElement className={classes.cardElement} /> */}

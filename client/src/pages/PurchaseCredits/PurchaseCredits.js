@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { StripeProvider, Elements } from "react-stripe-elements";
-// import CreditsContainer from "components/SignUpContainer";
+import CardFormContainer from "components/SignUpContainer";
 // import { Grid, Typography, Button, makeStyles, Paper } from "@material-ui/core";
-
+import NameForm from "./NameForm";
 // import Cart from "./Cart";
 import SelectAmount from "./SelectAmount";
 // import CheckoutForm from "./CheckoutForm";
@@ -34,7 +34,7 @@ const PurchaseCredits = () => {
         />
       ) : (
         <Elements>
-          <CardSection setEditCredit={handleToggle} />
+          <CardSection />
         </Elements>
       )}
     </StripeProvider>
