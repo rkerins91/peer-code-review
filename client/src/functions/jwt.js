@@ -45,6 +45,10 @@ async function fetchUser(decodedToken) {
   }
 }
 
+export const removeToken = () => {
+  localStorage.removeItem("peercode-auth-token");
+};
+
 export const authJWT = () => {
   let token = getToken();
   if (token) {

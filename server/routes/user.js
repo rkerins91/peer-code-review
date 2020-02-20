@@ -182,9 +182,8 @@ router.put("/user/:id/experience", async (req, res) => {
 router.put("/user/:id/add-credit", async (req, res) => {
   try {
     const { credits } = req.body;
-    console.log(credits);
     const user = await User.findById(req.params.id);
-    if (user.credits >= 1) {
+    if (user.credits + credits > 0) {
       user.credits += Number(credits);
       user.save();
       return res
