@@ -8,6 +8,10 @@ const threadSchema = new Schema(
       ref: "User",
       required: true
     },
+    title: {
+      type: String,
+      required: true
+    },
     status: {
       type: Number,
       default: 0,

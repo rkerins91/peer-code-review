@@ -1,7 +1,8 @@
 const express = require("express");
 const { check, validationResult } = require("express-validator");
 const router = express.Router();
-const { Post, Thread } = require("../database");
+const { Post, Thread, threadQueries } = require("../database");
+const mongoose = require("mongoose");
 const config = require("../config/config");
 
 router.post(
@@ -27,12 +28,12 @@ router.post(
 
     const newPost = new Post({
       author: user._id,
-      title,
       data: content
     });
 
     const newThread = new Thread({
       creator: user._id,
+      title,
       status: 0,
       language: { name: language, experience: user.experience[language] }
     });
@@ -48,9 +49,90 @@ router.post(
         threadId: thread._id
       });
     } catch (err) {
+      console.log(err);
       return res.status(500);
     }
   }
 );
+
+router.get("/thread/:id", async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw "invalidThreadIdError";
+    }
+    const threadId = req.params.id;
+    const thread = await Thread.findById(threadId);
+    if (thread) {
+      return res.status(200).json({
+        success: true,
+        thread: thread
+      });
+    } else {
+      throw "invalidThreadIdError";
+    }
+  } catch (err) {
+    console.log(err);
+    if (err === "invalidThreadIdError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.id,
+            msg: "Requested thread not found",
+            param: "id"
+          }
+        ]
+      });
+    }
+    res.sendStatus(500);
+  }
+});
+
+router.get("/requests/:status/:id", async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw "invalidUserIdError";
+    }
+    const userId = req.params.id;
+    var threads;
+    switch (req.params.status) {
+      case config.server.threadStatus[0]:
+        threads = await threadQueries.getOpenUserRequests(userId);
+        break;
+      case "all":
+        threads = await threadQueries.getAllUserRequests(userId);
+        break;
+      default:
+        throw "invalidStatusError";
+    }
+    return res.status(200).json({
+      success: true,
+      threads: threads
+    });
+  } catch (err) {
+    console.log(err);
+    if (err === "invalidUserIdError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.id,
+            msg: "User not found",
+            param: "id"
+          }
+        ]
+      });
+    } else if (err === "invalidStatusError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.status,
+            msg: "Invalid status parameter",
+            param: "status"
+          }
+        ]
+      });
+    }
+    res.sendStatus(500);
+  }
+});
 
 module.exports = router;
