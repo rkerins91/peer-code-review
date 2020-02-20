@@ -128,13 +128,19 @@ const CodeUpload = () => {
         data: JSON.stringify(requestData)
       });
       //redirect user to their reviews page
-      if (response.data.success) {
+      const removeCredit = await axios.put(`/user/${user._id}/add-credit`, {
+        credits: -1
+      });
+      if (response.data.success && removeCredit.data.success) {
         var alerts = new Set();
         alerts.add("Code upload successful!");
         setPageAlerts(alerts);
         setPostSuccess(true);
       }
     } catch (err) {
+      if (err.message.includes("403")) {
+        alert("Not enough credits");
+      }
       console.log(err);
     }
   };

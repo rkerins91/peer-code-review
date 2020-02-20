@@ -25,3 +25,6 @@ client/.env
 server/.env
 
 client/.env
+
+client/src/pages/PurchaseCredits/CardForm.js
+client/src/pages/PurchaseCredits/CardSection.js

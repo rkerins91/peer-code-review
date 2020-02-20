@@ -151,34 +151,53 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
-router.put("/:id/experience", async (req, res) => {
+router.put("/user/:id/experience", async (req, res) => {
   const languages = { ...req.body };
-  const user = await User.findById(req.params.id);
-  if (
-    Object.keys(languages).every(ele =>
-      config.server.availableLanguages.includes(ele)
-    )
-  ) {
-    // Set make values of languages obj numbers
-    for (let language in languages) {
-      if (languages.hasOwnProperty(language)) {
-        languages[language] = Number(languages[language]);
+  try {
+    const user = await User.findById(req.params.id);
+    if (
+      Object.keys(languages).every(ele =>
+        config.server.availableLanguages.includes(ele)
+      )
+    ) {
+      // Set values of languages obj to numbers
+      for (let language in languages) {
+        if (languages.hasOwnProperty(language)) {
+          languages[language] = Number(languages[language]);
+        }
       }
     }
+    // Set user experience to new languages obj and save
+    user.experience = languages;
+    user.markModified("experience");
+    user.save();
+    return res
+      .status(200)
+      .send({ message: "Successfully updated experience!" });
+  } catch (err) {
+    return res.status(400).send({ message: err.message });
+  }
+});
 
-    try {
-      // Set user experience to new languages obj and save
-      user.experience = languages;
-      user.markModified("experience");
+router.put("/user/:id/add-credit", async (req, res) => {
+  try {
+    const { credits } = req.body;
+    console.log(credits);
+    const user = await User.findById(req.params.id);
+    if (user.credits >= 1) {
+      user.credits += Number(credits);
       user.save();
       return res
         .status(200)
-        .send({ message: "Successfully updated experience!" });
-    } catch (err) {
-      return res.sendStatus(500);
+        .send({ success: true, message: "Successfully added credits!" });
+    } else {
+      return res
+        .status(403)
+        .send({ success: false, error: "Not enough credits" });
     }
+  } catch (err) {
+    return res.status(400);
   }
-  res.status(400).send("Invalid language sent");
 });
 
 module.exports = router;

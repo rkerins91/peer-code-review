@@ -3,7 +3,7 @@ import { UserContext } from "context/UserContext";
 import ExperienceContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import { availableLanguages } from "utils";
-import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
+import { Grid, Button, Typography, makeStyles, Paper } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
@@ -31,6 +31,10 @@ const useStyles = makeStyles({
   success: {
     color: "#43DDC1",
     fontSize: "2vw"
+  },
+  experienceCard: {
+    rounded: true,
+    backgroundColor: "#F0F0F0"
   }
 });
 const Experience = () => {
@@ -92,7 +96,7 @@ const Experience = () => {
     });
     // TO-DO, use context for user ID instead of hardcoding
     const { data } = await axios.put(
-      `/${user._id}/experience`,
+      `user/${user._id}/experience`,
       experienceToSubmit
     );
     setSuccessful(data.message);
