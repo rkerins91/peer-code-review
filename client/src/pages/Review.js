@@ -17,7 +17,7 @@ const useStyles = makeStyles({
   header: {
     padding: "2vh",
     fontSize: "4vh",
-    fontWeight: "700"
+    fontWeight: 700
   },
   drawer: {
     height: "calc(100% - 10vh)",
@@ -29,6 +29,13 @@ const useStyles = makeStyles({
   },
   fullList: {
     width: "20vw"
+  },
+  selected: {
+    color: "#6E3ADB"
+  },
+  uploadLink: {
+    textDecoration: "none",
+    color: "#6E3ADB"
   },
   container: {
     marginLeft: "20vw",
@@ -65,7 +72,6 @@ const ReviewPage = () => {
           return {}; // if there is an error, return empty user object
         } else {
           if ((json.success = true)) {
-            console.log(json);
             setReviews(json.threads);
             if (json.threads[0]) {
               setSelectedReview(json.threads[0]);
@@ -78,6 +84,14 @@ const ReviewPage = () => {
       }
     }
     getRequests();
+  };
+
+  const isSelected = id => {
+    if (selectedReview) {
+      if (id === selectedReview._id) {
+        return classes.selected;
+      } else return null;
+    } else return null;
   };
 
   useEffect(() => {
@@ -100,10 +114,9 @@ const ReviewPage = () => {
             <Typography className={classes.header}>
               {reviews.length > 0 ? (
                 <span>
-                  {" "}
-                  Reviews{" "}
+                  Reviews
                   <span style={{ color: "#43DDC1" }}>
-                    {"(" + reviews.length + ")"}
+                    {" (" + reviews.length + ")"}
                   </span>
                 </span>
               ) : (
@@ -114,15 +127,19 @@ const ReviewPage = () => {
               <ListItem
                 button
                 onClick={() => setSelectedReview(review)}
-                key={review.title}
+                key={review._id}
               >
-                <ListItemText primary={review.title} secondary={review.date} />
+                <ListItemText
+                  className={isSelected(review._id)}
+                  primary={review.title}
+                  secondary={review.createdAt.split("T")[0]}
+                />
               </ListItem>
             ))}
           </List>
           <Divider />
           <List>
-            <Link to="/code-upload">
+            <Link className={classes.uploadLink} to="/code-upload">
               <ListItem button>
                 <ListItemText primary={"Upload Code"} />
               </ListItem>
