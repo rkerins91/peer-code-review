@@ -10,6 +10,7 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import CodeUpload from "./pages/CodeUpload";
 import TestPage from "./pages/TestPage";
+import ReviewPage from "./pages/Review";
 import Home from "./pages/Home";
 
 import "./App.css";
@@ -55,6 +56,7 @@ function App() {
             <Route path="/experience" component={Experience} />
             <Route path="/code-upload" component={CodeUpload} />
             <Route path="/testpage" component={TestPage} />
+            <Route path="/reviews" component={ReviewPage} />
           </BrowserRouter>
         </SnackbarProvider>
       </MuiThemeProvider>
