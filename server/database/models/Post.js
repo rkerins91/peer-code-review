@@ -7,6 +7,11 @@ const postSchema = new Schema(
       ref: "User",
       required: true
     },
+    authorName: {
+      type: String,
+      ref: "User",
+      required: true
+    },
     data: Schema.Types.Mixed
   },
   { timestamps: true }
