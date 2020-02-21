@@ -56,6 +56,45 @@ router.post(
   }
 );
 
+//push a new post onto a thread
+router.post("/thread/:id/post", async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw "invalidThreadIdError";
+    }
+    const threadId = req.params.id;
+    const { author, authorName, content } = req.body;
+
+    const newPost = new Post({
+      author: author,
+      authorName: authorName,
+      data: content
+    });
+    var newThread = await Thread.findById(threadId);
+    const post = await newPost.save();
+    newThread.posts.push(post);
+    thread = await newThread.save();
+    return res.status(201).json({
+      success: true,
+      threadId: thread._id
+    });
+  } catch (err) {
+    console.log(err);
+    if (err === "invalidThreadIdError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.id,
+            msg: "Requested thread not found",
+            param: "id"
+          }
+        ]
+      });
+    }
+    res.sendStatus(500);
+  }
+});
+
 //get a single thread by id
 router.get("/thread/:id", async (req, res) => {
   try {

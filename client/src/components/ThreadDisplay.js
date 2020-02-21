@@ -5,10 +5,13 @@ import {
   Typography,
   Backdrop,
   CircularProgress,
-  makeStyles
+  makeStyles,
+  Button
 } from "@material-ui/core";
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
+import { TextEditor } from "components";
+import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
@@ -19,15 +22,18 @@ const useStyles = makeStyles({
   },
   header: {
     background: "white",
-    borderRadius: "6px",
     width: "100%",
-    padding: "2em 2em"
+    padding: "2em 2em",
+    marginBottom: "2px"
   },
   postWrapper: {
     background: "white",
-    borderRadius: "6px",
     width: "100%",
-    marginTop: "2px",
+    padding: "0 3em"
+  },
+  editorWrapper: {
+    background: "white",
+    width: "100%",
     padding: "0 3em"
   },
   threadTitle: {
@@ -36,49 +42,117 @@ const useStyles = makeStyles({
   threadDate: {
     fontWeight: "500",
     color: "grey"
+  },
+  editButton: {
+    backgroundColor: "#43DDC1",
+    textTransform: "none",
+    margin: "1em auto",
+    justifySelf: "center"
   }
 });
 
 const ThreadDisplay = ({ threadData, user, refreshThread }) => {
   const classes = useStyles();
 
+  const [replyButtonText, setReplyButtonText] = useState("Reply");
+
+  //Editor state
+  const [readOnly, setReadOnly] = useState(true);
+  const [editorHasContent, setEditorHasContent] = useState(false);
+  const [submitState, setSubmitState] = useState(false);
+
+  const handleHasContent = value => {
+    setEditorHasContent(value);
+  };
+
+  //User messaging state
   const [pageAlerts, setPageAlerts] = useState(new Set());
-  const [postSuccess, setPostSuccess] = useState(false);
+  const [postSuccessAlert, setPostSuccessAlert] = useState(false);
   const [alertState, setAlertState] = useState(false);
 
   const handleErrors = error => {
-    setPageAlerts(pageAlerts.add(error));
+    var alerts = new Set();
+    alerts.add(error);
+    setPageAlerts(alerts);
     setAlertState(true);
   };
 
   //reset alerts
   const resetAlerts = () => {
     setAlertState(false);
-    setPostSuccess(false);
+    setPostSuccessAlert(false);
+    const alerts = new Set();
+    setPageAlerts(alerts);
   };
 
-  const handlePostEdit = async postData => {
+  const handleToggleReply = () => {
+    setReadOnly(!readOnly);
+    if (replyButtonText === "Reply") {
+      setReplyButtonText("Cancel");
+    } else {
+      setReplyButtonText("Reply");
+    }
+  };
+
+  const handleSaveReply = () => {
+    if (!editorHasContent) {
+      handleErrors("New content cannot be blank");
+      setSubmitState(false);
+    } else {
+      setSubmitState(true);
+      setReplyButtonText("Reply");
+    }
+  };
+
+  const handlePostEdit = async ({ postId, data }) => {
     const requestData = {
-      content: postData.data
+      author: user._id,
+      authorName: user.name,
+      content: data
     };
 
-    try {
-      const response = await axios({
-        method: "put",
-        url: `/thread/${threadData._id}/${postData.postId}/content`,
-        headers: { "content-type": "application/json" },
-        data: JSON.stringify(requestData)
-      });
-      //redirect user to their reviews page
-      if (response.data.success) {
-        var alerts = new Set();
-        alerts.add("Post edited successfulyl!");
-        setPageAlerts(alerts);
-        setPostSuccess(true);
-        refreshThread(threadData._id);
+    if (postId) {
+      //Truthy if this is a post edit
+      try {
+        const response = await axios({
+          method: "put",
+          url: `/thread/${threadData._id}/${postId}/content`,
+          headers: { "content-type": "application/json" },
+          data: JSON.stringify(requestData)
+        });
+        //redirect user to their reviews page
+        if (response.data.success) {
+          var alerts = new Set();
+          alerts.add("Post edited successfully!");
+          setPageAlerts(alerts);
+          setPostSuccessAlert(true);
+          refreshThread(threadData._id);
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
+    } else {
+      //This is a new reply
+      try {
+        const response = await axios({
+          method: "post",
+          url: `/thread/${threadData._id}/post`,
+          headers: { "content-type": "application/json" },
+          data: JSON.stringify(requestData)
+        });
+        //redirect user to their reviews page
+        if (response.data.success) {
+          var alerts = new Set();
+          alerts.add("Reply posted successfully!");
+          setPageAlerts(alerts);
+          setPostSuccessAlert(true);
+          setSubmitState(false);
+          refreshThread(response.data.threadId);
+          setReadOnly(true);
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -116,7 +190,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
             </Typography>
           </Grid>
           <Grid item className={classes.postWrapper} xs={12}>
-            {threadData.posts.map((post, index) => {
+            {threadData.posts.map(post => {
               return (
                 <PostDisplay
                   user={user}
@@ -125,10 +199,42 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
                   key={post._id}
                   onEditPost={handlePostEdit}
                   onErrors={handleErrors}
-                  index={index}
                 ></PostDisplay>
               );
             })}
+          </Grid>
+          <Grid item className={classes.editorWrapper} xs={12}>
+            <Button
+              className={classes.editButton}
+              variant="contained"
+              color="primary"
+              onClick={handleToggleReply}
+            >
+              {replyButtonText}
+            </Button>
+          </Grid>
+          <Grid item className={classes.editorWrapper} xs={12}>
+            <TextEditor
+              selectedLanguage={threadData.language.name}
+              onSubmit={handlePostEdit}
+              didSubmit={submitState}
+              hasContent={handleHasContent}
+              readOnly={readOnly}
+            ></TextEditor>
+          </Grid>
+          <Grid item xs={12} className={classes.editorWrapper}>
+            {readOnly ? (
+              <div></div>
+            ) : (
+              <Button
+                className={classes.editButton}
+                variant="contained"
+                color="primary"
+                onClick={handleSaveReply}
+              >
+                Post
+              </Button>
+            )}
           </Grid>
         </Grid>
         <AlertSnackbar
@@ -139,7 +245,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
           autoHideDuration="6000"
         ></AlertSnackbar>
         <AlertSnackbar
-          openAlert={postSuccess}
+          openAlert={postSuccessAlert}
           messages={[...pageAlerts]}
           alertsClosed={resetAlerts}
           variant="success"

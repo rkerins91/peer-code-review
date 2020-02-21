@@ -119,7 +119,7 @@ const CodeUpload = () => {
   };
 
   //get data from editor component
-  const handleSubmit = async data => {
+  const handleSubmit = async ({ data }) => {
     //Wrap up editor data with user and language data and send to server.
     const requestData = {
       title: requestTitle,

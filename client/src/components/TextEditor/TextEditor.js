@@ -24,13 +24,13 @@ const useStyles = makeStyles({
     border: "2px solid grey",
     padding: "10px",
     margin: "0",
-    height: "50vh",
+    height: "40vh",
     overflow: "auto"
   },
   editorRead: {
     padding: "10px",
     margin: "0",
-    height: "50vh",
+    maxHeight: "50vh",
     overflow: "auto"
   }
 });
@@ -73,6 +73,7 @@ const TextEditor = ({
     defaultSyntax: selectedLanguage
   });
 
+  //Create initial editor state depending on mode
   const createEditorState = () => {
     if (readOnly) {
       editorStyle = classes.editorRead;
@@ -85,10 +86,9 @@ const TextEditor = ({
     }
     return EditorState.createEmpty(decorator);
   };
-
   const [editorState, setEditorState] = useState(createEditorState());
 
-  //Switch between edit and read only
+  //Switch between edit and read only styles
   useEffect(() => {
     if (readOnly) {
       editorStyle = classes.editorRead;
@@ -119,7 +119,7 @@ const TextEditor = ({
     setEditorState(
       EditorState.push(editorState, newContentState, "change-block-data")
     );
-  }, [selectedLanguage]);
+  });
 
   //Triggers editor's focus method
   const editor = React.useRef(null);
@@ -228,8 +228,9 @@ const TextEditor = ({
       if (postId) {
         onSubmit({ postId: postId, data: rawJs });
       } else {
-        onSubmit(rawJs);
+        onSubmit({ data: rawJs });
       }
+      setEditorState(EditorState.createEmpty(decorator));
     }
   }, [didSubmit]);
 

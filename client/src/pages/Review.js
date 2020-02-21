@@ -100,10 +100,11 @@ const ReviewPage = () => {
           if (response.data.success) {
             tempReviews[i] = response.data.thread;
             setReviews(tempReviews);
+            setSelectedReview(reviews[i]);
             return;
           }
         } catch (err) {
-          window.location.reload(true);
+          Location.reload(true); //If there's an error, refresh the whole page
         }
       }
     }

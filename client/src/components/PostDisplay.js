@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Typography, makeStyles, Button } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { TextEditor } from "components";
@@ -10,11 +10,11 @@ const useStyles = makeStyles({
   posterInfo: {
     display: "inline",
     fontSize: "1.5em",
-    margin: "0 1vh"
+    margin: "0 1vh 0 0"
   },
   editor: {
     padding: "10px",
-    paddingLeft: "1em"
+    paddingLeft: "5em"
   },
   editButton: {
     backgroundColor: "#43DDC1",
@@ -32,6 +32,7 @@ const PostDisplay = ({
 }) => {
   const classes = useStyles();
 
+  //editor state
   const [readOnly, setReadOnly] = useState(true);
   const [submitState, setSubmitState] = useState(false);
   const [editorHasContent, setEditorHasContent] = useState(false);
@@ -41,9 +42,11 @@ const PostDisplay = ({
   const handleSave = () => {
     if (!editorHasContent) {
       onErrors("New content cannot be blank");
+      setSubmitState(false);
     } else {
       setSubmitState(true);
       setReadOnly(true);
+      setEditButtonText("Edit");
     }
   };
 
@@ -63,6 +66,11 @@ const PostDisplay = ({
   if (postData) {
     postData.data.entityMap = {};
   }
+
+  //Runs only on successful submit, reset submit state.
+  useEffect(() => {
+    setSubmitState(false);
+  }, [submitState]);
 
   return (
     <div className={classes.root}>
