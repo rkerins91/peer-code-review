@@ -49,6 +49,10 @@ const useStyles = makeStyles({
     color: "white"
   },
   user: {
+    marginLeft: "1vw"
+  },
+  link: {
+    textDecoration: "none"
     marginLeft: "1vw",
     textTransform: "none"
   }
@@ -97,6 +101,10 @@ const NavBar = () => {
             <Logo />
           </Link>
           <Toolbar className={classes.right}>
+            <Button className={classes.linkButton}> Reviews </Button>
+            <Link to="/balance" className={classes.link}>
+              <Button className={classes.linkButton}>Balance</Button>
+            </Link>
             <Link to="/reviews">
               <Button className={classes.linkButton}> Reviews </Button>
             </Link>

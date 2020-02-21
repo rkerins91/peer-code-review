@@ -22,7 +22,11 @@ const userSchema = new Schema(
       type: Schema.Types.Mixed,
       of: Number
     },
-    assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }]
+    assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }],
+    credits: {
+      type: Number,
+      default: 3
+    }
   },
   { timestamps: true }
 );

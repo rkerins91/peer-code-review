@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import CodeUpload from "./pages/CodeUpload";
 import ReviewPage from "./pages/Review";
 import Home from "./pages/Home";
+import Balance from "./pages/Balance";
 
 import "./App.css";
 
@@ -50,9 +51,11 @@ function App() {
         <SnackbarProvider maxSnack={4}>
           <BrowserRouter>
             <Route exact path="/" component={Home} />
+            <Route path="/code-upload" component={CodeUpload} />
             <Route path="/signup" component={Signup} signupUser={setUser} />
             <Route path="/login" component={Login} />
             <Route path="/experience" component={Experience} />
+            <Route path="/balance" component={Balance} />
             <Route path="/code-upload" component={CodeUpload} />
             <Route path="/reviews" component={ReviewPage} />
           </BrowserRouter>

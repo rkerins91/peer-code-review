@@ -59,7 +59,7 @@ const getKeyByValue = (object, value) => {
 };
 
 const CodeUpload = () => {
-  const { user, isLoading } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const classes = useStyles();
   const [requestTitle, setRequestTitle] = useState("");
@@ -132,7 +132,11 @@ const CodeUpload = () => {
       user: user
     };
 
+    let alerts = new Set();
     try {
+      const removeCredit = await axios.put(`/user/${user._id}/add-credit`, {
+        credits: -1
+      });
       const response = await axios({
         method: "post",
         url: "/create-request",
@@ -140,13 +144,20 @@ const CodeUpload = () => {
         data: JSON.stringify(requestData)
       });
       //redirect user to their reviews page
-      if (response.data.success) {
-        var alerts = new Set();
+
+      if (response.data.success && removeCredit.data.success) {
         alerts.add("Code upload successful!");
         setPageAlerts(alerts);
         setPostSuccess(true);
+        user.credits += -1;
+        setUser(user);
       }
     } catch (err) {
+      if (err.message.includes("403")) {
+        alerts.add("Please purchase credits to get a review");
+        setPageAlerts(alerts);
+        setAlertState(true);
+      }
       console.log(err);
     }
   };
