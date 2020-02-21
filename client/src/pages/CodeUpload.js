@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
+import { Redirect } from "react-router-dom";
 import axios from "axios";
 import {
   Grid,
-  Button,
   InputLabel,
   Select,
   MenuItem,
@@ -32,6 +32,11 @@ const useStyles = makeStyles({
     margin: "4vh",
     fontWeight: "500"
   },
+  editor: {
+    padding: "10px",
+    margin: "0",
+    height: "50vh"
+  },
   textInput: {
     textAlign: "center",
     width: "100%"
@@ -54,7 +59,7 @@ const getKeyByValue = (object, value) => {
 };
 
 const CodeUpload = () => {
-  const { user } = useContext(UserContext);
+  const { user, isLoading } = useContext(UserContext);
 
   const classes = useStyles();
   const [requestTitle, setRequestTitle] = useState("");
@@ -114,7 +119,7 @@ const CodeUpload = () => {
   };
 
   //get data from editor component
-  const handleSubmit = async data => {
+  const handleSubmit = async ({ data }) => {
     //Wrap up editor data with user and language data and send to server.
     const requestData = {
       title: requestTitle,
@@ -146,6 +151,9 @@ const CodeUpload = () => {
     }
   };
 
+  if (isLoading) {
+    return <NavBar></NavBar>;
+  }
   return (
     <div className={classes.root}>
       <NavBar></NavBar>
@@ -182,10 +190,12 @@ const CodeUpload = () => {
         </Grid>
         <Grid item xs={12}>
           <TextEditor
+            className={classes.editor}
             selectedLanguage={requestLanguage}
             onSubmit={handleSubmit}
             didSubmit={submitState}
             hasContent={handleHasContent}
+            existingContent={null}
             readOnly={false}
           ></TextEditor>
         </Grid>
