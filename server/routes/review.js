@@ -55,6 +55,7 @@ router.post(
   }
 );
 
+//get a single thread by id
 router.get("/thread/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -87,6 +88,7 @@ router.get("/thread/:id", async (req, res) => {
   }
 });
 
+//get a user's requests by id and status
 router.get("/requests/:status/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
@@ -131,6 +133,29 @@ router.get("/requests/:status/:id", async (req, res) => {
         ]
       });
     }
+    res.sendStatus(500);
+  }
+});
+
+//Save an edited post
+router.put("/thread/:threadId/:postId/content", async (req, res) => {
+  const newData = req.body.content;
+  try {
+    const newThread = await Thread.findOneAndUpdate(
+      { _id: req.params.threadId, "posts._id": req.params.postId },
+      {
+        $set: {
+          "posts.$.data": newData
+        }
+      }
+    );
+    if (newThread) {
+      return res.status(200).json({
+        success: true
+      });
+    }
+  } catch (err) {
+    console.log(err);
     res.sendStatus(500);
   }
 });
