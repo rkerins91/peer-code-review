@@ -19,9 +19,7 @@ async function fetchUser(decodedToken) {
           "Content-Type": "application/json"
         }
       });
-      console.log(res);
       const json = await res.json();
-      console.log(json);
       if (json.errors) {
         console.log(json.errors);
         return {}; // if there is an error, return empty user object
