@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Grid,
   Typography,
@@ -7,6 +8,7 @@ import {
   makeStyles
 } from "@material-ui/core";
 import PostDisplay from "./PostDisplay";
+import AlertSnackbar from "components/AlertSnackbar";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
@@ -37,8 +39,48 @@ const useStyles = makeStyles({
   }
 });
 
-const ThreadDisplay = ({ threadData }) => {
+const ThreadDisplay = ({ threadData, user, refreshThread }) => {
   const classes = useStyles();
+
+  const [pageAlerts, setPageAlerts] = useState(new Set());
+  const [postSuccess, setPostSuccess] = useState(false);
+  const [alertState, setAlertState] = useState(false);
+
+  const handleErrors = error => {
+    setPageAlerts(pageAlerts.add(error));
+    setAlertState(true);
+  };
+
+  //reset alerts
+  const resetAlerts = () => {
+    setAlertState(false);
+    setPostSuccess(false);
+  };
+
+  const handlePostEdit = async postData => {
+    const requestData = {
+      content: postData.data
+    };
+
+    try {
+      const response = await axios({
+        method: "put",
+        url: `/thread/${threadData._id}/${postData.postId}/content`,
+        headers: { "content-type": "application/json" },
+        data: JSON.stringify(requestData)
+      });
+      //redirect user to their reviews page
+      if (response.data.success) {
+        var alerts = new Set();
+        alerts.add("Post edited successfulyl!");
+        setPageAlerts(alerts);
+        setPostSuccess(true);
+        refreshThread(threadData._id);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const getLocalDate = mongoDate => {
     const localDate = new Date(mongoDate);
@@ -74,17 +116,35 @@ const ThreadDisplay = ({ threadData }) => {
             </Typography>
           </Grid>
           <Grid item className={classes.postWrapper} xs={12}>
-            {threadData.posts.map(post => {
+            {threadData.posts.map((post, index) => {
               return (
                 <PostDisplay
+                  user={user}
                   postData={post}
                   postLanguage={threadData.language.name}
                   key={post._id}
+                  onEditPost={handlePostEdit}
+                  onErrors={handleErrors}
+                  index={index}
                 ></PostDisplay>
               );
             })}
           </Grid>
         </Grid>
+        <AlertSnackbar
+          openAlert={alertState}
+          messages={[...pageAlerts]}
+          alertsClosed={resetAlerts}
+          variant="error"
+          autoHideDuration="6000"
+        ></AlertSnackbar>
+        <AlertSnackbar
+          openAlert={postSuccess}
+          messages={[...pageAlerts]}
+          alertsClosed={resetAlerts}
+          variant="success"
+          autoHideDuration="6000"
+        ></AlertSnackbar>
       </div>
     );
   }

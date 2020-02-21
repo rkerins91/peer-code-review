@@ -32,6 +32,11 @@ const useStyles = makeStyles({
     margin: "4vh",
     fontWeight: "500"
   },
+  editor: {
+    padding: "10px",
+    margin: "0",
+    height: "50vh"
+  },
   textInput: {
     textAlign: "center",
     width: "100%"
@@ -182,10 +187,12 @@ const CodeUpload = () => {
         </Grid>
         <Grid item xs={12}>
           <TextEditor
+            className={classes.editor}
             selectedLanguage={requestLanguage}
             onSubmit={handleSubmit}
             didSubmit={submitState}
             hasContent={handleHasContent}
+            existingContent={null}
             readOnly={false}
           ></TextEditor>
         </Grid>

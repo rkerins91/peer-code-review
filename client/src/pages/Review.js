@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { NavBar, ThreadDisplay } from "components";
 import { UserContext } from "context/UserContext";
+import axios from "axios";
 
 const useStyles = makeStyles({
   header: {
@@ -86,6 +87,28 @@ const ReviewPage = () => {
     getRequests();
   };
 
+  const handleThreadRefresh = async threadId => {
+    var tempReviews = reviews;
+    for (let i = 0; i < reviews.length; i++) {
+      if (threadId === tempReviews[i]._id) {
+        try {
+          const response = await axios({
+            method: "get",
+            url: `/thread/${threadId}`,
+            headers: { "content-type": "application/json" }
+          });
+          if (response.data.success) {
+            tempReviews[i] = response.data.thread;
+            setReviews(tempReviews);
+            return;
+          }
+        } catch (err) {
+          window.location.reload(true);
+        }
+      }
+    }
+  };
+
   const getLocalDate = mongoDate => {
     const localDate = new Date(mongoDate);
     return localDate.toLocaleDateString();
@@ -154,7 +177,11 @@ const ReviewPage = () => {
       </Drawer>
       <Grid container className={classes.container}>
         <Grid item xs={12} className={classes.gridItem}>
-          <ThreadDisplay threadData={selectedReview} />
+          <ThreadDisplay
+            threadData={selectedReview}
+            user={user}
+            refreshThread={handleThreadRefresh}
+          />
         </Grid>
       </Grid>
     </>
