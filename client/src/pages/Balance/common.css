@@ -12,7 +12,7 @@ button {
 }
 
 html {
-  background-color: #6772e5;
+  background-color: #6e3adb;
   font-size: 16px;
   font-family: Roboto, Open Sans, Segoe UI, sans-serif;
   font-weight: 500;
@@ -35,7 +35,7 @@ body {
 
 .AppWrapper {
   width: 500px;
-  height: 400px;
+  height: 20vh;
   position: relative;
 }
 
@@ -58,10 +58,10 @@ body {
   margin: 0 15px 20px;
   padding: 0;
   border-style: none;
-  background-color: #7795f8;
+  background-color: #6e3adb;
   will-change: opacity, transform;
   box-shadow: 0 6px 9px rgba(50, 50, 93, 0.06), 0 2px 5px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 #829fff;
+    inset 0 1px 0 #000;
   border-radius: 4px;
 }
 
@@ -82,7 +82,7 @@ body {
   width: 15%;
   min-width: 70px;
   padding: 11px 0;
-  color: #c4f0ff;
+  color: #ffffff;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -111,7 +111,7 @@ body {
 }
 
 .FormRowInput::placeholder {
-  color: #87bbfd;
+  color: #ffffff;
 }
 
 .StripeElement--webkit-autofill {
@@ -162,7 +162,7 @@ body {
 }
 
 .ErrorMessage {
-  color: #fff;
+  color: #e8176e;
   position: absolute;
   display: flex;
   justify-content: center;

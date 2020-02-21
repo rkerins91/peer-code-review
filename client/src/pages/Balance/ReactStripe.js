@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   CardElement,
@@ -6,13 +6,16 @@ import {
   useElements,
   useStripe
 } from "@stripe/react-stripe-js";
+import { UserContext } from "context/UserContext";
+import { Grid, Button, makeStyles } from "@material-ui/core";
 import "./common.css";
+import axios from "axios";
 
 const CARD_OPTIONS = {
   iconStyle: "solid",
   style: {
     base: {
-      iconColor: "#c4f0ff",
+      iconColor: "#fff",
       color: "#fff",
       fontWeight: 500,
       fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
@@ -22,12 +25,12 @@ const CARD_OPTIONS = {
         color: "#fce883"
       },
       "::placeholder": {
-        color: "#87bbfd"
+        color: "#fff"
       }
     },
     invalid: {
-      iconColor: "#ffc7ee",
-      color: "#ffc7ee"
+      iconColor: "#e8977e",
+      color: "#e8977e"
     }
   }
 };
@@ -102,22 +105,33 @@ const ResetButton = ({ onClick }) => (
   </button>
 );
 
-const CheckoutForm = () => {
+const useStyles = makeStyles({
+  text: {
+    fontSize: "3vw",
+    fontWeight: "800"
+  },
+  button: {
+    backgroundColor: "#43DDC1",
+    marginTop: "1vh",
+    marginBottom: "1vh",
+    width: "75%"
+  }
+});
+
+const CheckoutForm = ({ setAddCredit, credits }) => {
+  const { user } = useContext(UserContext);
+  const classes = useStyles();
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
+  const [price, usePrice] = useState(credits * 5);
   const [cardComplete, setCardComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
-  const [billingDetails, setBillingDetails] = useState({
-    email: "",
-    phone: "",
-    name: ""
-  });
+  const [billingDetails, setBillingDetails] = useState({ name: "" });
 
   const handleSubmit = async event => {
     event.preventDefault();
-
     if (!stripe || !elements) {
       // Stripe.js has not loaded yet. Make sure to disable
       // form submission until Stripe.js has loaded.
@@ -139,6 +153,7 @@ const CheckoutForm = () => {
       billing_details: billingDetails
     });
 
+    console.log(payload);
     setProcessing(false);
 
     if (payload.error) {
@@ -146,17 +161,18 @@ const CheckoutForm = () => {
     } else {
       setPaymentMethod(payload.paymentMethod);
     }
+    // handle payments on backend using paymentMethod, create payment intent
+    const { data } = await axios.put(`/user/${user._id}/add-credit`, {
+      paymentMethod: payload.paymentMethod,
+      credits
+    });
   };
 
   const reset = () => {
     setError(null);
     setProcessing(false);
     setPaymentMethod(null);
-    setBillingDetails({
-      email: "",
-      phone: "",
-      name: ""
-    });
+    setBillingDetails({ name: "" });
   };
 
   return paymentMethod ? (
@@ -185,30 +201,6 @@ const CheckoutForm = () => {
             setBillingDetails({ ...billingDetails, name: e.target.value });
           }}
         />
-        <Field
-          label="Email"
-          id="email"
-          type="email"
-          placeholder="janedoe@gmail.com"
-          required
-          autoComplete="email"
-          value={billingDetails.email}
-          onChange={e => {
-            setBillingDetails({ ...billingDetails, email: e.target.value });
-          }}
-        />
-        <Field
-          label="Phone"
-          id="phone"
-          type="tel"
-          placeholder="(941) 555-0123"
-          required
-          autoComplete="tel"
-          value={billingDetails.phone}
-          onChange={e => {
-            setBillingDetails({ ...billingDetails, phone: e.target.value });
-          }}
-        />
       </fieldset>
       <fieldset className="FormGroup">
         <CardField
@@ -219,9 +211,28 @@ const CheckoutForm = () => {
         />
       </fieldset>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
-      <SubmitButton processing={processing} error={error} disabled={!stripe}>
-        Pay $25
-      </SubmitButton>
+      <Grid container direction="row">
+        <Grid item xs={6}>
+          <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={setAddCredit}
+          >
+            Edit cart
+          </Button>
+        </Grid>
+        <Grid item xs={6}>
+          <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={handleSubmit}
+          >
+            {`Pay $${credits * 5}`}
+          </Button>
+        </Grid>
+      </Grid>
     </form>
   );
 };
@@ -238,11 +249,11 @@ const ELEMENTS_OPTIONS = {
 // recreating the `Stripe` object on every render.
 const stripePromise = loadStripe("pk_test_6pRNASCoBOKtIshFeQd4XMUh");
 
-const App = () => {
+const App = ({ setAddCredit, credits }) => {
   return (
     <div className="AppWrapper">
       <Elements stripe={stripePromise} options={ELEMENTS_OPTIONS}>
-        <CheckoutForm />
+        <CheckoutForm setAddCredit={setAddCredit} credits={credits} />
       </Elements>
     </div>
   );

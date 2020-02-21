@@ -3,6 +3,7 @@ const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const { User } = require("../database");
 
@@ -181,8 +182,27 @@ router.put("/user/:id/experience", async (req, res) => {
 
 router.put("/user/:id/add-credit", async (req, res) => {
   try {
-    const { credits } = req.body;
+    const { paymentMethod, credits } = req.body;
+    // console.log(paymentMethod);
     const user = await User.findById(req.params.id);
+    // if paymentMethod exists, pay with stripe
+    // console.log(paymentMethod.id);
+    const paymethodid = paymentMethod.id;
+    if (paymentMethod) {
+      console.log(paymethodid);
+      try {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: credits * 100,
+          currency: "usd",
+          payment_method: paymethodid,
+          payment_method_types: ["card"]
+        });
+      } catch (error) {
+        console.error(error);
+      }
+
+      console.log(paymentIntent);
+    }
     if (user.credits + credits >= 0) {
       user.credits += Number(credits);
       user.save();

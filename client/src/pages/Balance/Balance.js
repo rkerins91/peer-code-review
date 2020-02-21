@@ -59,7 +59,7 @@ const PurchaseCredits = () => {
             />
           ) : (
             <Elements>
-              <CardSection />
+              <CardSection credits={credits} setAddCredit={handleToggle} />
             </Elements>
           )}
         </StripeProvider>
