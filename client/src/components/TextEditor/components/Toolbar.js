@@ -15,12 +15,12 @@ const Toolbar = props => {
   const [blockFormatButtonState, setBlockFormatButtonState] = useState();
 
   useEffect(() => {
-    setInlineFormatButtonState(props.InlineStyle);
-  }, [props.InlineStyle]);
+    setInlineFormatButtonState(props.inlineStyle);
+  }, [props.inlineStyle]);
 
   useEffect(() => {
-    setBlockFormatButtonState(props.BlockStyle);
-  }, [props.BlockStyle]);
+    setBlockFormatButtonState(props.blockStyle);
+  }, [props.blockStyle]);
 
   const handleInlineFormatChange = (event, newFormats) => {
     setInlineFormatButtonState(newFormats);

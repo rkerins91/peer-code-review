@@ -20,8 +20,14 @@ const useStyles = makeStyles({
   root: {
     width: "100%"
   },
-  editor: {
+  editorEdit: {
     border: "2px solid grey",
+    padding: "10px",
+    margin: "0",
+    height: "50vh",
+    overflow: "auto"
+  },
+  editorRead: {
     padding: "10px",
     margin: "0",
     height: "50vh",
@@ -52,9 +58,11 @@ const TextEditor = ({
   didSubmit,
   hasContent,
   readOnly,
-  existingContent
+  existingContent,
+  postId
 }) => {
   const classes = useStyles();
+  var editorStyle;
 
   if (selectedLanguage === "") {
     selectedLanguage = null;
@@ -66,7 +74,12 @@ const TextEditor = ({
   });
 
   const createEditorState = () => {
-    if (existingContent && readOnly) {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+    if (existingContent) {
       const currentContent = convertFromRaw(existingContent);
       return EditorState.createWithContent(currentContent, decorator);
     }
@@ -74,6 +87,15 @@ const TextEditor = ({
   };
 
   const [editorState, setEditorState] = useState(createEditorState());
+
+  //Switch between edit and read only
+  useEffect(() => {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+  }, [readOnly]);
 
   //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
@@ -203,20 +225,23 @@ const TextEditor = ({
     if (didSubmit) {
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
-      console.log(rawJs);
-      onSubmit(rawJs);
+      if (postId) {
+        onSubmit({ postId: postId, data: rawJs });
+      } else {
+        onSubmit(rawJs);
+      }
     }
   }, [didSubmit]);
 
   return (
     <div className={classes.root}>
       <Toolbar
-        onChange={style => handleFormatChange(style)}
+        onChange={handleFormatChange}
         inlineStyle={currentInlineStyles}
         blockStyle={currentBlockType}
         readOnly={readOnly}
       />
-      <div className={classes.editor} onClick={focusEditor}>
+      <div className={editorStyle} onClick={focusEditor}>
         <Editor
           ref={editor}
           editorState={editorState}
