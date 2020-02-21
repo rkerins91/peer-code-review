@@ -13,8 +13,17 @@ module.exports = {
     const results = await Thread.find(
       { creator: userId, status: { $lt: 3 } },
       null,
-      { sort: { updatedAt: -1 } }
+      {
+        sort: { updatedAt: -1 }
+      }
     );
+    return results;
+  },
+
+  getOpenUserReviews: async userId => {
+    const results = await Thread.find({ reviewer: userId }, null, {
+      sort: { updatedAt: -1 }
+    });
     return results;
   },
 
@@ -22,7 +31,9 @@ module.exports = {
     const results = await Thread.find(
       { reviewer: userId, status: { $lt: 3 } },
       null,
-      { sort: { updatedAt: -1 } }
+      {
+        sort: { updatedAt: -1 }
+      }
     );
     return results;
   },

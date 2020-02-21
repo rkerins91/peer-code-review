@@ -28,6 +28,7 @@ router.post(
 
     const newPost = new Post({
       author: user._id,
+      authorName: user.name,
       data: content
     });
 
