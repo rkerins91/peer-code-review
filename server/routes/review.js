@@ -141,7 +141,7 @@ router.get("/requests/:status/:id", async (req, res) => {
 router.put("/thread/:threadId/:postId/content", async (req, res) => {
   const newData = req.body.content;
   try {
-    const newThread = await Thread.findOneAndUpdate(
+    const thread = await Thread.findOneAndUpdate(
       { _id: req.params.threadId, "posts._id": req.params.postId },
       {
         $set: {
@@ -149,7 +149,7 @@ router.put("/thread/:threadId/:postId/content", async (req, res) => {
         }
       }
     );
-    if (newThread) {
+    if (thread) {
       return res.status(200).json({
         success: true
       });
