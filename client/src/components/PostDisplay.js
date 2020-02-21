@@ -72,6 +72,9 @@ const PostDisplay = ({
     setSubmitState(false);
   }, [submitState]);
 
+  if (!user) {
+    return <p>Nothing to display</p>;
+  }
   return (
     <div className={classes.root}>
       <Grid container spacing={1} justify="flex-start" alignItems="center">

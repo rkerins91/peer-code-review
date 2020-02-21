@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
+import { Redirect } from "react-router-dom";
 import axios from "axios";
 import {
   Grid,
-  Button,
   InputLabel,
   Select,
   MenuItem,
@@ -59,7 +59,7 @@ const getKeyByValue = (object, value) => {
 };
 
 const CodeUpload = () => {
-  const { user } = useContext(UserContext);
+  const { user, isLoading } = useContext(UserContext);
 
   const classes = useStyles();
   const [requestTitle, setRequestTitle] = useState("");
@@ -151,6 +151,9 @@ const CodeUpload = () => {
     }
   };
 
+  if (isLoading) {
+    return <NavBar></NavBar>;
+  }
   return (
     <div className={classes.root}>
       <NavBar></NavBar>

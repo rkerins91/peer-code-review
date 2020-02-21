@@ -229,8 +229,8 @@ const TextEditor = ({
         onSubmit({ postId: postId, data: rawJs });
       } else {
         onSubmit({ data: rawJs });
+        setEditorState(EditorState.createEmpty(decorator));
       }
-      setEditorState(EditorState.createEmpty(decorator));
     }
   }, [didSubmit]);
 
