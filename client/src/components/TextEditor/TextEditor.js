@@ -20,11 +20,17 @@ const useStyles = makeStyles({
   root: {
     width: "100%"
   },
-  editor: {
+  editorEdit: {
     border: "2px solid grey",
     padding: "10px",
     margin: "0",
-    height: "50vh",
+    height: "40vh",
+    overflow: "auto"
+  },
+  editorRead: {
+    padding: "10px",
+    margin: "0",
+    maxHeight: "50vh",
     overflow: "auto"
   }
 });
@@ -52,9 +58,11 @@ const TextEditor = ({
   didSubmit,
   hasContent,
   readOnly,
-  existingContent
+  existingContent,
+  postId
 }) => {
   const classes = useStyles();
+  var editorStyle;
 
   if (selectedLanguage === "") {
     selectedLanguage = null;
@@ -65,15 +73,29 @@ const TextEditor = ({
     defaultSyntax: selectedLanguage
   });
 
+  //Create initial editor state depending on mode
   const createEditorState = () => {
-    if (existingContent && readOnly) {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+    if (existingContent) {
       const currentContent = convertFromRaw(existingContent);
       return EditorState.createWithContent(currentContent, decorator);
     }
     return EditorState.createEmpty(decorator);
   };
-
   const [editorState, setEditorState] = useState(createEditorState());
+
+  //Switch between edit and read only styles
+  useEffect(() => {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+  }, [readOnly]);
 
   //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
@@ -97,7 +119,7 @@ const TextEditor = ({
     setEditorState(
       EditorState.push(editorState, newContentState, "change-block-data")
     );
-  }, [selectedLanguage]);
+  });
 
   //Triggers editor's focus method
   const editor = React.useRef(null);
@@ -203,20 +225,24 @@ const TextEditor = ({
     if (didSubmit) {
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
-      console.log(rawJs);
-      onSubmit(rawJs);
+      if (postId) {
+        onSubmit({ postId: postId, data: rawJs });
+      } else {
+        onSubmit({ data: rawJs });
+        setEditorState(EditorState.createEmpty(decorator));
+      }
     }
   }, [didSubmit]);
 
   return (
     <div className={classes.root}>
       <Toolbar
-        onChange={style => handleFormatChange(style)}
+        onChange={handleFormatChange}
         inlineStyle={currentInlineStyles}
         blockStyle={currentBlockType}
         readOnly={readOnly}
       />
-      <div className={classes.editor} onClick={focusEditor}>
+      <div className={editorStyle} onClick={focusEditor}>
         <Editor
           ref={editor}
           editorState={editorState}
