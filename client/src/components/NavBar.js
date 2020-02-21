@@ -17,11 +17,13 @@ import { Logo } from "./Logo";
 
 const useStyles = makeStyles({
   bar: {
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    height: "10vh"
   },
   linkButton: {
     color: "white",
-    marginLeft: "2vw"
+    marginLeft: "2vw",
+    textTransform: "none"
   },
   codeButton: {
     color: "#43DDC1",
@@ -51,6 +53,8 @@ const useStyles = makeStyles({
   },
   link: {
     textDecoration: "none"
+    marginLeft: "1vw",
+    textTransform: "none"
   }
 });
 
@@ -101,13 +105,21 @@ const NavBar = () => {
             <Link to="/balance" className={classes.link}>
               <Button className={classes.linkButton}>Balance</Button>
             </Link>
+            <Link to="/reviews">
+              <Button className={classes.linkButton}> Reviews </Button>
+            </Link>
+            <Button className={classes.linkButton}> Balance </Button>
             <IconButton className={classes.iconButton}>
               <NotificationsNoneRoundedIcon
                 className={classes.notificationIcon}
                 fontSize="large"
               />
             </IconButton>
-            <Button className={classes.codeButton}> Upload Code </Button>
+            <Button className={classes.codeButton}>
+              <Link className={classes.codeLink} to="/code-upload">
+                Upload code
+              </Link>
+            </Button>
             <div>
               <IconButton
                 className={classes.iconButton}

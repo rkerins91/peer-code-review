@@ -7,7 +7,8 @@ import {
   getDefaultKeyBinding,
   EditorState,
   RichUtils,
-  convertToRaw
+  convertToRaw,
+  convertFromRaw
 } from "draft-js";
 
 import CodeUtils from "draft-js-code";
@@ -19,11 +20,17 @@ const useStyles = makeStyles({
   root: {
     width: "100%"
   },
-  editor: {
+  editorEdit: {
     border: "2px solid grey",
     padding: "10px",
     margin: "0",
-    height: "50vh",
+    height: "40vh",
+    overflow: "auto"
+  },
+  editorRead: {
+    padding: "10px",
+    margin: "0",
+    maxHeight: "50vh",
     overflow: "auto"
   }
 });
@@ -45,8 +52,17 @@ const inlineStyles = {
   CODE: "CODE"
 };
 
-const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
+const TextEditor = ({
+  selectedLanguage,
+  onSubmit,
+  didSubmit,
+  hasContent,
+  readOnly,
+  existingContent,
+  postId
+}) => {
   const classes = useStyles();
+  var editorStyle;
 
   if (selectedLanguage === "") {
     selectedLanguage = null;
@@ -57,9 +73,29 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     defaultSyntax: selectedLanguage
   });
 
-  const [editorState, setEditorState] = useState(
-    EditorState.createEmpty(decorator)
-  );
+  //Create initial editor state depending on mode
+  const createEditorState = () => {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+    if (existingContent) {
+      const currentContent = convertFromRaw(existingContent);
+      return EditorState.createWithContent(currentContent, decorator);
+    }
+    return EditorState.createEmpty(decorator);
+  };
+  const [editorState, setEditorState] = useState(createEditorState());
+
+  //Switch between edit and read only styles
+  useEffect(() => {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+  }, [readOnly]);
 
   //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
@@ -83,7 +119,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     setEditorState(
       EditorState.push(editorState, newContentState, "change-block-data")
     );
-  }, [selectedLanguage]);
+  });
 
   //Triggers editor's focus method
   const editor = React.useRef(null);
@@ -189,18 +225,24 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     if (didSubmit) {
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
-      onSubmit(rawJs);
+      if (postId) {
+        onSubmit({ postId: postId, data: rawJs });
+      } else {
+        onSubmit({ data: rawJs });
+        setEditorState(EditorState.createEmpty(decorator));
+      }
     }
   }, [didSubmit]);
 
   return (
     <div className={classes.root}>
       <Toolbar
-        onChange={style => handleFormatChange(style)}
+        onChange={handleFormatChange}
         inlineStyle={currentInlineStyles}
         blockStyle={currentBlockType}
+        readOnly={readOnly}
       />
-      <div className={classes.editor} onClick={focusEditor}>
+      <div className={editorStyle} onClick={focusEditor}>
         <Editor
           ref={editor}
           editorState={editorState}
@@ -210,6 +252,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
           handleKeyCommand={handleKeyCommand}
           onTab={onTab}
           blockStyleFn={getBlockStyle}
+          readOnly={readOnly}
         />
       </div>
     </div>

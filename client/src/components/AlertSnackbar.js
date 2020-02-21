@@ -51,6 +51,11 @@ const AlertSnackbar = props => {
         closeSnackbar();
       });
     }
+    return () => {
+      props.messages.map(() => {
+        closeSnackbar();
+      });
+    };
   }, [props.openAlert]);
 
   return <div className={classes.root}></div>;

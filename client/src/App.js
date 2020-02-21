@@ -9,6 +9,7 @@ import Experience from "./pages/Experience";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import CodeUpload from "./pages/CodeUpload";
+import ReviewPage from "./pages/Review";
 import Home from "./pages/Home";
 import Balance from "./pages/Balance";
 
@@ -49,12 +50,14 @@ function App() {
       <MuiThemeProvider theme={theme}>
         <SnackbarProvider maxSnack={4}>
           <BrowserRouter>
+            <Route exact path="/" component={Home} />
             <Route path="/code-upload" component={CodeUpload} />
             <Route path="/signup" component={Signup} signupUser={setUser} />
             <Route path="/login" component={Login} />
             <Route path="/experience" component={Experience} />
             <Route path="/balance" component={Balance} />
-            <Route exact path="/" component={Home} />
+            <Route path="/code-upload" component={CodeUpload} />
+            <Route path="/reviews" component={ReviewPage} />
           </BrowserRouter>
         </SnackbarProvider>
       </MuiThemeProvider>
