@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 import {
   Grid,
@@ -162,9 +161,6 @@ const CodeUpload = () => {
     }
   };
 
-  if (isLoading) {
-    return <NavBar></NavBar>;
-  }
   return (
     <div className={classes.root}>
       <NavBar></NavBar>
