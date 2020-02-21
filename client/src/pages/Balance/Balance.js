@@ -7,7 +7,9 @@ import NameForm from "./NameForm";
 // import Cart from "./Cart";
 import SelectAmount from "./SelectAmount";
 // import CheckoutForm from "./CheckoutForm";
-// import CardSection from "./CardSection";
+import CardSection from "./CardSection";
+import NavBar from "../../components/NavBar";
+import CreditsContainer from "./CreditsContainer";
 
 const PurchaseCredits = () => {
   const { user } = useContext(UserContext);
@@ -23,9 +25,9 @@ const PurchaseCredits = () => {
   };
 
   // WILL USE THIS CODE ONCE I ADD CODE FOR CHECKOUT
-  // const handleToggle = () => {
-  //   setCheckout(!checkout);
-  // };
+  const handleToggle = () => {
+    setCheckout(!checkout);
+  };
 
   const handleSubmit = async () => {
     const data = await axios.put(`/user/${user._id}/add-credit`, {
@@ -42,20 +44,27 @@ const PurchaseCredits = () => {
     return <></>;
   }
   return (
-    <StripeProvider apiKey="pk_test_SiybGhOykaltlAsTtJZoMCeq00IeRPoG1J">
-      {!checkout ? (
-        <SelectAmount
-          // if balance is null, use user context to show balance, else use state
-          balance={balance || user.credits}
-          credits={credits}
-          decrement={decrementCredits}
-          increment={incrementCredits}
-          setCheckout={handleSubmit}
-        />
-      ) : (
-        <Elements>{/* <CardSection /> */}</Elements>
-      )}
-    </StripeProvider>
+    <>
+      <NavBar />
+      <CreditsContainer>
+        <StripeProvider apiKey="pk_test_SiybGhOykaltlAsTtJZoMCeq00IeRPoG1J">
+          {!checkout ? (
+            <SelectAmount
+              // if balance is null, use user context to show balance, else use state
+              balance={balance || user.credits}
+              credits={credits}
+              decrement={decrementCredits}
+              increment={incrementCredits}
+              setCheckout={handleToggle}
+            />
+          ) : (
+            <Elements>
+              <CardSection />
+            </Elements>
+          )}
+        </StripeProvider>
+      </CreditsContainer>
+    </>
   );
 };
 

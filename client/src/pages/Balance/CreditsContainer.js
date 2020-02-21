@@ -4,8 +4,7 @@ import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles({
   root: {
-    paddingTop: "20vh",
-    backgroundColor: "#DDDDDD",
+    paddingTop: "10vh",
     height: "90vh"
   },
   signUp: {

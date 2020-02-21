@@ -10,6 +10,7 @@ import {
   Paper,
   TextField
 } from "@material-ui/core";
+import ReactStripe from "./ReactStripe";
 
 const useStyles = makeStyles({
   text: {
@@ -53,60 +54,40 @@ const CardSection = ({ setEditCredit }) => {
   }, [cardNumber]);
 
   return (
-    <CreditCardContainer>
-      <Grid container direction="column" alignItems="center">
-        <NameForm
-          firstName={firstName}
-          setFirstName={setFirstName}
-          lastName={lastName}
-          setLastName={setLastName}
-          firstNameError={firstNameError}
-          lastNameError={lastNameError}
-        />
-        <Grid item container xs={12}>
-          <CardForm
-            cardNumber={cardNumber}
-            setCardNumber={setCardNumber}
-            cardNumberError={setCardNumberError}
-            expirationDate={expirationDate}
-            setExpirationDate={setExpirationDate}
-            cardExpirationDate={setExpirationDate}
-            securityCode={securityCode}
-            setSecurityCode={setSecurityCode}
-            securityCodeError={setSecurityCodeError}
-          />
+    <Grid container direction="column" alignItems="center">
+      <Grid item container xs={12} direction="column">
+        <ReactStripe />
+      </Grid>
+      <Grid
+        item
+        container
+        xs={8}
+        direction="row"
+        alignItems="center"
+        justify="center"
+      >
+        <Grid item xs={6}>
+          <Button
+            className={classes.button}
+            onClick={setEditCredit}
+            color="primary"
+            variant="contained"
+          >
+            Edit cart
+          </Button>
         </Grid>
-        <Grid
-          item
-          container
-          xs={8}
-          direction="row"
-          alignItems="center"
-          justify="center"
-        >
-          <Grid item xs={6}>
-            <Button
-              className={classes.button}
-              onClick={setEditCredit}
-              color="primary"
-              variant="contained"
-            >
-              Edit cart
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              className={classes.button}
-              color="primary"
-              variant="contained"
-              onClick={handleSubmit}
-            >
-              Submit
-            </Button>
-          </Grid>
+        <Grid item xs={6}>
+          <Button
+            className={classes.button}
+            color="primary"
+            variant="contained"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
         </Grid>
       </Grid>
-    </CreditCardContainer>
+    </Grid>
   );
 };
 
