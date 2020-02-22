@@ -116,7 +116,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
       try {
         const response = await axios({
           method: "put",
-          url: `/thread/${threadData._id}/${postId}/content`,
+          url: `/thread/${threadData._id}/post/${postId}`,
           headers: { "content-type": "application/json" },
           data: JSON.stringify(requestData)
         });

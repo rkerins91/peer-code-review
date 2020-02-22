@@ -178,7 +178,7 @@ router.get("/requests/:status/:id", async (req, res) => {
 });
 
 //Save an edited post
-router.put("/thread/:threadId/:postId/content", async (req, res) => {
+router.put("/thread/:threadId/post/:postId", async (req, res) => {
   const newData = req.body.content;
   try {
     const thread = await Thread.findOneAndUpdate(
