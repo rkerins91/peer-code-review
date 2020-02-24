@@ -22,8 +22,8 @@ const createRequest = async data => {
   return resultThread;
 };
 
-const addToNoAssign = async function(thread, userId) {
-  const newThread = await Thread.findById(thread._id);
+const addToNoAssign = async function(threadId, userId) {
+  const newThread = await Thread.findById(threadId);
   newThread.no_assign.addToSet(userId);
   const resultThread = await newThread.save();
   console.log(`No assign ${resultThread.no_assign}`);

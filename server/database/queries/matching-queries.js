@@ -22,8 +22,8 @@ module.exports = {
       },
       "_id"
     );
-    console.log(results);
 
+    console.log(results);
     return results;
   }
 };

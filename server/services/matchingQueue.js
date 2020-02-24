@@ -54,8 +54,12 @@ matchingQueue.on("completed", async (job, result) => {
       job.data.thread._id
     );
     console.log(`assignment succeded to user ${assignedUser.email}`);
-    addToNoAssign(job.data.thread, result.assignee._id);
+    const updatedThread = await addToNoAssign(
+      job.data.thread._id,
+      result.assignee._id
+    );
     //queue a delayed job to check if the assigned thread has changed status
+    job.data.thread = updatedThread;
     matchingQueue.add(job.data, { delay: config.server.assignmentTimeout });
   } catch (error) {
     console.error(error);
