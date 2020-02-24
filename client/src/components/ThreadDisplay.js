@@ -11,7 +11,7 @@ import {
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
-import languageGrammer from "utils";
+import { languageGrammar } from "utils";
 import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles({

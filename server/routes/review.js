@@ -3,6 +3,7 @@ const { check, validationResult } = require("express-validator");
 const router = express.Router();
 const { Post, Thread, threadQueries } = require("../database");
 const { createRequest } = require("../controllers/thread");
+const matchingQueue = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
 
@@ -26,6 +27,8 @@ router.post(
     }
     try {
       const thread = await createRequest(req.body);
+      matchingQueue.add({ thread: thread, pass: 1 }); //enqueue matching job
+
       return res.status(201).json({
         success: true,
         threadId: thread._id
