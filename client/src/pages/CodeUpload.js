@@ -120,12 +120,12 @@ const CodeUpload = () => {
   //get data from editor component
   const handleSubmit = async ({ data }) => {
     //Wrap up editor data with user and language data and send to server.
+    const normalizedLanguage = getKeyByValue(languageGrammar, requestLanguage);
     const requestData = {
       title: requestTitle,
       language: {
-        name: requestLanguage,
-        experience:
-          user.experience[getKeyByValue(languageGrammar, requestLanguage)]
+        name: normalizedLanguage,
+        experience: user.experience[normalizedLanguage]
       },
       content: data,
       user: user

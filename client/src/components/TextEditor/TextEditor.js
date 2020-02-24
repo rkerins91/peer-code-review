@@ -126,12 +126,11 @@ const TextEditor = ({
   const focusEditor = () => {
     editor.current.focus();
   };
-
   useEffect(() => {
     focusEditor();
   }, []);
 
-  //Toggle button group controller
+  //Takes input from toolbar and updates editor state with new styles
   const handleFormatChange = style => {
     if (inlineStyles.hasOwnProperty(style)) {
       setEditorState(RichUtils.toggleInlineStyle(editorState, style));
@@ -140,7 +139,7 @@ const TextEditor = ({
     }
   };
 
-  //Sets content block type state to send to toolbar
+  //Sets content block type state to send to toolbar if editor exited a block style
   useEffect(() => {
     const prevContentState = editorState.getCurrentContent();
     if (!prevContentState.hasText()) {
