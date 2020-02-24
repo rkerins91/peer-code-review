@@ -220,7 +220,7 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
                 color="primary"
                 variant="contained"
               >
-                Post Code
+                Upload Code
               </Button>
             </Link>
           </Grid>
