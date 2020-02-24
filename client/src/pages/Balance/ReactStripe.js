@@ -7,7 +7,8 @@ import {
   useStripe
 } from "@stripe/react-stripe-js";
 import { UserContext } from "context/UserContext";
-import { Grid, Button, makeStyles } from "@material-ui/core";
+import { Grid, Button, makeStyles, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import "./common.css";
 import axios from "axios";
 
@@ -115,6 +116,9 @@ const useStyles = makeStyles({
     marginTop: "1vh",
     marginBottom: "1vh",
     width: "75%"
+  },
+  link: {
+    textDecoration: "none"
   }
 });
 
@@ -124,11 +128,11 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [error, setError] = useState(null);
-  const [price, usePrice] = useState(credits * 5);
   const [cardComplete, setCardComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [billingDetails, setBillingDetails] = useState({ name: "" });
+  const [madeSuccessfulPayment, setMadeSuccessfulPayment] = useState(false);
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -147,25 +151,42 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
       setProcessing(true);
     }
 
+    const requestPaymentIntent = await axios.post(
+      `/user/${user._id}/purchase-credit`,
+      {
+        credits
+      }
+    );
+
     const payload = await stripe.createPaymentMethod({
       type: "card",
       card: elements.getElement(CardElement),
       billing_details: billingDetails
     });
 
-    console.log(payload);
-    setProcessing(false);
+    const confirm = await stripe.confirmCardPayment(
+      `${requestPaymentIntent.data.clientSecret}`,
+      {
+        payment_method: payload.paymentMethod.id
+      }
+    );
 
-    if (payload.error) {
-      setError(payload.error);
-    } else {
-      setPaymentMethod(payload.paymentMethod);
+    if (confirm.paymentIntent.status === "succeeded") {
+      setMadeSuccessfulPayment(true);
+      setProcessing(false);
+      const { data } = await axios.put(`/user/${user._id}/add-credit`, {
+        credits
+      });
+      if (data.success) {
+        setMadeSuccessfulPayment(true);
+        user.credits += credits;
+      }
     }
-    // handle payments on backend using paymentMethod, create payment intent
-    const { data } = await axios.put(`/user/${user._id}/add-credit`, {
-      paymentMethod: payload.paymentMethod,
-      credits
-    });
+  };
+
+  const goToAddCredits = () => {
+    setMadeSuccessfulPayment(false);
+    setAddCredit(true);
   };
 
   const reset = () => {
@@ -175,17 +196,37 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
     setBillingDetails({ name: "" });
   };
 
-  return paymentMethod ? (
-    <div className="Result">
-      <div className="ResultTitle" role="alert">
-        Payment successful
-      </div>
-      <div className="ResultMessage">
-        Thanks for trying Stripe Elements. No money was charged, but we
-        generated a PaymentMethod: {paymentMethod.id}
-      </div>
-      <ResetButton onClick={reset} />
-    </div>
+  return madeSuccessfulPayment ? (
+    <>
+      <Grid container direction="column" spacing={6}>
+        <Grid item xs={12}>
+          <Typography className={classes.text}>Payment Complete</Typography>
+        </Grid>
+        <Grid container item direction="row" xs={12} justify="center">
+          <Grid item xs={6}>
+            <Button
+              className={classes.button}
+              color="primary"
+              variant="contained"
+              onClick={goToAddCredits}
+            >
+              View Balance
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Link to="/code-upload" className={classes.link}>
+              <Button
+                className={classes.button}
+                color="primary"
+                variant="contained"
+              >
+                Post Code
+              </Button>
+            </Link>
+          </Grid>
+        </Grid>
+      </Grid>
+    </>
   ) : (
     <form className="Form" onSubmit={handleSubmit}>
       <fieldset className="FormGroup">
@@ -228,8 +269,9 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
             color="primary"
             variant="contained"
             onClick={handleSubmit}
+            disabled={processing}
           >
-            {`Pay $${credits * 5}`}
+            {processing ? `Processing...` : `Pay $${credits * 5}`}
           </Button>
         </Grid>
       </Grid>
@@ -247,7 +289,7 @@ const ELEMENTS_OPTIONS = {
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
-const stripePromise = loadStripe("pk_test_6pRNASCoBOKtIshFeQd4XMUh");
+const stripePromise = loadStripe("pk_test_SiybGhOykaltlAsTtJZoMCeq00IeRPoG1J");
 
 const App = ({ setAddCredit, credits }) => {
   return (

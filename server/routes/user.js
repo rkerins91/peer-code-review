@@ -180,29 +180,25 @@ router.put("/user/:id/experience", async (req, res) => {
   }
 });
 
+router.post("/user/:id/purchase-credit", async (req, res) => {
+  const { credits } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: credits * 500,
+      currency: "usd"
+    });
+    res.status(200).send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.put("/user/:id/add-credit", async (req, res) => {
   try {
-    const { paymentMethod, credits } = req.body;
-    // console.log(paymentMethod);
-    const user = await User.findById(req.params.id);
-    // if paymentMethod exists, pay with stripe
-    // console.log(paymentMethod.id);
-    const paymethodid = paymentMethod.id;
-    if (paymentMethod) {
-      console.log(paymethodid);
-      try {
-        const paymentIntent = await stripe.paymentIntents.create({
-          amount: credits * 100,
-          currency: "usd",
-          payment_method: paymethodid,
-          payment_method_types: ["card"]
-        });
-      } catch (error) {
-        console.error(error);
-      }
+    const { credits } = req.body;
 
-      console.log(paymentIntent);
-    }
+    const user = await User.findById(req.params.id);
+
     if (user.credits + credits >= 0) {
       user.credits += Number(credits);
       user.save();

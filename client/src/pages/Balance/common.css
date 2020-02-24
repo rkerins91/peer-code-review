@@ -34,7 +34,6 @@ body {
 }
 
 .AppWrapper {
-  width: 500px;
   height: 20vh;
   position: relative;
 }
@@ -52,6 +51,7 @@ body {
 
 .Form {
   animation: fade 200ms ease-out;
+  width: 100%;
 }
 
 .FormGroup {
@@ -95,7 +95,7 @@ body {
   }
 }
 .FormRowInput:-webkit-autofill {
-  -webkit-text-fill-color: #fce883;
+  -webkit-text-fill-color: #fff;
   /* Hack to hide the default webkit autofill */
   transition: background-color 100000000s;
   animation: 1ms void-animation-out;
