@@ -45,14 +45,14 @@ userSchema.pre("save", async function(next) {
 });
 
 // run after model.save
-userSchema.post("save", async function() {
+userSchema.pre("save", async function(next) {
+  if (!this.isModified("assigned_threads")) return next();
   try {
     const count = this.assigned_threads.length;
-    await this.updateOne({ assigned_count: count });
-    return;
+    this.assigned_count = count;
+    return next();
   } catch (err) {
-    console.error(err);
-    return;
+    return next(err);
   }
 });
 
