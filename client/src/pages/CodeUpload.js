@@ -14,7 +14,6 @@ import { NavBar } from "components";
 import { TextEditor } from "components/index";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
-import { languageGrammar } from "utils";
 
 const useStyles = makeStyles({
   root: {
@@ -52,10 +51,6 @@ const useStyles = makeStyles({
     padding: "0"
   }
 });
-
-const getKeyByValue = (object, value) => {
-  return Object.keys(object).find(key => object[key] === value);
-};
 
 const CodeUpload = () => {
   const { user, setUser } = useContext(UserContext);
@@ -120,12 +115,11 @@ const CodeUpload = () => {
   //get data from editor component
   const handleSubmit = async ({ data }) => {
     //Wrap up editor data with user and language data and send to server.
-    const normalizedLanguage = getKeyByValue(languageGrammar, requestLanguage);
     const requestData = {
       title: requestTitle,
       language: {
-        name: normalizedLanguage,
-        experience: user.experience[normalizedLanguage]
+        name: requestLanguage,
+        experience: user.experience[requestLanguage]
       },
       content: data,
       user: user
@@ -188,7 +182,7 @@ const CodeUpload = () => {
           >
             {getLanguages.map(language => {
               return (
-                <MenuItem value={languageGrammar[language]} key={language}>
+                <MenuItem value={language} key={language}>
                   {language}
                 </MenuItem>
               );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import Toolbar from "./components/Toolbar";
+import { langaugeGrammar } from "utils";
 
 import {
   Editor,
@@ -15,6 +16,7 @@ import CodeUtils from "draft-js-code";
 import Prism from "prismjs";
 import PrismDecorator from "draft-js-prism";
 import "prismjs/themes/prism-okaidia.css";
+import { languageGrammar } from "../../utils";
 
 const useStyles = makeStyles({
   root: {
@@ -63,14 +65,17 @@ const TextEditor = ({
 }) => {
   const classes = useStyles();
   var editorStyle;
+  var mappedLanguage;
 
   if (selectedLanguage === "") {
-    selectedLanguage = null;
+    mappedLanguage = null;
+  } else {
+    mappedLanguage = languageGrammar[selectedLanguage];
   }
 
   const decorator = new PrismDecorator({
     prism: Prism,
-    defaultSyntax: selectedLanguage
+    defaultSyntax: mappedLanguage
   });
 
   //Create initial editor state depending on mode
@@ -107,7 +112,7 @@ const TextEditor = ({
     const block = editorState
       .getCurrentContent()
       .getBlockForKey(selection.getStartKey());
-    const data = block.getData().merge({ syntax: selectedLanguage });
+    const data = block.getData().merge({ syntax: mappedLanguage });
     const newBlock = block.merge({ data });
     const newContentState = editorState.getCurrentContent().merge({
       blockMap: editorState
@@ -173,7 +178,7 @@ const TextEditor = ({
   const getBlockStyle = block => {
     switch (block.getType()) {
       case "code-block":
-        return "language-".concat(selectedLanguage);
+        return "language-".concat(mappedLanguage);
       default:
         return null;
     }
@@ -225,8 +230,10 @@ const TextEditor = ({
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
       if (postId) {
+        //submitting an edit
         onSubmit({ postId: postId, data: rawJs });
       } else {
+        // submitting a reply
         onSubmit({ data: rawJs });
         setEditorState(EditorState.createEmpty(decorator));
       }
