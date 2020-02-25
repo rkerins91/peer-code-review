@@ -20,7 +20,7 @@ module.exports = {
     return results;
   },
 
-  getOpenUserReviews: async userId => {
+  getAllUserReviews: async userId => {
     const results = await Thread.find({ reviewer: userId }, null, {
       sort: { updatedAt: -1 }
     });
