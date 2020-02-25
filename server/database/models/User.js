@@ -63,7 +63,7 @@ userSchema.method("login", async function(user, callback) {
 
   jwt.sign(
     payload,
-    config.jwt.tokenExpirationPolicy,
+    config.jwt.secret,
     {
       expiresIn: Number(config.jwt.tokenExpirationPolicy)
     },
