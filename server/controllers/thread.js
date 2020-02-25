@@ -19,7 +19,7 @@ module.exports = {
 
     const post = await newPost.save();
     newThread.posts.push(post);
-    newThread.no_assign.push(user._id);
+    newThread.noAssign.push(user._id);
     const resultThread = await newThread.save();
     return resultThread;
   },
@@ -56,7 +56,7 @@ module.exports = {
 
   addToNoAssign: async (threadId, userId) => {
     const newThread = await Thread.findById(threadId);
-    newThread.no_assign.addToSet(userId);
+    newThread.noAssign.addToSet(userId);
     const resultThread = await newThread.save();
     return resultThread;
   },

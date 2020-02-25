@@ -7,18 +7,18 @@ module.exports = {
     const expLevel = thread.language.experience;
 
     /*
-    1. Candidate is not this thread's no_assign list
+    1. Candidate is not this thread's noAssign list
     2. Candidate's experience level in the thread language > than the thread requester's
-    3. Candidate's assigned_threads length <= 5
+    3. Candidate's assignedThreads length <= 5
     */
     console.log("getting candidates");
 
     const results = await User.find(
       {
-        _id: { $not: { $in: thread.no_assign } },
+        _id: { $not: { $in: thread.noAssign } },
         [`experience.${language}`]: { $exists: true },
         [`experience.${language}`]: { $gt: expLevel },
-        assigned_count: { $lt: 2 } // set to 2 for testing.
+        assignedCount: { $lt: 2 } // set to 2 for testing.
       },
       "_id"
     );

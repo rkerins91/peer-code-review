@@ -131,7 +131,6 @@ const ReviewPage = () => {
 
   return (
     <>
-      <NavBar />
       <Drawer classes={{ paper: classes.drawer }} open variant="permanent">
         <div
           className={classes.fullList}
