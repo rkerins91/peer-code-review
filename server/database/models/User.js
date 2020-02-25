@@ -22,8 +22,8 @@ const userSchema = new Schema(
       type: Schema.Types.Mixed,
       of: Number
     },
-    assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }],
-    assigned_count: { type: Number, default: 0 },
+    assignedThreads: [{ type: Schema.Types.ObjectId, ref: Thread }],
+    assignedCount: { type: Number, default: 0 },
     credits: {
       type: Number,
       default: 3
@@ -46,10 +46,10 @@ userSchema.pre("save", async function(next) {
 
 // run after model.save
 userSchema.pre("save", async function(next) {
-  if (!this.isModified("assigned_threads")) return next();
+  if (!this.isModified("assignedThreads")) return next();
   try {
-    const count = this.assigned_threads.length;
-    this.assigned_count = count;
+    const count = this.assignedThreads.length;
+    this.assignedCount = count;
     return next();
   } catch (err) {
     return next(err);
