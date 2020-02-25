@@ -3,6 +3,7 @@ const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
+const passport = require("passport");
 
 const { User } = require("../database");
 
@@ -126,77 +127,90 @@ router.post(
       }
     }
   );
-router.get("/user/:id", async (req, res) => {
-  const _id = req.params.id;
-  // Find if user exists
-  try {
-    var user = await User.findById(_id);
-    if (!user) {
-      return res.status(404).json({
-        errors: [
-          {
-            value: _id,
-            msg: "Cannot find the user",
-            param: "id"
-          }
-        ]
-      });
-    } else {
-      res.status(201).json({
-        user: user
-      });
-    }
-  } catch (err) {
-    console.log(err);
-  }
-});
 
-router.put("/user/:id/experience", async (req, res) => {
-  const languages = { ...req.body };
-  try {
-    const user = await User.findById(req.params.id);
-    if (
-      Object.keys(languages).every(ele =>
-        config.server.availableLanguages.includes(ele)
-      )
-    ) {
-      // Set values of languages obj to numbers
-      for (let language in languages) {
-        if (languages.hasOwnProperty(language)) {
-          languages[language] = Number(languages[language]);
+router.get(
+  "/user/me",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const _id = req.body.id;
+    // Find if user exists
+    try {
+      var user = await User.findById(_id);
+      if (!user) {
+        return res.status(404).json({
+          errors: [
+            {
+              value: _id,
+              msg: "Cannot find the user",
+              param: "id"
+            }
+          ]
+        });
+      } else {
+        res.status(201).json({
+          user: user
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
+router.put(
+  "/user/:id/experience",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const languages = { ...req.body };
+    try {
+      const user = await User.findById(req.params.id);
+      if (
+        Object.keys(languages).every(ele =>
+          config.server.availableLanguages.includes(ele)
+        )
+      ) {
+        // Set values of languages obj to numbers
+        for (let language in languages) {
+          if (languages.hasOwnProperty(language)) {
+            languages[language] = Number(languages[language]);
+          }
         }
       }
-    }
-    // Set user experience to new languages obj and save
-    user.experience = languages;
-    user.markModified("experience");
-    user.save();
-    return res
-      .status(200)
-      .send({ message: "Successfully updated experience!" });
-  } catch (err) {
-    return res.status(400).send({ message: err.message });
-  }
-});
-
-router.put("/user/:id/add-credit", async (req, res) => {
-  try {
-    const { credits } = req.body;
-    const user = await User.findById(req.params.id);
-    if (user.credits + credits >= 0) {
-      user.credits += Number(credits);
+      // Set user experience to new languages obj and save
+      user.experience = languages;
+      user.markModified("experience");
       user.save();
       return res
         .status(200)
-        .send({ success: true, message: "Successfully added credits!" });
-    } else {
-      return res
-        .status(403)
-        .send({ success: false, error: "Not enough credits" });
+        .send({ message: "Successfully updated experience!" });
+    } catch (err) {
+      return res.status(400).send({ message: err.message });
     }
-  } catch (err) {
-    return res.status(400);
   }
-});
+);
+
+router.put(
+  "/user/:id/add-credit",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const { credits } = req.body;
+      const user = await User.findById(req.params.id);
+      if (user.credits + credits >= 0) {
+        user.credits += Number(credits);
+        user.save();
+        return res
+          .status(200)
+          .send({ success: true, message: "Successfully added credits!" });
+      } else {
+        return res
+          .status(403)
+          .send({ success: false, error: "Not enough credits" });
+      }
+    } catch (err) {
+      return res.status(400);
+    }
+  }
+);
 
 module.exports = router;
