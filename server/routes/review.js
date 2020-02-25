@@ -44,7 +44,7 @@ router.post(
 router.post("/thread/:id/post", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
-      throw "invalidThreadIdError";
+      throw new Error("invalidThreadIdError");
     }
     const threadId = req.params.id;
     const { author, authorName, content } = req.body;
@@ -64,7 +64,7 @@ router.post("/thread/:id/post", async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    if (err === "invalidThreadIdError") {
+    if (err.message === "invalidThreadIdError") {
       return res.status(404).json({
         errors: [
           {
@@ -83,7 +83,7 @@ router.post("/thread/:id/post", async (req, res) => {
 router.get("/thread/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
-      throw "invalidThreadIdError";
+      throw new Error("invalidThreadIdError");
     }
     const threadId = req.params.id;
     const thread = await Thread.findById(threadId);
@@ -93,11 +93,11 @@ router.get("/thread/:id", async (req, res) => {
         thread: thread
       });
     } else {
-      throw "invalidThreadIdError";
+      throw new Error("invalidThreadIdError");
     }
   } catch (err) {
     console.log(err);
-    if (err === "invalidThreadIdError") {
+    if (err.message === "invalidThreadIdError") {
       return res.status(404).json({
         errors: [
           {
@@ -116,7 +116,7 @@ router.get("/thread/:id", async (req, res) => {
 router.get("/requests/:status/:id", async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
-      throw "invalidUserIdError";
+      throw new Error("invalidUserIdError");
     }
     const userId = req.params.id;
     var threads;
@@ -128,7 +128,7 @@ router.get("/requests/:status/:id", async (req, res) => {
         threads = await threadQueries.getAllUserRequests(userId);
         break;
       default:
-        throw "invalidStatusError";
+        throw new Error("invalidStatusError");
     }
     return res.status(200).json({
       success: true,
@@ -136,7 +136,7 @@ router.get("/requests/:status/:id", async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    if (err === "invalidUserIdError") {
+    if (err.message === "invalidUserIdError") {
       return res.status(404).json({
         errors: [
           {
