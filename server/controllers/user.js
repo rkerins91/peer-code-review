@@ -1,5 +1,5 @@
 const { User } = require("../database");
-const config = require("../controllers/config");
+const config = require("../config/config");
 
 module.exports = {
   setExperience: async (userId, experience) => {
