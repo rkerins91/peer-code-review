@@ -39,7 +39,7 @@ const useStyles = makeStyles({
 });
 const Experience = () => {
   const classes = useStyles();
-  const { user, isLoading } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const defaultExperiences = [];
 
   // Set default experience shown to whatever user currently has on database
@@ -102,9 +102,7 @@ const Experience = () => {
     setSuccessful(data.message);
   };
 
-  if (!user && !isLoading) {
-    return <Redirect to="/login" />;
-  } else if (user && user.experience) {
+  if (user && user.experience) {
     return <Redirect to="/" />;
   } else
     return (
