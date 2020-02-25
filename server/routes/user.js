@@ -3,7 +3,7 @@ const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
-
+const { setExperience } = require("../controllers/user");
 const { User } = require("../database");
 
 router.post(
@@ -46,7 +46,6 @@ router.post(
         });
       } else {
         const newUser = new User({ name, email, password });
-
         user = await newUser.save();
 
         //On successful save, create payload and send response token with user
@@ -126,6 +125,7 @@ router.post(
       }
     }
   );
+
 router.get("/user/:id", async (req, res) => {
   const _id = req.params.id;
   // Find if user exists
@@ -154,23 +154,7 @@ router.get("/user/:id", async (req, res) => {
 router.put("/user/:id/experience", async (req, res) => {
   const languages = { ...req.body };
   try {
-    const user = await User.findById(req.params.id);
-    if (
-      Object.keys(languages).every(ele =>
-        config.server.availableLanguages.includes(ele)
-      )
-    ) {
-      // Set values of languages obj to numbers
-      for (let language in languages) {
-        if (languages.hasOwnProperty(language)) {
-          languages[language] = Number(languages[language]);
-        }
-      }
-    }
-    // Set user experience to new languages obj and save
-    user.experience = languages;
-    user.markModified("experience");
-    user.save();
+    await setExperience(req.params.id, languages);
     return res
       .status(200)
       .send({ message: "Successfully updated experience!" });
