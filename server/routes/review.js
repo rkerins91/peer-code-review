@@ -1,8 +1,12 @@
 const express = require("express");
 const { check, validationResult } = require("express-validator");
 const router = express.Router();
-const { Post, Thread, threadQueries } = require("../database");
-const { createRequest } = require("../controllers/thread");
+const { Thread } = require("../database");
+const {
+  createRequest,
+  createPost,
+  getRequestThreads
+} = require("../controllers/thread");
 const matchingQueue = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
@@ -46,18 +50,7 @@ router.post("/thread/:id/post", async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
       throw new Error("invalidThreadIdError");
     }
-    const threadId = req.params.id;
-    const { author, authorName, content } = req.body;
-
-    const newPost = new Post({
-      author: author,
-      authorName: authorName,
-      data: content
-    });
-    var newThread = await Thread.findById(threadId);
-    const post = await newPost.save();
-    newThread.posts.push(post);
-    thread = await newThread.save();
+    await createPost(req.params.id, req.body);
     return res.status(201).json({
       success: true,
       threadId: thread._id
@@ -71,6 +64,15 @@ router.post("/thread/:id/post", async (req, res) => {
             value: req.params.id,
             msg: "Requested thread not found",
             param: "id"
+          }
+        ]
+      });
+    }
+    if (err.message === "Missing required request data") {
+      return res.status(404).json({
+        errors: [
+          {
+            msg: err.message
           }
         ]
       });
@@ -118,18 +120,7 @@ router.get("/requests/:status/:id", async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
       throw new Error("invalidUserIdError");
     }
-    const userId = req.params.id;
-    var threads;
-    switch (req.params.status) {
-      case config.server.threadStatus[0]:
-        threads = await threadQueries.getOpenUserRequests(userId);
-        break;
-      case "all":
-        threads = await threadQueries.getAllUserRequests(userId);
-        break;
-      default:
-        throw new Error("invalidStatusError");
-    }
+    const threads = await getRequestThreads(req.params.id, req.params.status);
     return res.status(200).json({
       success: true,
       threads: threads

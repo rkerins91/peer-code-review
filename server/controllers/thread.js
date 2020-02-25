@@ -1,4 +1,4 @@
-const { Thread, Post } = require("../database");
+const { Thread, Post, threadQueries } = require("../database");
 const config = require("../config/config");
 
 module.exports = {
@@ -22,6 +22,36 @@ module.exports = {
     newThread.no_assign.push(user._id);
     const resultThread = await newThread.save();
     return resultThread;
+  },
+
+  createPost: async (threadId, postData) => {
+    const { author, authorName, content } = postData;
+    if (author && authorName && content) {
+      const newPost = new Post({
+        author: author,
+        authorName: authorName,
+        data: content
+      });
+      const post = await newPost.save();
+      var thread = await Thread.findById(threadId);
+      thread.posts.push(post);
+      await newThread.save();
+    } else throw new Error("Missing required request data");
+  },
+
+  getRequestThreads: async (userId, status) => {
+    var threads;
+    switch (status) {
+      case config.server.threadStatus[0]:
+        threads = await threadQueries.getOpenUserRequests(userId);
+        break;
+      case "all":
+        threads = await threadQueries.getAllUserRequests(userId);
+        break;
+      default:
+        throw new Error("invalidStatusError");
+    }
+    return threads;
   },
 
   addToNoAssign: async (threadId, userId) => {
