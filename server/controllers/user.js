@@ -34,14 +34,14 @@ module.exports = {
 
   assignThread: async (userId, threadId) => {
     const user = await User.findById(userId);
-    user.assigned_threads.addToSet(threadId);
+    user.assignedThreads.addToSet(threadId);
     const updatedUser = await user.save();
     return updatedUser;
   },
 
   unassignThread: async (userId, threadId) => {
     const user = await User.findById(userId);
-    user.assigned_threads.pull(threadId);
+    user.assignedThreads.pull(threadId);
     const updatedUser = await user.save();
     return updatedUser;
   }
