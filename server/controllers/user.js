@@ -22,6 +22,16 @@ module.exports = {
     user.save();
   },
 
+  updateCredits: async (userId, amount) => {
+    const user = await User.findById(userId);
+    if (user.credits + amount >= 0) {
+      user.credits += Number(amount);
+      user.save();
+      return true;
+    }
+    return false;
+  },
+
   assignThread: async (userId, threadId) => {
     const user = await User.findById(userId);
     user.assigned_threads.addToSet(threadId);

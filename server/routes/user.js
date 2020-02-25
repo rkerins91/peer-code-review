@@ -3,7 +3,7 @@ const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
-const { setExperience } = require("../controllers/user");
+const { setExperience, updateCredits } = require("../controllers/user");
 const { User } = require("../database");
 
 router.post(
@@ -30,7 +30,6 @@ router.post(
     }
 
     const { name, email, password } = req.body;
-
     try {
       //Check for an existing user
       var user = await User.findOne({ email: email });
@@ -75,13 +74,11 @@ router.post(
     ],
     async (req, res) => {
       const errors = validationResult(req);
-
       if (errors.length > 0) {
         return res.status(400).json({ errors: errors.array() });
       }
 
       const { email, password } = req.body;
-
       // Find if user exists
       try {
         var user = await User.findOne({ email });
@@ -98,7 +95,6 @@ router.post(
         } else {
           // User exists, compare hashed password
           let isMatch = await bcrypt.compare(password, user.password);
-
           if (isMatch) {
             // Passwords match, create JWT Payload, and send it in response with user object
             user.login(user, (err, token) => {
@@ -166,10 +162,8 @@ router.put("/user/:id/experience", async (req, res) => {
 router.put("/user/:id/add-credit", async (req, res) => {
   try {
     const { credits } = req.body;
-    const user = await User.findById(req.params.id);
-    if (user.credits + credits >= 0) {
-      user.credits += Number(credits);
-      user.save();
+    const success = await updateCredits(req.params.id, credits);
+    if (success) {
       return res
         .status(200)
         .send({ success: true, message: "Successfully added credits!" });
