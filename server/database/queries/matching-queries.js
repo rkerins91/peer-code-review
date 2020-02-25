@@ -17,8 +17,8 @@ module.exports = {
       {
         _id: { $not: { $in: thread.no_assign } },
         [`experience.${language}`]: { $exists: true },
-        [`experience.${language}`]: { $gt: expLevel }
-        //assigned_count: { $lt: 2 } // set to 2 for testing.
+        [`experience.${language}`]: { $gt: expLevel },
+        assigned_count: { $lt: 2 } // set to 2 for testing.
       },
       "_id"
     );
