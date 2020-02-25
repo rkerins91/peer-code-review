@@ -41,7 +41,7 @@ module.exports = {
   getAssignedThreads: async userId => {
     const results = await User.find()
       .populate({
-        path: "assigned_threads",
+        path: "assignedThreads",
         match: {
           _id: userId
         },

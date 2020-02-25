@@ -2,6 +2,8 @@ const express = require("express");
 const { check, validationResult } = require("express-validator");
 const router = express.Router();
 const { Post, Thread, threadQueries } = require("../database");
+const { createRequest } = require("../controllers/thread");
+const matchingQueue = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
 
@@ -23,28 +25,10 @@ router.post(
     if (errors.length > 0) {
       return res.status(400).json({ errors: errors.array() });
     }
-
-    const { title, content, language, user } = req.body;
-
-    const newPost = new Post({
-      author: user._id,
-      authorName: user.name,
-      data: content
-    });
-
-    const newThread = new Thread({
-      creator: user._id,
-      title,
-      status: 0,
-      language: { name: language.name, experience: language.experience }
-    });
-
     try {
-      const post = await newPost.save();
-      newThread.posts.push(post);
-      newThread.no_assign.push(user._id);
-      const thread = await newThread.save();
-      //Success, add this thread to the matching queue
+      const thread = await createRequest(req.body);
+      matchingQueue.add({ thread: thread, pass: 1 }); //enqueue matching job
+
       return res.status(201).json({
         success: true,
         threadId: thread._id
@@ -178,7 +162,7 @@ router.get("/requests/:status/:id", async (req, res) => {
 });
 
 //Save an edited post
-router.put("/thread/:threadId/:postId/content", async (req, res) => {
+router.put("/thread/:threadId/post/:postId", async (req, res) => {
   const newData = req.body.content;
   try {
     const thread = await Thread.findOneAndUpdate(

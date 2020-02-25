@@ -11,6 +11,7 @@ import {
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
+import { languageGrammar } from "utils";
 import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles({
@@ -116,11 +117,10 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
       try {
         const response = await axios({
           method: "put",
-          url: `/thread/${threadData._id}/${postId}/content`,
+          url: `/thread/${threadData._id}/post/${postId}`,
           headers: { "content-type": "application/json" },
           data: JSON.stringify(requestData)
         });
-        //redirect user to their reviews page
         if (response.data.success) {
           var alerts = new Set();
           alerts.add("Post edited successfully!");
@@ -140,7 +140,6 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
           headers: { "content-type": "application/json" },
           data: JSON.stringify(requestData)
         });
-        //redirect user to their reviews page
         if (response.data.success) {
           var alerts = new Set();
           alerts.add("Reply posted successfully!");
@@ -195,7 +194,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
                 <PostDisplay
                   user={user}
                   postData={post}
-                  postLanguage={threadData.language.name}
+                  postLanguage={languageGrammar[threadData.language.name]}
                   key={post._id}
                   onEditPost={handlePostEdit}
                   onErrors={handleErrors}
@@ -215,7 +214,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
           </Grid>
           <Grid item className={classes.editorWrapper} xs={12}>
             <TextEditor
-              selectedLanguage={threadData.language.name}
+              selectedLanguage={languageGrammar[threadData.language.name]}
               onSubmit={handlePostEdit}
               didSubmit={submitState}
               hasContent={handleHasContent}

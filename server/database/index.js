@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const User = require("./models/User");
 const { Post } = require("./models/Post");
 const Thread = require("./models/Thread");
-const threadQueries = require("./queries/thread-queries");
+const { threadQueries, matchingQueries } = require("./queries");
+
 const config = require("../config/config");
 
 const connectDB = async () => {
@@ -19,4 +20,11 @@ const connectDB = async () => {
   }
 };
 
-module.exports = { connectDB, User, Post, Thread, threadQueries };
+module.exports = {
+  connectDB,
+  User,
+  Post,
+  Thread,
+  threadQueries,
+  matchingQueries
+};
