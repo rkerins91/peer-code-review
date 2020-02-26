@@ -5,7 +5,8 @@ const { Thread } = require("../database");
 const {
   createRequest,
   createPost,
-  getRequestThreads
+  getRequestThreads,
+  acceptRequest
 } = require("../controllers/thread");
 const matchingQueue = require("../services/matchingQueue");
 const mongoose = require("mongoose");
@@ -46,15 +47,27 @@ router.post(
 
 //push a new post onto a thread
 router.post("/thread/:id/post", async (req, res) => {
+  const threadId = req.params.id;
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
+    if (!mongoose.isValidObjectId(threadId)) {
       throw new Error("invalidThreadIdError");
     }
-    await createPost(req.params.id, req.body);
-    return res.status(201).json({
-      success: true,
-      threadId: thread._id
-    });
+    var updatedThread = await createPost(threadId, req.body);
+    // accept the request as a reviewer if thread is in "assigned" status, and posting user is not the thread creator.
+    if (
+      updatedThread.status === 1 &&
+      req.body.author !== updatedThread.creator
+    ) {
+      updatedThread = await acceptRequest(threadId, req.body.author);
+    }
+
+    if (updatedThread) {
+      return res.status(201).json({
+        success: true
+      });
+    } else {
+      throw new Error();
+    }
   } catch (err) {
     console.log(err);
     if (err.message === "invalidThreadIdError") {
@@ -77,7 +90,7 @@ router.post("/thread/:id/post", async (req, res) => {
         ]
       });
     }
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
 
@@ -110,7 +123,7 @@ router.get("/thread/:id", async (req, res) => {
         ]
       });
     }
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
 
@@ -148,7 +161,7 @@ router.get("/requests/:status/:id", async (req, res) => {
         ]
       });
     }
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
 
@@ -171,7 +184,7 @@ router.put("/thread/:threadId/post/:postId", async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
 

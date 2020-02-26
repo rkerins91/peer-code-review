@@ -3,8 +3,13 @@ const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
-const { setExperience, updateCredits } = require("../controllers/user");
-const { User } = require("../database");
+const {
+  setExperience,
+  updateCredits,
+  unassignThread
+} = require("../controllers/user");
+const matchingQueue = require("../services/matchingQueue");
+const { User, Thread } = require("../database");
 
 router.post(
   "/signup",
@@ -174,6 +179,34 @@ router.put("/user/:id/add-credit", async (req, res) => {
     }
   } catch (err) {
     return res.status(400);
+  }
+});
+
+router.patch("/user/:id/decline-request/:requestId", async (req, res) => {
+  const userId = req.params.id;
+  const threadId = req.params.requestId;
+  try {
+    if (
+      !mongoose.isValidObjectId(userId) ||
+      !mongoose.isValidObjectId(threadId)
+    ) {
+      throw new Error("invalidThreadIdError");
+    }
+    const user = await unassignThread(userId, threadId);
+    const thread = await Thread.findById(threadId);
+    matchingQueue.add({ thread: thread, pass: 1 }); //begin rematching
+    if (user) {
+      return res.status(200).json({
+        success: true,
+        user: user
+      });
+    } else throw new Error("Failed to unassign thread");
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      success: false,
+      error: error.message
+    });
   }
 });
 
