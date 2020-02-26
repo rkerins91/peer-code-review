@@ -10,6 +10,7 @@ const useStyles = makeStyles({
   signUp: {
     width: "50vw",
     maxHeight: "80vh",
+    minHeight: "30vh",
     overflowY: "auto",
     padding: "5vh",
     textAlign: "center",

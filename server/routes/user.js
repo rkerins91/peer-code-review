@@ -3,7 +3,7 @@ const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const stripe = require("stripe")(config.stripe.stripeSecret);
 
 const { User } = require("../database");
 

@@ -9,6 +9,9 @@ const config = {
   server: {
     availableLanguages: ["C", "C++", "Java", "JavaScript", "Python", "Ruby"],
     threadStatus: ["open", "assigned", "ongoing", "complete"]
+  },
+  stripe: {
+    stripeSecret: process.env.STRIPE_SECRET_KEY
   }
 };
 
