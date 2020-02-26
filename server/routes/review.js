@@ -8,6 +8,7 @@ const {
   getRequestThreads
 } = require("../controllers/thread");
 const matchingQueue = require("../services/matchingQueue");
+const socketEvents = require("../services/socketEvents");
 const mongoose = require("mongoose");
 const config = require("../config/config");
 
@@ -173,6 +174,20 @@ router.put("/thread/:threadId/post/:postId", async (req, res) => {
     console.log(err);
     res.sendStatus(500);
   }
+});
+
+router.get("/notification-test/:id", async (req, res) => {
+  var createdAt = new Date(Date.now());
+  createdAt = createdAt.toLocaleString;
+  const testData = {
+    _id: "notificationId",
+    event: "new_assignment",
+    origin: "system",
+    read: false,
+    createdAt: createdAt
+  };
+  socketEvents.broadcast(req.params.id, testData);
+  res.sendStatus(200);
 });
 
 module.exports = router;

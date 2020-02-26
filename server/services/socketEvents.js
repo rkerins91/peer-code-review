@@ -11,6 +11,12 @@ module.exports = {
   },
 
   broadcast: (roomName, data) => {
-    io.to(roomName).emit("notification", data);
+    io.to(roomName).emit("notification", {
+      _id: "notificationId",
+      event: "new_assignment",
+      origin: "system",
+      read: false,
+      createdAt: new Date(Date.now())
+    });
   }
 };
