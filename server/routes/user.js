@@ -162,6 +162,7 @@ router.put(
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
     const languages = { ...req.body };
+    console.log("params", req.params.id);
     try {
       const user = await User.findById(req.params.id);
       if (

@@ -55,7 +55,6 @@ userSchema.method("login", async function(user, callback) {
       expiresIn: Number(config.jwt.tokenExpirationPolicy)
     },
     (err, token) => {
-      console.log(token);
       callback(err, token);
     }
   );

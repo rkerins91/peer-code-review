@@ -25,7 +25,6 @@ router.post(
     if (errors.length > 0) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     const { title, content, language, user } = req.body;
 
     const newPost = new Post({
@@ -78,10 +77,12 @@ router.post(
       var newThread = await Thread.findById(threadId);
       const post = await newPost.save();
       newThread.posts.push(post);
-      thread = await newThread.save();
+
+      // ??? undeclared variable, why create thread var from newThread if id is same?
+      await newThread.save();
       return res.status(201).json({
         success: true,
-        threadId: thread._id
+        threadId
       });
     } catch (err) {
       console.log(err);

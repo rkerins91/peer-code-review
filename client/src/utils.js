@@ -1,3 +1,6 @@
+import { getToken } from "./functions/jwt";
+import axios from "axios";
+
 export const availableLanguages = [
   "C",
   "C++",

@@ -1,6 +1,6 @@
 var jwtDecode = require("jwt-decode");
 
-const getToken = () => {
+export const getToken = () => {
   let token = localStorage.getItem("peercode-auth-token");
   return token;
 };

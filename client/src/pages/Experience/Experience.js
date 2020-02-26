@@ -3,6 +3,7 @@ import { UserContext } from "context/UserContext";
 import ExperienceContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import { availableLanguages } from "utils";
+import { getToken } from "functions/jwt";
 import { Grid, Button, Typography, makeStyles, Paper } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
