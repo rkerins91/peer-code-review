@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import {
   AppBar,
@@ -17,11 +17,13 @@ import { Logo } from "./Logo";
 
 const useStyles = makeStyles({
   bar: {
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    height: "10vh"
   },
   linkButton: {
     color: "white",
-    marginLeft: "2vw"
+    marginLeft: "2vw",
+    textTransform: "none"
   },
   codeButton: {
     color: "#43DDC1",
@@ -47,10 +49,13 @@ const useStyles = makeStyles({
     color: "white"
   },
   user: {
-    marginLeft: "1vw"
+    marginLeft: "1vw",
+    textTransform: "none"
   },
   link: {
-    textDecoration: "none"
+    textDecoration: "none",
+    marginLeft: "1vw",
+    textTransform: "none"
   }
 });
 
@@ -74,79 +79,69 @@ const NavBar = () => {
     setAnchorEl(null);
   };
 
-  if (isLoading) {
-    return (
-      <AppBar>
-        <Toolbar className={classes.bar}>
-          <Link to="/">
-            <Logo />
-          </Link>
-        </Toolbar>
-      </AppBar>
-    );
-  } else if (user && !user.experience) {
-    // if the user has no experience set, redirect
-    return <Redirect to="/experience" />;
-  } else if (!user && !isLoading) {
-    return <Redirect to="/login" />;
-  } else
-    return (
-      <AppBar>
-        <Toolbar className={classes.bar}>
-          <Link to="/">
-            <Logo />
-          </Link>
-          <Toolbar className={classes.right}>
+  return (
+    <AppBar>
+      <Toolbar className={classes.bar}>
+        <Link to="/">
+          <Logo />
+        </Link>
+        <Toolbar className={classes.right}>
+          <Link className={classes.link} to="/reviews">
             <Button className={classes.linkButton}> Reviews </Button>
-            <Link to="/balance" className={classes.link}>
-              <Button className={classes.linkButton}>Balance</Button>
+          </Link>
+          <Link to="/balance" className={classes.link}>
+            <Button className={classes.linkButton}>Balance</Button>
+          </Link>
+          <IconButton className={classes.iconButton}>
+            <NotificationsNoneRoundedIcon
+              className={classes.notificationIcon}
+              fontSize="large"
+            />
+          </IconButton>
+          <Button className={classes.codeButton}>
+            <Link className={classes.codeLink} to="/code-upload">
+              Upload code
             </Link>
-            <IconButton className={classes.iconButton}>
-              <NotificationsNoneRoundedIcon
-                className={classes.notificationIcon}
-                fontSize="large"
-              />
-            </IconButton>
-            <Button className={classes.codeButton}> Upload Code </Button>
-            <div>
-              <IconButton
-                className={classes.iconButton}
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                color="inherit"
-                fontSize="large"
-              ></IconButton>
-              <Button className={classes.profileButton} onClick={handleMenu}>
-                <AccountCircle />
-                <Typography className={classes.user}>
-                  {user ? user.name : "profile"}
-                </Typography>
-              </Button>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right"
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </Menu>
-            </div>
-          </Toolbar>
+          </Button>
+          <div>
+            <IconButton
+              className={classes.iconButton}
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              color="inherit"
+              fontSize="large"
+            ></IconButton>
+            <Button className={classes.profileButton} onClick={handleMenu}>
+              <AccountCircle />
+              <Typography className={classes.user}>
+                {user ? user.name : "profile"}
+              </Typography>
+            </Button>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right"
+              }}
+              open={open}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
+          </div>
         </Toolbar>
-      </AppBar>
-    );
+      </Toolbar>
+    </AppBar>
+  );
 };
 
 export default NavBar;

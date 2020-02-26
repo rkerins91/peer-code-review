@@ -22,7 +22,8 @@ const userSchema = new Schema(
       type: Schema.Types.Mixed,
       of: Number
     },
-    assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }],
+    assignedThreads: [{ type: Schema.Types.ObjectId, ref: Thread }],
+    assignedCount: { type: Number, default: 0 },
     credits: {
       type: Number,
       default: 3
@@ -43,6 +44,18 @@ userSchema.pre("save", async function(next) {
   }
 });
 
+// run after model.save
+userSchema.pre("save", async function(next) {
+  if (!this.isModified("assignedThreads")) return next();
+  try {
+    const count = this.assignedThreads.length;
+    this.assignedCount = count;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});
+
 userSchema.method("login", async function(user, callback) {
   const payload = {
     user
@@ -50,7 +63,7 @@ userSchema.method("login", async function(user, callback) {
 
   jwt.sign(
     payload,
-    config.jwt.tokenExpirationPolicy,
+    config.jwt.secret,
     {
       expiresIn: Number(config.jwt.tokenExpirationPolicy)
     },

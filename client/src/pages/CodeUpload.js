@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import {
   Grid,
-  Button,
   InputLabel,
   Select,
   MenuItem,
@@ -15,9 +14,8 @@ import { NavBar } from "components";
 import { TextEditor } from "components/index";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
-import { languageGrammar } from "utils";
 
-const useStlyes = makeStyles({
+const useStyles = makeStyles({
   root: {
     padding: "8% 5%"
   },
@@ -31,6 +29,11 @@ const useStlyes = makeStyles({
   header: {
     margin: "4vh",
     fontWeight: "500"
+  },
+  editor: {
+    padding: "10px",
+    margin: "0",
+    height: "50vh"
   },
   textInput: {
     textAlign: "center",
@@ -52,7 +55,7 @@ const useStlyes = makeStyles({
 const CodeUpload = () => {
   const { user, setUser } = useContext(UserContext);
 
-  const classes = useStlyes();
+  const classes = useStyles();
   const [requestTitle, setRequestTitle] = useState("");
   const [requestLanguage, setRequestLanguage] = useState("");
   const [editorHasContent, setEditorHasContent] = useState(false);
@@ -70,7 +73,6 @@ const CodeUpload = () => {
   };
 
   var getLanguages = [];
-
   if (user) {
     getLanguages = Object.keys(user.experience);
   }
@@ -111,11 +113,14 @@ const CodeUpload = () => {
   };
 
   //get data from editor component
-  const handleSubmit = async data => {
+  const handleSubmit = async ({ data }) => {
     //Wrap up editor data with user and language data and send to server.
     const requestData = {
       title: requestTitle,
-      language: requestLanguage,
+      language: {
+        name: requestLanguage,
+        experience: user.experience[requestLanguage]
+      },
       content: data,
       user: user
     };
@@ -152,7 +157,6 @@ const CodeUpload = () => {
 
   return (
     <div className={classes.root}>
-      <NavBar></NavBar>
       <Grid className={classes.wrapper} container justify="center" spacing={2}>
         <Typography className={classes.header} variant="h3" align="center">
           Request a code review
@@ -177,7 +181,7 @@ const CodeUpload = () => {
           >
             {getLanguages.map(language => {
               return (
-                <MenuItem value={languageGrammar[language]} key={language}>
+                <MenuItem value={language} key={language}>
                   {language}
                 </MenuItem>
               );
@@ -186,10 +190,13 @@ const CodeUpload = () => {
         </Grid>
         <Grid item xs={12}>
           <TextEditor
+            className={classes.editor}
             selectedLanguage={requestLanguage}
             onSubmit={handleSubmit}
             didSubmit={submitState}
             hasContent={handleHasContent}
+            existingContent={null}
+            readOnly={false}
           ></TextEditor>
         </Grid>
         <Grid item xs={12} className={classes.submit}>

@@ -1,16 +1,14 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
 import { authJWT, removeToken } from "./functions/jwt";
 import { SnackbarProvider } from "notistack";
 import { theme } from "./themes/theme";
-import Experience from "./pages/Experience";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import CodeUpload from "./pages/CodeUpload";
 import Home from "./pages/Home";
-import Balance from "./pages/Balance";
+import Loading from "./components/Loading";
 
 import "./App.css";
 
@@ -44,22 +42,28 @@ function App() {
     getUser();
   }, []);
 
-  return (
-    <UserContext.Provider value={value}>
-      <MuiThemeProvider theme={theme}>
-        <SnackbarProvider maxSnack={4}>
-          <BrowserRouter>
-            <Route path="/code-upload" component={CodeUpload} />
-            <Route path="/signup" component={Signup} signupUser={setUser} />
-            <Route path="/login" component={Login} />
-            <Route path="/experience" component={Experience} />
-            <Route path="/balance" component={Balance} />
-            <Route exact path="/" component={Home} />
-          </BrowserRouter>
-        </SnackbarProvider>
-      </MuiThemeProvider>
-    </UserContext.Provider>
-  );
+  // placeholder loading component
+  if (userLoading) {
+    return <Loading />;
+  } else if (user && !user.experience) {
+    // if the user has no experience set, redirect
+    return <Redirect to="/experience" />;
+  } else
+    return (
+      <UserContext.Provider value={value}>
+        <MuiThemeProvider theme={theme}>
+          <SnackbarProvider maxSnack={4}>
+            <BrowserRouter>
+              <Switch>
+                <Route path="/signup" component={Signup} signupUser={setUser} />
+                <Route path="/login" component={Login} />
+                <Route path="/" component={Home} />
+              </Switch>
+            </BrowserRouter>
+          </SnackbarProvider>
+        </MuiThemeProvider>
+      </UserContext.Provider>
+    );
 }
 
 export default App;

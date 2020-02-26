@@ -7,23 +7,31 @@ import {
   getDefaultKeyBinding,
   EditorState,
   RichUtils,
-  convertToRaw
+  convertToRaw,
+  convertFromRaw
 } from "draft-js";
 
 import CodeUtils from "draft-js-code";
 import Prism from "prismjs";
 import PrismDecorator from "draft-js-prism";
 import "prismjs/themes/prism-okaidia.css";
+import { languageGrammar } from "../../utils";
 
 const useStyles = makeStyles({
   root: {
     width: "100%"
   },
-  editor: {
+  editorEdit: {
     border: "2px solid grey",
     padding: "10px",
     margin: "0",
-    height: "50vh",
+    height: "40vh",
+    overflow: "auto"
+  },
+  editorRead: {
+    padding: "10px",
+    margin: "0",
+    maxHeight: "50vh",
     overflow: "auto"
   }
 });
@@ -45,21 +53,53 @@ const inlineStyles = {
   CODE: "CODE"
 };
 
-const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
+const TextEditor = ({
+  selectedLanguage,
+  onSubmit,
+  didSubmit,
+  hasContent,
+  readOnly,
+  existingContent,
+  postId
+}) => {
   const classes = useStyles();
+  var editorStyle;
+  var mappedLanguage;
 
   if (selectedLanguage === "") {
-    selectedLanguage = null;
+    mappedLanguage = null;
+  } else {
+    mappedLanguage = languageGrammar[selectedLanguage];
   }
 
   const decorator = new PrismDecorator({
     prism: Prism,
-    defaultSyntax: selectedLanguage
+    defaultSyntax: mappedLanguage
   });
 
-  const [editorState, setEditorState] = useState(
-    EditorState.createEmpty(decorator)
-  );
+  //Create initial editor state depending on mode
+  const createEditorState = () => {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+    if (existingContent) {
+      const currentContent = convertFromRaw(existingContent);
+      return EditorState.createWithContent(currentContent, decorator);
+    }
+    return EditorState.createEmpty(decorator);
+  };
+  const [editorState, setEditorState] = useState(createEditorState());
+
+  //Switch between edit and read only styles
+  useEffect(() => {
+    if (readOnly) {
+      editorStyle = classes.editorRead;
+    } else {
+      editorStyle = classes.editorEdit;
+    }
+  }, [readOnly]);
 
   //Editor style states
   const [currentInlineStyles, setInlineStyles] = useState([]);
@@ -71,7 +111,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     const block = editorState
       .getCurrentContent()
       .getBlockForKey(selection.getStartKey());
-    const data = block.getData().merge({ syntax: selectedLanguage });
+    const data = block.getData().merge({ syntax: mappedLanguage });
     const newBlock = block.merge({ data });
     const newContentState = editorState.getCurrentContent().merge({
       blockMap: editorState
@@ -83,19 +123,18 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     setEditorState(
       EditorState.push(editorState, newContentState, "change-block-data")
     );
-  }, [selectedLanguage]);
+  });
 
   //Triggers editor's focus method
   const editor = React.useRef(null);
   const focusEditor = () => {
     editor.current.focus();
   };
-
   useEffect(() => {
     focusEditor();
   }, []);
 
-  //Toggle button group controller
+  //Takes input from toolbar and updates editor state with new styles
   const handleFormatChange = style => {
     if (inlineStyles.hasOwnProperty(style)) {
       setEditorState(RichUtils.toggleInlineStyle(editorState, style));
@@ -104,7 +143,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     }
   };
 
-  //Sets content block type state to send to toolbar
+  //Sets content block type state to send to toolbar if editor exited a block style
   useEffect(() => {
     const prevContentState = editorState.getCurrentContent();
     if (!prevContentState.hasText()) {
@@ -138,7 +177,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
   const getBlockStyle = block => {
     switch (block.getType()) {
       case "code-block":
-        return "language-".concat(selectedLanguage);
+        return "language-".concat(mappedLanguage);
       default:
         return null;
     }
@@ -189,18 +228,26 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
     if (didSubmit) {
       const content = editorState.getCurrentContent();
       const rawJs = convertToRaw(content);
-      onSubmit(rawJs);
+      if (postId) {
+        //submitting an edit
+        onSubmit({ postId: postId, data: rawJs });
+      } else {
+        // submitting a reply
+        onSubmit({ data: rawJs });
+        setEditorState(EditorState.createEmpty(decorator));
+      }
     }
   }, [didSubmit]);
 
   return (
     <div className={classes.root}>
       <Toolbar
-        onChange={style => handleFormatChange(style)}
+        onChange={handleFormatChange}
         inlineStyle={currentInlineStyles}
         blockStyle={currentBlockType}
+        readOnly={readOnly}
       />
-      <div className={classes.editor} onClick={focusEditor}>
+      <div className={editorStyle} onClick={focusEditor}>
         <Editor
           ref={editor}
           editorState={editorState}
@@ -210,6 +257,7 @@ const TextEditor = ({ selectedLanguage, onSubmit, didSubmit, hasContent }) => {
           handleKeyCommand={handleKeyCommand}
           onTab={onTab}
           blockStyleFn={getBlockStyle}
+          readOnly={readOnly}
         />
       </div>
     </div>
