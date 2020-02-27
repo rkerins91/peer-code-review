@@ -24,6 +24,7 @@ const Home = () => {
           {/* <Route exact path="/" component={Profile} /> */}
           <Route path="/balance" component={Balance} />
           <Route path="/code-upload" component={CodeUpload} />
+          <Route path="/reviews/:threadParam" children={<ReviewPage />} />
           <Route path="/reviews" component={ReviewPage} />
         </Switch>
       </>

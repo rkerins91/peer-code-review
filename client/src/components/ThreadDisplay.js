@@ -194,7 +194,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
                 <PostDisplay
                   user={user}
                   postData={post}
-                  postLanguage={languageGrammar[threadData.language.name]}
+                  postLanguage={threadData.language.name}
                   key={post._id}
                   onEditPost={handlePostEdit}
                   onErrors={handleErrors}
@@ -214,7 +214,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
           </Grid>
           <Grid item className={classes.editorWrapper} xs={12}>
             <TextEditor
-              selectedLanguage={languageGrammar[threadData.language.name]}
+              selectedLanguage={threadData.language.name}
               onSubmit={handlePostEdit}
               didSubmit={submitState}
               hasContent={handleHasContent}
