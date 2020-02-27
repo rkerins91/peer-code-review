@@ -8,8 +8,10 @@ const {
   getRequestThreads
 } = require("../controllers/thread");
 const matchingQueue = require("../services/matchingQueue");
+const MatchingService = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const io = require("../services/socketService");
 
 router.post(
   "/create-request",
@@ -31,7 +33,7 @@ router.post(
     }
     try {
       const thread = await createRequest(req.body);
-      matchingQueue.add({ thread: thread, pass: 1 }); //enqueue matching job
+      MatchingService.addJob({ thread: thread, pass: 1 }); //enqueue matching job
 
       return res.status(201).json({
         success: true,
@@ -187,6 +189,7 @@ router.get("/notification-test/:id", async (req, res) => {
   };
   const io = req.app.get("socketio");
   io.in(req.params.id).emit("notification", testData);
+  io.sendNotification(req.params.id, testData);
   res.sendStatus(200);
 });
 
