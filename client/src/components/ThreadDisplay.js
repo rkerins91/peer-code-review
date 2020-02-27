@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import {
   Grid,
@@ -12,7 +12,6 @@ import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
 import { languageGrammar } from "utils";
-import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },

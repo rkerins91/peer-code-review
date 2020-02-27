@@ -10,7 +10,7 @@ import {
   Typography,
   Grid
 } from "@material-ui/core";
-import { NavBar, ThreadDisplay } from "components";
+import { ThreadDisplay } from "components";
 import { UserContext } from "context/UserContext";
 import axios from "axios";
 
