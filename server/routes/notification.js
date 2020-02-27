@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Notification, notificationSchema } = require("../database");
+const { Notification } = require("../database");
 
 router.get("/:id/test", async (req, res) => {
   try {

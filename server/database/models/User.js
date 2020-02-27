@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../../config/config");
 const Thread = require("./Thread");
+const { Notification } = require("./Notification");
 
 const userSchema = new Schema(
   {
@@ -22,6 +23,7 @@ const userSchema = new Schema(
       type: Schema.Types.Mixed,
       of: Number
     },
+    notifications: [{ type: Schema.Types.ObjectId, ref: Notification }],
     assignedThreads: [{ type: Schema.Types.ObjectId, ref: Thread }],
     assignedCount: { type: Number, default: 0 },
     credits: {
