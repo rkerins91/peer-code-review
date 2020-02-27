@@ -8,7 +8,6 @@ const {
   getRequestThreads
 } = require("../controllers/thread");
 const matchingQueue = require("../services/matchingQueue");
-const socketEvents = require("../services/socketEvents");
 const mongoose = require("mongoose");
 const config = require("../config/config");
 

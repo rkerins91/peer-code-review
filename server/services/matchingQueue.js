@@ -4,6 +4,7 @@ const { assignThread, unassignThread } = require("../controllers/user");
 const { addToNoAssign, updateStatus } = require("../controllers/thread");
 const config = require("../config/config");
 const matchingQueue = new Queue("candidate matching");
+const io = require("../bin/www");
 
 /* job object:
     {

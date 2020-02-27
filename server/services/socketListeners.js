@@ -11,9 +11,5 @@ module.exports = {
         socket.emit("join-message", "joined room " + userId)
       );
     });
-
-    const broadcast = () => {
-      console.log("test test");
-    };
   }
 };
