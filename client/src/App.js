@@ -7,11 +7,11 @@ import { SnackbarProvider } from "notistack";
 import { theme } from "./themes/theme";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import Experience from "./pages/Experience";
 import Home from "./pages/Home";
 import Loading from "./components/Loading";
 import "./App.css";
-import Experience from "./pages/Experience";
-import io from "socket.io-client";
+import socket from "./functions/sockets";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -38,10 +38,9 @@ function App() {
       setUserLoading(true);
       let user = await authJWT();
       setUser(user);
+      socket.emit("login", user._id);
       setUserLoading(false);
     }
-    let socket = io("localhost:3001");
-    console.log(socket);
     getUser();
   }, []);
 
