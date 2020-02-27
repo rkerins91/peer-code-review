@@ -23,10 +23,6 @@ var server = http.createServer(app);
 const io = socketIo(server);
 app.set("socketio", io);
 
-module.exports = {
-  io: io
-};
-
 /**
  * Listen on provided port, on all network interfaces and for socket events.
  */

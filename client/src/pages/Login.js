@@ -3,6 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import { SignUpContainer } from "components";
 import { UserContext } from "context/UserContext";
+import socket from "./functions/sockets";
 
 const useStyles = makeStyles({
   input: {
@@ -100,6 +101,7 @@ const Login = () => {
           if ((json.success = true)) {
             localStorage.setItem("peercode-auth-token", json.token);
             setUser(json.user);
+            socket.emit("login", json.user._id);
           }
         }
       } catch (e) {
