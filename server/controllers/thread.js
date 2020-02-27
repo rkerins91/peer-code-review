@@ -35,7 +35,7 @@ module.exports = {
       const post = await newPost.save();
       var thread = await Thread.findById(threadId);
       thread.posts.push(post);
-      await newThread.save();
+      await thread.save();
     } else throw new Error("Missing required request data");
   },
 
