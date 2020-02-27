@@ -7,6 +7,7 @@ const {
   createPost,
   getRequestThreads
 } = require("../controllers/thread");
+const matchingQueue = require("../services/matchingQueue");
 const MatchingService = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
@@ -186,6 +187,8 @@ router.get("/notification-test/:id", async (req, res) => {
     read: false,
     createdAt: createdAt
   };
+  const io = req.app.get("socketio");
+  io.in(req.params.id).emit("notification", testData);
   io.sendNotification(req.params.id, testData);
   res.sendStatus(200);
 });
