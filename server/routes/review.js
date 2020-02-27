@@ -186,7 +186,8 @@ router.get("/notification-test/:id", async (req, res) => {
     read: false,
     createdAt: createdAt
   };
-  socketEvents.broadcast(req.params.id, testData);
+  const io = req.app.get("socketio");
+  io.in(req.params.id).emit("notification", testData);
   res.sendStatus(200);
 });
 
