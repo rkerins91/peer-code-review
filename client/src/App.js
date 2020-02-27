@@ -9,9 +9,9 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Loading from "./components/Loading";
-
 import "./App.css";
 import Experience from "./pages/Experience";
+import io from "socket.io-client";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -40,6 +40,8 @@ function App() {
       setUser(user);
       setUserLoading(false);
     }
+    let socket = io("localhost:3001");
+    console.log(socket);
     getUser();
   }, []);
 
