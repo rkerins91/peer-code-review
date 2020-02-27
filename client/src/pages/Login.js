@@ -3,7 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import { SignUpContainer } from "components";
 import { UserContext } from "context/UserContext";
-import socket from "./functions/sockets";
+import socket from "functions/sockets";
 
 const useStyles = makeStyles({
   input: {
