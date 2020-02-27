@@ -7,10 +7,10 @@ const {
   createPost,
   getRequestThreads
 } = require("../controllers/thread");
-const matchingQueue = require("../services/matchingQueue");
-const socketEvents = require("../services/socketEvents");
+const MatchingService = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const io = require("../services/socketService");
 
 router.post(
   "/create-request",
@@ -32,7 +32,7 @@ router.post(
     }
     try {
       const thread = await createRequest(req.body);
-      matchingQueue.add({ thread: thread, pass: 1 }); //enqueue matching job
+      MatchingService.addJob({ thread: thread, pass: 1 }); //enqueue matching job
 
       return res.status(201).json({
         success: true,
@@ -186,7 +186,7 @@ router.get("/notification-test/:id", async (req, res) => {
     read: false,
     createdAt: createdAt
   };
-  socketEvents.broadcast(req.params.id, testData);
+  io.sendNotification(req.params.id, testData);
   res.sendStatus(200);
 });
 

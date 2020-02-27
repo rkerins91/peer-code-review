@@ -5,8 +5,8 @@
  */
 var app = require("../app");
 var http = require("http");
-const socketIo = require("socket.io");
-const socketEvents = require("../services/socketEvents");
+const SocketService = require("../services/socketService");
+const MatchingService = require("../services/matchingQueue");
 
 /**
  * Get port from environment and store in Express.
@@ -20,7 +20,7 @@ app.set("port", port);
  */
 
 var server = http.createServer(app);
-const io = socketIo(server);
+SocketService.bindServer(server);
 
 /**
  * Listen on provided port, on all network interfaces and for socket events.
@@ -29,8 +29,8 @@ const io = socketIo(server);
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
-
-io.on("connection", socket => socketEvents.eventConfig(socket));
+SocketService.start();
+MatchingService.runQueue();
 
 /**
  * Normalize a port into a number, string, or false.
