@@ -4,7 +4,6 @@ import { UserContext } from "context/UserContext";
 import { NavBar } from "components";
 import CodeUpload from "./CodeUpload";
 import ReviewPage from "./Review";
-import Experience from "./Experience";
 import Balance from "./Balance";
 
 const Home = () => {
@@ -24,8 +23,11 @@ const Home = () => {
           {/* <Route exact path="/" component={Profile} /> */}
           <Route path="/balance" component={Balance} />
           <Route path="/code-upload" component={CodeUpload} />
-          <Route path="/reviews/:threadParam" children={<ReviewPage />} />
-          <Route path="/reviews" component={ReviewPage} />
+          <Route
+            path="/dashboard/:typeParam/:threadParam"
+            children={<ReviewPage />}
+          />
+          <Route path="/dashboard" component={ReviewPage} />
         </Switch>
       </>
     );

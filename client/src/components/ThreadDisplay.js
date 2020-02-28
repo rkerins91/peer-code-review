@@ -17,7 +17,7 @@ import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 const useStyles = makeStyles({
   root: { padding: "5%" },
   backdrop: {
-    zIndex: 1000,
+    zIndex: 900,
     color: "#fff",
     left: "20vw" // same width as the sidebar
   },

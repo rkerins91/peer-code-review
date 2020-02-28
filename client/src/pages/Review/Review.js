@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import { ThreadDisplay } from "components";
 import { UserContext } from "context/UserContext";
+import SideBar from "./SideBar";
 import axios from "axios";
 
 const useStyles = makeStyles({
@@ -57,15 +58,28 @@ const useStyles = makeStyles({
 const ReviewPage = () => {
   const classes = useStyles();
   const [reviews, setReviews] = useState({});
+  const [requests, setRequests] = useState({});
+  const [assigned, setAssigned] = useState({});
   const [selectedThread, setSelectedThread] = useState(null);
-  const { threadParam } = useParams();
+  const { threadParam, typeParam } = useParams();
 
   // user context
   const { user } = useContext(UserContext);
 
   const getReviews = async () => {
+    //helper function to turn response arrays into objects keyed by their id
+    const createThreadObj = array => {
+      var collection = {};
+      array.forEach(thread => {
+        console.log(collection);
+        collection[thread._id] = thread;
+      });
+      console.log(collection);
+      return collection;
+    };
+
     try {
-      const res = await fetch(`/requests/all/${user._id}`, {
+      const res = await fetch(`/threads/open/${user._id}`, {
         method: "get",
         headers: {
           "Content-Type": "application/json"
@@ -77,17 +91,13 @@ const ReviewPage = () => {
         return {}; // if there is an error, return empty user object
       } else {
         if (json.success) {
-          json.threads.forEach(thread => {
-            reviews[thread._id] = thread;
-          });
-          console.log(reviews);
-          setReviews(reviews);
+          setRequests(createThreadObj(json.requests));
+          setReviews(createThreadObj(json.reviews));
+          setAssigned(createThreadObj(json.assigned));
           if (!threadParam) {
-            setSelectedThread(Object.values(reviews)[0]);
-          } else {
-            setSelectedThread(reviews[threadParam]);
+            setSelectedThread(json.requests[0]);
           }
-          return reviews;
+          return json;
         }
       }
     } catch (e) {
@@ -116,76 +126,36 @@ const ReviewPage = () => {
     }
   };
 
-  const getLocalDate = mongoDate => {
-    const localDate = new Date(mongoDate);
-    return localDate.toLocaleDateString();
-  };
-
-  const isSelected = id => {
-    if (threadParam) {
-      if (id === threadParam) {
-        return classes.selected;
-      } else return null;
-    } else return null;
-  };
-
   useEffect(() => {
     if (user) {
-      setReviews(getReviews());
+      getReviews();
     }
   }, []);
 
+  useEffect(() => {
+    switch (typeParam) {
+      case "requests":
+        setSelectedThread(requests[threadParam]);
+        break;
+      case "reviews":
+        setSelectedThread(reviews[threadParam]);
+        break;
+      case "assigned":
+        setSelectedThread(assigned[threadParam]);
+        break;
+    }
+  }, [reviews, requests, assigned]);
+
   return (
-    <>
-      <Drawer classes={{ paper: classes.drawer }} open variant="permanent">
-        <div
-          className={classes.fullList}
-          role="presentation"
-          //   onClick={toggleDrawer(side, false)}
-          //   onKeyDown={toggleDrawer(side, false)}
-        >
-          <List>
-            <Typography className={classes.header}>
-              {Object.values(reviews).length > 0 ? (
-                <span>
-                  Reviews
-                  <span
-                    className={classes.counter}
-                    style={{ color: "#43DDC1" }}
-                  >
-                    {" (" + Object.values(reviews).length + ")"}
-                  </span>
-                </span>
-              ) : (
-                "No Reviews To Display"
-              )}
-            </Typography>
-            {Object.values(reviews).map(review => (
-              <Link
-                className={classes.link}
-                to={"/reviews/" + review._id}
-                key={review._id}
-              >
-                <ListItem button onClick={() => setSelectedThread(review)}>
-                  <ListItemText
-                    className={isSelected(review._id)}
-                    primary={review.title}
-                    secondary={getLocalDate(review.createdAt)}
-                  />
-                </ListItem>
-              </Link>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            <Link className={classes.link} to="/code-upload">
-              <ListItem button>
-                <ListItemText primary={"Upload Code"} />
-              </ListItem>
-            </Link>
-          </List>
-        </div>
-      </Drawer>
+    <div>
+      <SideBar
+        requests={Object.values(requests)}
+        reviews={Object.values(reviews)}
+        assigned={Object.values(assigned)}
+        threadParam={threadParam}
+        typeParam={typeParam}
+        setSelectedThread={setSelectedThread}
+      ></SideBar>
       <Grid container className={classes.container}>
         <Grid item xs={12} className={classes.gridItem}>
           <ThreadDisplay
@@ -195,7 +165,7 @@ const ReviewPage = () => {
           />
         </Grid>
       </Grid>
-    </>
+    </div>
   );
 };
 
