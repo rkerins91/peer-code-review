@@ -11,8 +11,6 @@ const {
 const matchingQueue = require("../services/matchingQueue");
 const { User, Thread } = require("../database");
 const stripe = require("stripe")(config.stripe.stripeSecret);
-const { setExperience, updateCredits } = require("../controllers/user");
-const { User } = require("../database");
 
 router.post(
   "/signup",
