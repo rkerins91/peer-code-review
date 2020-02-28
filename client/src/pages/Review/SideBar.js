@@ -45,17 +45,6 @@ const useStyles = makeStyles({
   link: {
     textDecoration: "none",
     color: "#6E3ADB"
-  },
-  container: {
-    marginLeft: "20vw",
-    marginTop: "10vh",
-    width: "80vw",
-    height: "90vh"
-  },
-  gridItem: {
-    marginLeft: "5vh",
-    marginRight: "5vh",
-    height: "80vh"
   }
 });
 
@@ -65,7 +54,8 @@ const SideBar = ({
   assigned,
   threadParam,
   typeParam,
-  setSelectedThread
+  setSelectedThread,
+  defaultSelection
 }) => {
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(true);
@@ -94,7 +84,11 @@ const SideBar = ({
       if (id === threadParam) {
         return classes.selected;
       } else return classes.notSelected;
-    } else return classes.notSelected;
+    } else if (defaultSelection) {
+      if (id === defaultSelection.threadId) {
+        return classes.selected;
+      } else return classes.notSelected;
+    }
   };
 
   const getLocalDate = mongoDate => {

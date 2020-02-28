@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Redirect, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Drawer,
@@ -16,28 +16,6 @@ import SideBar from "./SideBar";
 import axios from "axios";
 
 const useStyles = makeStyles({
-  header: {
-    padding: "2vh",
-    fontSize: "4vh",
-    fontWeight: 700
-  },
-  counter: {
-    fontSize: "1.5rem"
-  },
-  drawer: {
-    height: "calc(100% - 10vh)",
-    top: "10vh",
-    zIndex: 1000 // z-index of app bar is 1100, default of drawer is 1200
-  },
-  list: {
-    width: 250
-  },
-  fullList: {
-    width: "20vw"
-  },
-  selected: {
-    color: "#6E3ADB"
-  },
   link: {
     textDecoration: "none",
     color: "#6E3ADB"
@@ -61,7 +39,8 @@ const ReviewPage = () => {
   const [requests, setRequests] = useState({});
   const [assigned, setAssigned] = useState({});
   const [selectedThread, setSelectedThread] = useState(null);
-  const { threadParam, typeParam } = useParams();
+  var { threadParam, typeParam } = useParams();
+  const [defaultSelection, setDefaultSelection] = useState(null);
 
   // user context
   const { user } = useContext(UserContext);
@@ -71,10 +50,8 @@ const ReviewPage = () => {
     const createThreadObj = array => {
       var collection = {};
       array.forEach(thread => {
-        console.log(collection);
         collection[thread._id] = thread;
       });
-      console.log(collection);
       return collection;
     };
 
@@ -94,10 +71,7 @@ const ReviewPage = () => {
           setRequests(createThreadObj(json.requests));
           setReviews(createThreadObj(json.reviews));
           setAssigned(createThreadObj(json.assigned));
-          if (!threadParam) {
-            setSelectedThread(json.requests[0]);
-          }
-          return json;
+          return;
         }
       }
     } catch (e) {
@@ -105,24 +79,32 @@ const ReviewPage = () => {
     }
   };
 
-  const handleThreadRefresh = async threadId => {
-    for (let key in reviews) {
-      if (threadId === key) {
-        try {
-          const response = await axios({
-            method: "get",
-            url: `/thread/${threadId}`,
-            headers: { "content-type": "application/json" }
-          });
-          if (response.data.success) {
-            reviews[key] = response.data.thread;
+  const handleThreadRefresh = async (threadId, type) => {
+    try {
+      const response = await axios({
+        method: "get",
+        url: `/thread/${threadId}`,
+        headers: { "content-type": "application/json" }
+      });
+      if (response.data.success) {
+        switch (type) {
+          case "requests":
+            requests[threadId] = response.data.thread;
+            setRequests(requests);
+            break;
+          case "reviews":
+            reviews[threadId] = response.data.thread;
             setReviews(reviews);
-            setSelectedThread(response.data.thread);
-          }
-        } catch (err) {
-          Location.reload(true); //If there's an error, refresh the whole page
+            break;
+          case "assigned":
+            assigned[threadId] = response.data.thread;
+            setAssigned(assigned);
+            break;
         }
+        setSelectedThread(response.data.thread);
       }
+    } catch (err) {
+      Location.reload(true); //If there's an error, refresh the whole page
     }
   };
 
@@ -143,6 +125,21 @@ const ReviewPage = () => {
       case "assigned":
         setSelectedThread(assigned[threadParam]);
         break;
+      default:
+        // fallback, select the first thread in the first collection that has a thread as selected by default
+        if (Object.values(requests).length > 0) {
+          threadParam = Object.values(requests)[0]._id;
+          setSelectedThread(requests[threadParam]);
+          setDefaultSelection({ type: "requests", threadId: threadParam });
+        } else if (Object.values(reviews).length > 0) {
+          threadParam = Object.values(reviews)[0]._id;
+          setSelectedThread(reviews[threadParam]);
+          setDefaultSelection({ type: "reviews", threadId: threadParam });
+        } else if (Object.values(assigned).length > 0) {
+          threadParam = Object.values(assigned)[0]._id;
+          setSelectedThread(assigned[threadParam]);
+          setDefaultSelection({ type: "assigned", threadId: threadParam });
+        }
     }
   }, [reviews, requests, assigned]);
 
@@ -155,6 +152,7 @@ const ReviewPage = () => {
         threadParam={threadParam}
         typeParam={typeParam}
         setSelectedThread={setSelectedThread}
+        defaultSelection={defaultSelection}
       ></SideBar>
       <Grid container className={classes.container}>
         <Grid item xs={12} className={classes.gridItem}>
@@ -162,6 +160,8 @@ const ReviewPage = () => {
             threadData={selectedThread}
             user={user}
             refreshThread={handleThreadRefresh}
+            typeParam={typeParam}
+            defaultSelection={defaultSelection}
           />
         </Grid>
       </Grid>
