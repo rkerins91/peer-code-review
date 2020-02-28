@@ -1,8 +1,6 @@
 import React from "react";
-import CreditsContainer from "./CreditsContainer";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import NavBar from "components/NavBar";
 import { Grid, Typography, Button, makeStyles, Paper } from "@material-ui/core";
 
 const useStyles = makeStyles({

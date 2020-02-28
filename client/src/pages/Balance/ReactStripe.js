@@ -109,7 +109,6 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
   const [error, setError] = useState(null);
   const [cardComplete, setCardComplete] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(null);
   const [billingDetails, setBillingDetails] = useState({ name: "" });
   const [madeSuccessfulPayment, setMadeSuccessfulPayment] = useState(false);
 

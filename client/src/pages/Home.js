@@ -4,7 +4,6 @@ import { UserContext } from "context/UserContext";
 import { NavBar } from "components";
 import CodeUpload from "./CodeUpload";
 import ReviewPage from "./Review";
-import Experience from "./Experience";
 import Balance from "./Balance";
 
 const Home = () => {
