@@ -64,7 +64,7 @@ const NavBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // user context
-  const { user, isLoading, logout } = useContext(UserContext);
+  const { user, logout } = useContext(UserContext);
 
   const handleMenu = e => {
     setAnchorEl(e.currentTarget);
@@ -86,7 +86,7 @@ const NavBar = () => {
           <Logo />
         </Link>
         <Toolbar className={classes.right}>
-          <Link className={classes.link} to="/reviews">
+          <Link className={classes.link} to="/dashboard">
             <Button className={classes.linkButton}> Reviews </Button>
           </Link>
           <Link to="/balance" className={classes.link}>

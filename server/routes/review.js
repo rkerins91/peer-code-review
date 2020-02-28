@@ -5,7 +5,9 @@ const { Thread } = require("../database");
 const {
   createRequest,
   createPost,
-  getRequestThreads
+  getRequestThreads,
+  getReviewThreads,
+  getAssignedThreads
 } = require("../controllers/thread");
 const MatchingService = require("../services/matchingQueue");
 const mongoose = require("mongoose");
@@ -54,7 +56,7 @@ router.post("/thread/:id/post", async (req, res) => {
     await createPost(req.params.id, req.body);
     return res.status(201).json({
       success: true,
-      threadId: thread._id
+      threadId: req.params.id
     });
   } catch (err) {
     console.log(err);
@@ -116,15 +118,22 @@ router.get("/thread/:id", async (req, res) => {
 });
 
 //get a user's requests by id and status
-router.get("/requests/:status/:id", async (req, res) => {
+router.get("/threads/:status/:id", async (req, res) => {
+  const userId = req.params.id;
+  const status = req.params.status;
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
+    if (!mongoose.isValidObjectId(userId)) {
       throw new Error("invalidUserIdError");
     }
-    const threads = await getRequestThreads(req.params.id, req.params.status);
+    const requests = await getRequestThreads(userId, status);
+    const reviews = await getReviewThreads(userId, status);
+    const assigned = await getAssignedThreads(userId);
+
     return res.status(200).json({
       success: true,
-      threads: threads
+      requests: requests,
+      reviews: reviews,
+      assigned: assigned
     });
   } catch (err) {
     console.log(err);
@@ -151,6 +160,14 @@ router.get("/requests/:status/:id", async (req, res) => {
     }
     res.sendStatus(500);
   }
+});
+
+// Route used for testing
+router.get("/user/:id/assigned", async (req, res) => {
+  const assigned = await getAssignedThreads(req.params.id);
+  return res.status(200).json({
+    assigned: assigned
+  });
 });
 
 //Save an edited post

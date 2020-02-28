@@ -12,8 +12,6 @@
 2. To see what dbs are on your machine, use `show dbs` command
 3. To make our db, use `use pumpkin_spice` command
 
-As a note, you will not be able to see the pumpkin_spice db using the `show dbs` command until it has a document added to it. You can add a basic one with your name and email by running the server and making an post request to `localhost:3001/user/register` and sending 'name' and 'email' as the the body.
-
 ## Install and Run redis locally
 
 1. `brew install redis` or `install redis-server` using another package manager

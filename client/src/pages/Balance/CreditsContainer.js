@@ -4,13 +4,13 @@ import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles({
   root: {
-    paddingTop: "10vh",
+    paddingTop: "15vh",
     height: "90vh"
   },
   signUp: {
     width: "50vw",
     maxHeight: "80vh",
-    minHeight: "30vh",
+    minHeight: "20vh",
     overflowY: "auto",
     padding: "5vh",
     textAlign: "center",
