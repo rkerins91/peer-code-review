@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
-import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
 import { authJWT, removeToken } from "./functions/jwt";
 import { SnackbarProvider } from "notistack";

@@ -8,7 +8,7 @@ import CreditsContainer from "./CreditsContainer";
 
 const PurchaseCredits = () => {
   const { user } = useContext(UserContext);
-  let [balance, setBalance] = useState(null);
+  let [balance] = useState(null);
   let [credits, setCredits] = useState(1);
   let [checkout, setCheckout] = useState(false);
 

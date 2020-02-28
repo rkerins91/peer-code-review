@@ -1,7 +1,3 @@
-* {
-  box-sizing: border-box;
-}
-
 input,
 button {
   -webkit-appearance: none;
@@ -12,7 +8,7 @@ button {
 }
 
 html {
-  background-color: #6e3adb;
+  background-color: #dadffa;
   font-size: 16px;
   font-family: Roboto, Open Sans, Segoe UI, sans-serif;
   font-weight: 500;
@@ -28,9 +24,6 @@ body {
 
 #root {
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .AppWrapper {
@@ -94,6 +87,7 @@ body {
     opacity: 1;
   }
 }
+
 .FormRowInput:-webkit-autofill {
   -webkit-text-fill-color: #fff;
   /* Hack to hide the default webkit autofill */
@@ -150,6 +144,7 @@ body {
 .SubmitButton.SubmitButton--error {
   transform: translateY(15px);
 }
+
 .SubmitButton.SubmitButton--error:active {
   transform: scale(0.99) translateY(15px);
 }
