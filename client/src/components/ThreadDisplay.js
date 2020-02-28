@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import {
   Grid,
@@ -12,7 +12,6 @@ import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
 import { languageGrammar } from "utils";
-import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
@@ -194,7 +193,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
                 <PostDisplay
                   user={user}
                   postData={post}
-                  postLanguage={languageGrammar[threadData.language.name]}
+                  postLanguage={threadData.language.name}
                   key={post._id}
                   onEditPost={handlePostEdit}
                   onErrors={handleErrors}
@@ -214,7 +213,7 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
           </Grid>
           <Grid item className={classes.editorWrapper} xs={12}>
             <TextEditor
-              selectedLanguage={languageGrammar[threadData.language.name]}
+              selectedLanguage={threadData.language.name}
               onSubmit={handlePostEdit}
               didSubmit={submitState}
               hasContent={handleHasContent}

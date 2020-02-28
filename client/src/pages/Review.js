@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Drawer,
@@ -10,7 +10,7 @@ import {
   Typography,
   Grid
 } from "@material-ui/core";
-import { NavBar, ThreadDisplay } from "components";
+import { ThreadDisplay } from "components";
 import { UserContext } from "context/UserContext";
 import axios from "axios";
 
@@ -19,6 +19,9 @@ const useStyles = makeStyles({
     padding: "2vh",
     fontSize: "4vh",
     fontWeight: 700
+  },
+  counter: {
+    fontSize: "1.5rem"
   },
   drawer: {
     height: "calc(100% - 10vh)",
@@ -34,7 +37,7 @@ const useStyles = makeStyles({
   selected: {
     color: "#6E3ADB"
   },
-  uploadLink: {
+  link: {
     textDecoration: "none",
     color: "#6E3ADB"
   },
@@ -53,44 +56,48 @@ const useStyles = makeStyles({
 
 const ReviewPage = () => {
   const classes = useStyles();
-  const [reviews, setReviews] = useState([]);
-  const [selectedReview, setSelectedReview] = useState(null);
+  const [reviews, setReviews] = useState({});
+  const [selectedThread, setSelectedThread] = useState(null);
+  const { threadParam } = useParams();
+
   // user context
   const { user } = useContext(UserContext);
 
-  const getReviews = () => {
-    async function getRequests() {
-      try {
-        const res = await fetch(`/requests/all/${user._id}`, {
-          method: "get",
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-        const json = await res.json();
-        if (json.errors) {
-          console.log(json.errors);
-          return {}; // if there is an error, return empty user object
-        } else {
-          if ((json.success = true)) {
-            setReviews(json.threads);
-            if (json.threads[0]) {
-              setSelectedReview(json.threads[0]);
-            }
-            return;
-          }
+  const getReviews = async () => {
+    try {
+      const res = await fetch(`/requests/all/${user._id}`, {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json"
         }
-      } catch (e) {
-        console.log(e);
+      });
+      const json = await res.json();
+      if (json.errors) {
+        console.log(json.errors);
+        return {}; // if there is an error, return empty user object
+      } else {
+        if (json.success) {
+          json.threads.forEach(thread => {
+            reviews[thread._id] = thread;
+          });
+          console.log(reviews);
+          setReviews(reviews);
+          if (!threadParam) {
+            setSelectedThread(Object.values(reviews)[0]);
+          } else {
+            setSelectedThread(reviews[threadParam]);
+          }
+          return reviews;
+        }
       }
+    } catch (e) {
+      console.log(e);
     }
-    getRequests();
   };
 
   const handleThreadRefresh = async threadId => {
-    var tempReviews = reviews;
-    for (let i = 0; i < reviews.length; i++) {
-      if (threadId === tempReviews[i]._id) {
+    for (let key in reviews) {
+      if (threadId === key) {
         try {
           const response = await axios({
             method: "get",
@@ -98,10 +105,9 @@ const ReviewPage = () => {
             headers: { "content-type": "application/json" }
           });
           if (response.data.success) {
-            tempReviews[i] = response.data.thread;
-            setReviews(tempReviews);
-            setSelectedReview(reviews[i]);
-            return;
+            reviews[key] = response.data.thread;
+            setReviews(reviews);
+            setSelectedThread(response.data.thread);
           }
         } catch (err) {
           Location.reload(true); //If there's an error, refresh the whole page
@@ -116,18 +122,18 @@ const ReviewPage = () => {
   };
 
   const isSelected = id => {
-    if (selectedReview) {
-      if (id === selectedReview._id) {
+    if (threadParam) {
+      if (id === threadParam) {
         return classes.selected;
       } else return null;
     } else return null;
   };
 
   useEffect(() => {
-    if (!user) {
-      return;
-    } else getReviews();
-  }, [user]);
+    if (user) {
+      setReviews(getReviews());
+    }
+  }, []);
 
   return (
     <>
@@ -140,34 +146,39 @@ const ReviewPage = () => {
         >
           <List>
             <Typography className={classes.header}>
-              {reviews.length > 0 ? (
+              {Object.values(reviews).length > 0 ? (
                 <span>
                   Reviews
-                  <span style={{ color: "#43DDC1" }}>
-                    {" (" + reviews.length + ")"}
+                  <span
+                    className={classes.counter}
+                    style={{ color: "#43DDC1" }}
+                  >
+                    {" (" + Object.values(reviews).length + ")"}
                   </span>
                 </span>
               ) : (
                 "No Reviews To Display"
               )}
             </Typography>
-            {reviews.map(review => (
-              <ListItem
-                button
-                onClick={() => setSelectedReview(review)}
+            {Object.values(reviews).map(review => (
+              <Link
+                className={classes.link}
+                to={"/reviews/" + review._id}
                 key={review._id}
               >
-                <ListItemText
-                  className={isSelected(review._id)}
-                  primary={review.title}
-                  secondary={getLocalDate(review.createdAt)}
-                />
-              </ListItem>
+                <ListItem button onClick={() => setSelectedThread(review)}>
+                  <ListItemText
+                    className={isSelected(review._id)}
+                    primary={review.title}
+                    secondary={getLocalDate(review.createdAt)}
+                  />
+                </ListItem>
+              </Link>
             ))}
           </List>
           <Divider />
           <List>
-            <Link className={classes.uploadLink} to="/code-upload">
+            <Link className={classes.link} to="/code-upload">
               <ListItem button>
                 <ListItemText primary={"Upload Code"} />
               </ListItem>
@@ -178,7 +189,7 @@ const ReviewPage = () => {
       <Grid container className={classes.container}>
         <Grid item xs={12} className={classes.gridItem}>
           <ThreadDisplay
-            threadData={selectedReview}
+            threadData={selectedThread}
             user={user}
             refreshThread={handleThreadRefresh}
           />

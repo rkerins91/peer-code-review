@@ -3,7 +3,7 @@ import { UserContext } from "context/UserContext";
 import ExperienceContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import { availableLanguages } from "utils";
-import { Grid, Button, Typography, makeStyles, Paper } from "@material-ui/core";
+import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
 import { Redirect } from "react-router-dom";

@@ -10,7 +10,6 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { UserContext } from "context/UserContext";
-import { NavBar } from "components";
 import { TextEditor } from "components/index";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";

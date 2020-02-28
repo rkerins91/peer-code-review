@@ -64,7 +64,7 @@ const NavBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   // user context
-  const { user, isLoading, logout } = useContext(UserContext);
+  const { user, logout } = useContext(UserContext);
 
   const handleMenu = e => {
     setAnchorEl(e.currentTarget);

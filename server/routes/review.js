@@ -53,7 +53,7 @@ router.post("/thread/:id/post", async (req, res) => {
     await createPost(req.params.id, req.body);
     return res.status(201).json({
       success: true,
-      threadId: thread._id
+      threadId: req.params.id
     });
   } catch (err) {
     console.log(err);
