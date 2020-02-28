@@ -25,7 +25,7 @@ const useStyles = makeStyles({
   }
 });
 
-const ReviewPage = () => {
+const Dashboard = () => {
   const classes = useStyles();
   const [reviews, setReviews] = useState({});
   const [requests, setRequests] = useState({});
@@ -161,4 +161,4 @@ const ReviewPage = () => {
   );
 };
 
-export default ReviewPage;
+export default Dashboard;
