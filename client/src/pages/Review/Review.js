@@ -1,15 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Redirect, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  Typography,
-  Grid
-} from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { ThreadDisplay } from "components";
 import { UserContext } from "context/UserContext";
 import SideBar from "./SideBar";

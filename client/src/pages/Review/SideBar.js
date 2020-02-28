@@ -156,6 +156,7 @@ const SideBar = ({
               })}
             </List>
           </Collapse>
+          <Divider />
           <ListItem button onClick={openReviews}>
             <ListItemText>
               <Typography className={classes.header}>
@@ -189,6 +190,7 @@ const SideBar = ({
               })}
             </List>
           </Collapse>
+          <Divider />
           <ListItem button onClick={openAssigned}>
             <ListItemText>
               <Typography className={classes.header}>
