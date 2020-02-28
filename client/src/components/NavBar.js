@@ -11,9 +11,9 @@ import {
   Typography,
   makeStyles
 } from "@material-ui/core";
-import NotificationsNoneRoundedIcon from "@material-ui/icons/NotificationsNoneRounded";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { Logo } from "./Logo";
+import Notifications from "components/Notifications";
 
 const useStyles = makeStyles({
   bar: {
@@ -67,6 +67,7 @@ const NavBar = () => {
   const { user, logout } = useContext(UserContext);
 
   const handleMenu = e => {
+    console.log(e.currentTarget);
     setAnchorEl(e.currentTarget);
   };
 
@@ -93,10 +94,7 @@ const NavBar = () => {
             <Button className={classes.linkButton}>Balance</Button>
           </Link>
           <IconButton className={classes.iconButton}>
-            <NotificationsNoneRoundedIcon
-              className={classes.notificationIcon}
-              fontSize="large"
-            />
+            <Notifications />
           </IconButton>
           <Button className={classes.codeButton}>
             <Link className={classes.codeLink} to="/code-upload">
