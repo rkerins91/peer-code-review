@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
-import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { UserContext } from "./context/UserContext";
 import { authJWT, removeToken } from "./functions/jwt";
 import { SnackbarProvider } from "notistack";
@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Loading from "./components/Loading";
 
 import "./App.css";
+import Experience from "./pages/Experience";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -45,9 +46,6 @@ function App() {
   // placeholder loading component
   if (userLoading) {
     return <Loading />;
-  } else if (user && !user.experience) {
-    // if the user has no experience set, redirect
-    return <Redirect to="/experience" />;
   } else
     return (
       <UserContext.Provider value={value}>
@@ -57,6 +55,7 @@ function App() {
               <Switch>
                 <Route path="/signup" component={Signup} signupUser={setUser} />
                 <Route path="/login" component={Login} />
+                <Route path="/experience" component={Experience} />
                 <Route path="/" component={Home} />
               </Switch>
             </BrowserRouter>

@@ -10,6 +10,9 @@ const {
 } = require("../controllers/user");
 const matchingQueue = require("../services/matchingQueue");
 const { User, Thread } = require("../database");
+const stripe = require("stripe")(config.stripe.stripeSecret);
+const { setExperience, updateCredits } = require("../controllers/user");
+const { User } = require("../database");
 
 router.post(
   "/signup",
@@ -164,6 +167,19 @@ router.put("/user/:id/experience", async (req, res) => {
   }
 });
 
+router.post("/user/:id/purchase-credit", async (req, res) => {
+  const { credits } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: credits * 500,
+      currency: "usd"
+    });
+    res.status(200).send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.put("/user/:id/add-credit", async (req, res) => {
   try {
     const { credits } = req.body;
@@ -208,6 +224,14 @@ router.patch("/user/:id/decline-request/:requestId", async (req, res) => {
       error: error.message
     });
   }
+});
+
+//Route used for testing
+router.get("/users/all", async (req, res) => {
+  const users = await User.find({ assignedThreads: { $exists: true } });
+  res.status(200).json({
+    users
+  });
 });
 
 module.exports = router;

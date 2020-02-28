@@ -38,26 +38,25 @@ module.exports = {
       const post = await newPost.save();
       var thread = await Thread.findById(threadId);
       thread.posts.push(post);
-      const resultThread = await thread.save();
-      return resultThread;
+
+      //Check if thread needs to be accepted
+      if (thread.status === 1 && author !== thread.creator) {
+        thread = this.acceptRequest(thread, author);
+      }
+      await thread.save();
     } else throw new Error("Missing required request data");
   },
 
-  acceptRequest: async (threadId, userId) => {
-    var thread = await Thread.findById(threadId);
-    if (thread.status === 1 && thread.creator !== userId) {
-      thread.reviewer = userId;
-      thread.status = 2;
-      const resultThread = await thread.save();
-      return resultThread;
-    }
-    return null;
+  acceptRequest: async (thread, userId) => {
+    thread.reviewer = userId;
+    thread.status = 2;
+    return thread;
   },
 
   getRequestThreads: async (userId, status) => {
     var threads;
     switch (status) {
-      case config.server.threadStatus[0]:
+      case "open":
         threads = await threadQueries.getOpenUserRequests(userId);
         break;
       case "all":
@@ -67,6 +66,26 @@ module.exports = {
         throw new Error("invalidStatusError");
     }
     return threads;
+  },
+
+  getReviewThreads: async (userId, status) => {
+    var threads;
+    switch (status) {
+      case "open":
+        threads = await threadQueries.getOpenUserReviews(userId);
+        break;
+      case "all":
+        threads = await threadQueries.getAllUserReviews(userId);
+        break;
+      default:
+        throw new Error("invalidStatusError");
+    }
+    return threads;
+  },
+
+  getAssignedThreads: async userId => {
+    const user = await threadQueries.getAssignedThreads(userId);
+    return user.assignedThreads;
   },
 
   addToNoAssign: async (threadId, userId) => {
