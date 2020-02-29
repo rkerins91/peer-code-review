@@ -37,17 +37,25 @@ const useStyles = makeStyles({
     padding: "0 3em"
   },
   threadTitle: {
-    fontWeight: "500"
+    fontWeight: "500",
+    display: "inline-flex"
   },
   threadDate: {
     fontWeight: "500",
-    color: "grey"
+    color: "grey",
+    display: "block"
   },
   editButton: {
     backgroundColor: "#43DDC1",
     textTransform: "none",
-    margin: "1em auto",
+    margin: "1em 1em",
     justifySelf: "center"
+  },
+  declineButton: {
+    backgroundColor: "#43DDC1",
+    textTransform: "none",
+    margin: "1em 1em",
+    float: "right"
   }
 });
 
@@ -226,6 +234,20 @@ const ThreadDisplay = ({
             >
               {threadData.title}
             </Typography>
+            {displayDecline ? (
+              <Tooltip title="Decline to review this request?">
+                <Button
+                  className={classes.declineButton}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleDecline}
+                >
+                  Decline
+                </Button>
+              </Tooltip>
+            ) : (
+              <span />
+            )}
             <Typography
               className={classes.threadDate}
               variant="subtitle1"
@@ -257,20 +279,6 @@ const ThreadDisplay = ({
             >
               {replyButtonText}
             </Button>
-            {displayDecline ? (
-              <Tooltip title="Decline to review this request?">
-                <Button
-                  className={classes.editButton}
-                  variant="contained"
-                  color="primary"
-                  onClick={handleDecline}
-                >
-                  Decline
-                </Button>
-              </Tooltip>
-            ) : (
-              <span />
-            )}
           </Grid>
           <Grid item className={classes.editorWrapper} xs={12}>
             <TextEditor

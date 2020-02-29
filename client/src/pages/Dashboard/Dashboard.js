@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
-import { ThreadDisplay } from "components";
+import ThreadDisplay from "./ThreadDisplay";
 import { UserContext } from "context/UserContext";
 import SideBar from "./SideBar";
 import axios from "axios";
