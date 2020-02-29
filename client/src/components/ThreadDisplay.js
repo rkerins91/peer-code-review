@@ -56,8 +56,7 @@ const ThreadDisplay = ({
   user,
   refreshThread,
   assignmentActions,
-  typeParam,
-  defaultSelection
+  typeParam
 }) => {
   const classes = useStyles();
 
@@ -102,11 +101,6 @@ const ThreadDisplay = ({
   };
 
   var displayDecline = false;
-  if (defaultSelection) {
-    if (defaultSelection.type === "assigned") {
-      displayDecline = true;
-    }
-  }
   if (typeParam) {
     if (typeParam === "assigned") {
       displayDecline = true;
@@ -168,8 +162,8 @@ const ThreadDisplay = ({
           setPostSuccessAlert(true);
           if (typeParam) {
             refreshThread(threadData._id, typeParam);
-          } else refreshThread(threadData._id, defaultSelection.type);
-        } else throw new Error("Request unsuccessful");
+          } else throw new Error("Request unsuccessful");
+        }
       } catch (err) {
         alerts.add("Post Edit failed");
         setPageAlerts(alerts);
@@ -193,8 +187,10 @@ const ThreadDisplay = ({
           setSubmitState(false);
           setReadOnly(true);
           if (typeParam) {
-            refreshThread(threadData._id, typeParam);
-          } else refreshThread(threadData._id, defaultSelection.type);
+            if (typeParam === "assigned") {
+              assignmentActions(threadData._id, false);
+            } else refreshThread(threadData._id, typeParam);
+          }
         } else throw new Error("Request unsuccessful");
       } catch (err) {
         alerts.add("Reply post failed");
