@@ -32,8 +32,7 @@ const Dashboard = () => {
   const [assigned, setAssigned] = useState({});
   const [selectedThread, setSelectedThread] = useState(null);
   var { threadParam, typeParam } = useParams();
-  var routeHistory = useHistory();
-  const [defaultSelection, setDefaultSelection] = useState(null);
+  const routeHistory = useHistory();
 
   // user context
   const { user } = useContext(UserContext);
@@ -106,6 +105,10 @@ const Dashboard = () => {
     setAssigned(assigned);
     if (!decline) {
       handleThreadRefresh(threadId, "reviews"); // Refresh the thread and treat as a review instead of assigned.
+      routeHistory.push("/dashboard/reviews/" + threadId);
+    } else {
+      typeParam = null;
+      selectDefault();
     }
   };
 
@@ -115,7 +118,7 @@ const Dashboard = () => {
     }
   }, []);
 
-  useEffect(() => {
+  const selectDefault = () => {
     switch (typeParam) {
       case "requests":
         setSelectedThread(requests[threadParam]);
@@ -131,17 +134,21 @@ const Dashboard = () => {
         if (Object.values(requests).length > 0) {
           threadParam = Object.values(requests)[0]._id;
           setSelectedThread(requests[threadParam]);
-          setDefaultSelection({ type: "requests", threadId: threadParam });
+          routeHistory.replace("/dashboard/requests/" + threadParam);
         } else if (Object.values(reviews).length > 0) {
           threadParam = Object.values(reviews)[0]._id;
           setSelectedThread(reviews[threadParam]);
-          setDefaultSelection({ type: "reviews", threadId: threadParam });
+          routeHistory.replace("/dashboard/reviews/" + threadParam);
         } else if (Object.values(assigned).length > 0) {
           threadParam = Object.values(assigned)[0]._id;
           setSelectedThread(assigned[threadParam]);
-          setDefaultSelection({ type: "assigned", threadId: threadParam });
+          routeHistory.replace("/dashboard/assigned/" + threadParam);
         }
     }
+  };
+
+  useEffect(() => {
+    selectDefault();
   }, [reviews, requests, assigned]);
 
   return (
@@ -153,7 +160,6 @@ const Dashboard = () => {
         threadParam={threadParam}
         typeParam={typeParam}
         setSelectedThread={setSelectedThread}
-        defaultSelection={defaultSelection}
       ></SideBar>
       <Grid container className={classes.container}>
         <Grid item xs={12} className={classes.gridItem}>
@@ -163,7 +169,6 @@ const Dashboard = () => {
             refreshThread={handleThreadRefresh}
             assignmentActions={handleAssignmentActions}
             typeParam={typeParam}
-            defaultSelection={defaultSelection}
           />
         </Grid>
       </Grid>

@@ -54,8 +54,7 @@ const SideBar = ({
   assigned,
   threadParam,
   typeParam,
-  setSelectedThread,
-  defaultSelection
+  setSelectedThread
 }) => {
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(true);
@@ -84,11 +83,7 @@ const SideBar = ({
       if (id === threadParam) {
         return classes.selected;
       } else return classes.notSelected;
-    } else if (defaultSelection) {
-      if (id === defaultSelection.threadId) {
-        return classes.selected;
-      } else return classes.notSelected;
-    }
+    } else return classes.notSelected;
   };
 
   const getLocalDate = mongoDate => {
