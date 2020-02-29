@@ -31,41 +31,41 @@ const Notifications = () => {
 
   return (
     <div>
-      {seen ? (
-        <NotificationsNoneRoundedIcon
-          fontSize="large"
-          className={classes.notificationIcon}
-        />
-      ) : (
-        <div>
-          <NotificationsActiveRoundedIcon
+      <div onClick={handleMenu}>
+        {seen ? (
+          <NotificationsNoneRoundedIcon
             fontSize="large"
             className={classes.notificationIcon}
-            onClick={handleMenu}
           />
-          <Menu
-            id="notification-bell"
-            anchorEl={anchorEl}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center"
-            }}
-            keepMounted
-            transformOrigin={{
-              vertical: -40,
-              horizontal: "right"
-            }}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            {dummyNotifications.map(ele => {
-              console.log(ele);
-              return <MenuItem>{ele}</MenuItem>;
-            })}
-          </Menu>
-        </div>
-      )}
-      ;
+        ) : (
+          <div>
+            <NotificationsActiveRoundedIcon
+              fontSize="large"
+              className={classes.notificationIcon}
+            />
+          </div>
+        )}
+      </div>
+      <Menu
+        id="notification-bell"
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center"
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: -40,
+          horizontal: "right"
+        }}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {dummyNotifications.map(ele => {
+          console.log(ele);
+          return <MenuItem>{ele}</MenuItem>;
+        })}
+      </Menu>
     </div>
   );
 };
