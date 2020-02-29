@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import { ThreadDisplay } from "components";
@@ -32,6 +32,7 @@ const Dashboard = () => {
   const [assigned, setAssigned] = useState({});
   const [selectedThread, setSelectedThread] = useState(null);
   var { threadParam, typeParam } = useParams();
+  var routeHistory = useHistory();
   const [defaultSelection, setDefaultSelection] = useState(null);
 
   // user context
@@ -100,6 +101,14 @@ const Dashboard = () => {
     }
   };
 
+  const handleAssignmentActions = async (threadId, decline) => {
+    delete assigned[threadId];
+    setAssigned(assigned);
+    if (!decline) {
+      handleThreadRefresh(threadId, "reviews"); // Refresh the thread and treat as a review instead of assigned.
+    }
+  };
+
   useEffect(() => {
     if (user) {
       getReviews();
@@ -152,6 +161,7 @@ const Dashboard = () => {
             threadData={selectedThread}
             user={user}
             refreshThread={handleThreadRefresh}
+            assignmentActions={handleAssignmentActions}
             typeParam={typeParam}
             defaultSelection={defaultSelection}
           />
