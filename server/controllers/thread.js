@@ -1,4 +1,5 @@
 const { Thread, Post, threadQueries } = require("../database");
+const { unassignThread } = require("./user");
 const config = require("../config/config");
 
 module.exports = {
@@ -41,16 +42,12 @@ module.exports = {
 
       //Check if thread needs to be accepted
       if (thread.status === 1 && author !== thread.creator) {
-        thread = this.acceptRequest(thread, author);
+        thread.reviewer = author;
+        thread.status = 2;
+        unassignThread(author, thread._id);
       }
-      await thread.save();
+      return await thread.save();
     } else throw new Error("Missing required request data");
-  },
-
-  acceptRequest: async (thread, userId) => {
-    thread.reviewer = userId;
-    thread.status = 2;
-    return thread;
   },
 
   getRequestThreads: async (userId, status) => {
