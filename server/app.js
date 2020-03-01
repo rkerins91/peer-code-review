@@ -33,7 +33,7 @@ app.use("/", indexRouter);
 app.use("/ping", pingRouter);
 app.use(userRouter);
 app.use(reviewRouter);
-app.use("/notification/", notificationRouter);
+app.use("/notifications", notificationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

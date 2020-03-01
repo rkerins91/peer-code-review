@@ -1,12 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const { Notification } = require("../database");
+const { Notification, User } = require("../database");
+const {
+  createNotification,
+  getUsersNotifications
+} = require("../controllers/notifications");
 
 router.get("/:id/test", async (req, res) => {
   try {
-    const { id } = req.params;
-    const notification = await Notification.findOne({ _id: id });
-    res.status(200).send(notification);
+    const notificationData = await getUsersNotifications(req.params.id);
+    // console.log(notifications);
+    res.status(200).send(notificationData);
   } catch (error) {
     res.status(500).send("No good");
   }
@@ -14,14 +18,8 @@ router.get("/:id/test", async (req, res) => {
 
 router.post("/test", async (req, res) => {
   try {
-    const { recipient, event, origin } = req.body;
-
-    const newNotification = await new Notification({
-      recipient,
-      event: Number(event),
-      origin
-    });
-    const notification = await newNotification.save();
+    const notification = await createNotification(req.body);
+    console.log(notification);
     res.status(200).send(notification);
   } catch (error) {
     res.status(500).send("No good");

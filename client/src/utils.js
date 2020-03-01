@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export const availableLanguages = [
   "C",
   "C++",
@@ -17,3 +19,8 @@ export const languageGrammar = {
 };
 
 export const levels = ["Beginner", "Intermediate", "Advanced", "Expert"];
+
+export const getNotifications = async id => {
+  const { data } = await axios.get(`/notifications/${id}/test`);
+  return data;
+};

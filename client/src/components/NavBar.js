@@ -67,7 +67,6 @@ const NavBar = () => {
   const { user, logout } = useContext(UserContext);
 
   const handleMenu = e => {
-    console.log(e.currentTarget);
     setAnchorEl(e.currentTarget);
   };
 

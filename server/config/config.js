@@ -12,7 +12,7 @@ const config = {
   server: {
     availableLanguages: ["C", "C++", "Java", "JavaScript", "Python", "Ruby"],
     threadStatus: ["new", "assigned", "ongoing", "complete", "archived"],
-    notificationEvents: ["new review", "new assignment", "new post"],
+    notificationEvents: ["new-review", "new-assignment", "new-post"],
     assignmentTimeout: 30000 // 30 seconds for testing
   },
   stripe: {
