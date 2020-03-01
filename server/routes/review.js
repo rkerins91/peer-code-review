@@ -9,6 +9,7 @@ const {
   getReviewThreads,
   getAssignedThreads
 } = require("../controllers/thread");
+const { createNotification } = require("../controllers/notifications");
 const matchingQueue = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
@@ -52,7 +53,17 @@ router.post("/thread/:id/post", async (req, res) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
       throw new Error("invalidThreadIdError");
     }
-    await createPost(req.params.id, req.body);
+    const { recipient, event } = await createPost(req.params.id, req.body);
+
+    if (req.body.author !== recipient.toString()) {
+      const notification = await createNotification({
+        origin: req.body.authorName,
+        event,
+        thread: req.params.id,
+        recipient
+      });
+    }
+
     return res.status(201).json({
       success: true,
       threadId: req.params.id
