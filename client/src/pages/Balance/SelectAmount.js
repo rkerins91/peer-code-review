@@ -1,8 +1,6 @@
 import React from "react";
-import CreditsContainer from "./CreditsContainer";
 import RemoveCircleOutlineIcon from "@material-ui/icons/RemoveCircleOutline";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
-import NavBar from "components/NavBar";
 import { Grid, Typography, Button, makeStyles, Paper } from "@material-ui/core";
 
 const useStyles = makeStyles({
@@ -48,57 +46,47 @@ const SelectAmount = ({
 }) => {
   const classes = useStyles();
   return (
-    <>
-      <NavBar />
-      <CreditsContainer>
-        <Grid container direction="column" justify="center" spacing={2}>
-          <Grid item xs={12}>
-            <Typography
-              className={classes.text}
-            >{`Balance: ${balance}`}</Typography>
+    <Grid container direction="column" justify="center" spacing={2}>
+      <Grid item xs={12}>
+        <Typography
+          className={classes.text}
+        >{`Balance: ${balance}`}</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container direction="row" justify="center" alignItems="center">
+          <Grid item xs={1}>
+            <RemoveCircleOutlineIcon
+              className={
+                credits !== 1 ? classes.subtract : classes.subtractDisabled
+              }
+              onClick={decrement}
+              disabled={credits === 1}
+            />
           </Grid>
-          <Grid item xs={12}>
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignItems="center"
-            >
-              <Grid item xs={1}>
-                <RemoveCircleOutlineIcon
-                  className={
-                    credits !== 1 ? classes.subtract : classes.subtractDisabled
-                  }
-                  onClick={decrement}
-                  disabled={credits === 1}
-                />
-              </Grid>
-              <Grid item xs={1}>
-                <Paper className={classes.creditCount} elevation={2}>
-                  <Typography className={classes.text}>{credits}</Typography>
-                </Paper>
-              </Grid>
-              <Grid item xs={1}>
-                <AddCircleOutlineOutlinedIcon
-                  className={classes.add}
-                  onClick={increment}
-                />
-              </Grid>
-            </Grid>
+          <Grid item xs={1}>
+            <Paper className={classes.creditCount} elevation={2}>
+              <Typography className={classes.text}>{credits}</Typography>
+            </Paper>
           </Grid>
-          <Grid item xs={12}>
-            <Button
-              className={classes.button}
-              onClick={setCheckout}
-              color="primary"
-              variant="contained"
-            >
-              Get credits
-            </Button>
+          <Grid item xs={1}>
+            <AddCircleOutlineOutlinedIcon
+              className={classes.add}
+              onClick={increment}
+            />
           </Grid>
         </Grid>
-      </CreditsContainer>
-    </>
+      </Grid>
+      <Grid item xs={12}>
+        <Button
+          className={classes.button}
+          onClick={setCheckout}
+          color="primary"
+          variant="contained"
+        >
+          Checkout
+        </Button>
+      </Grid>
+    </Grid>
   );
 };
 

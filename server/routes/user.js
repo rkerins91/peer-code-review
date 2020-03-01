@@ -3,6 +3,7 @@ const { check, body, validationResult } = require("express-validator");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
+const stripe = require("stripe")(config.stripe.stripeSecret);
 const { setExperience, updateCredits } = require("../controllers/user");
 const { User } = require("../database");
 
@@ -159,6 +160,19 @@ router.put("/user/:id/experience", async (req, res) => {
   }
 });
 
+router.post("/user/:id/purchase-credit", async (req, res) => {
+  const { credits } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: credits * 500,
+      currency: "usd"
+    });
+    res.status(200).send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 router.put("/user/:id/add-credit", async (req, res) => {
   try {
     const { credits } = req.body;
@@ -175,6 +189,14 @@ router.put("/user/:id/add-credit", async (req, res) => {
   } catch (err) {
     return res.status(400);
   }
+});
+
+//Route used for testing
+router.get("/users/all", async (req, res) => {
+  const users = await User.find({ assignedThreads: { $exists: true } });
+  res.status(200).json({
+    users
+  });
 });
 
 module.exports = router;

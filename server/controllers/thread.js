@@ -34,15 +34,30 @@ module.exports = {
       });
       const post = await newPost.save();
       var thread = await Thread.findById(threadId);
+      // check to see if author does not have a post in thread already, so we can differentiate between
+      // first review and subsequent comments for notifications
+      const isFirstReview = thread.posts.every(currPost => {
+        console.log(typeof currPost.author.toString(), "\n", typeof author);
+        return currPost.author.toString() !== author;
+      });
       thread.posts.push(post);
-      await newThread.save();
-    } else throw new Error("Missing required request data");
+      await thread.save();
+      // return recipient and event type based on which isFirst review
+      // and commenter
+      if (thread.noAssign[1].toString() === author && isFirstReview) {
+        return { recipient: thread.creator._id, event: 1 };
+      } else {
+        return { recipient: thread.creator._id, event: 3 };
+      }
+    } else {
+      throw new Error("Missing required request data");
+    }
   },
 
   getRequestThreads: async (userId, status) => {
     var threads;
     switch (status) {
-      case config.server.threadStatus[0]:
+      case "open":
         threads = await threadQueries.getOpenUserRequests(userId);
         break;
       case "all":
@@ -52,6 +67,26 @@ module.exports = {
         throw new Error("invalidStatusError");
     }
     return threads;
+  },
+
+  getReviewThreads: async (userId, status) => {
+    var threads;
+    switch (status) {
+      case "open":
+        threads = await threadQueries.getOpenUserReviews(userId);
+        break;
+      case "all":
+        threads = await threadQueries.getAllUserReviews(userId);
+        break;
+      default:
+        throw new Error("invalidStatusError");
+    }
+    return threads;
+  },
+
+  getAssignedThreads: async userId => {
+    const user = await threadQueries.getAssignedThreads(userId);
+    return user.assignedThreads;
   },
 
   addToNoAssign: async (threadId, userId) => {
