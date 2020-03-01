@@ -37,7 +37,6 @@ module.exports = {
       // check to see if author does not have a post in thread already, so we can differentiate between
       // first review and subsequent comments for notifications
       const isFirstReview = thread.posts.every(currPost => {
-        console.log(typeof currPost.author.toString(), "\n", typeof author);
         return currPost.author.toString() !== author;
       });
       thread.posts.push(post);
