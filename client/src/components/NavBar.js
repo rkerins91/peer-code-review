@@ -86,7 +86,7 @@ const NavBar = () => {
           <Logo />
         </Link>
         <Toolbar className={classes.right}>
-          <Link className={classes.link} to="/reviews">
+          <Link className={classes.link} to="/dashboard">
             <Button className={classes.linkButton}> Reviews </Button>
           </Link>
           <Link to="/balance" className={classes.link}>

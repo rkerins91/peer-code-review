@@ -26,11 +26,15 @@ const Notifications = () => {
 
   useEffect(() => {
     const getNotifications = async () => {
-      const { data } = await axios.get(`/notifications/${user._id}/test`);
+      const { data } = await axios.get(`/notifications/${user._id}`);
       setNotifications(data);
     };
     getNotifications();
   }, []);
+
+  useEffect(() => {
+    setSeen(notifications.every(ele => ele.seen === true));
+  });
 
   const handleMenu = e => {
     setAnchorEl(e.currentTarget);
@@ -38,9 +42,15 @@ const Notifications = () => {
   };
 
   const handleClose = () => {
+    const setUnread = notifications.map(ele => {
+      ele.seen = true;
+      return ele;
+    });
+    setNotifications(setUnread);
     setAnchorEl(null);
+    axios.put(`/notifications/update-read`, { notifications });
   };
-  console.log("*****", notifications);
+
   return (
     <div>
       <div onClick={handleMenu}>
@@ -74,7 +84,7 @@ const Notifications = () => {
       >
         {notifications.map(ele => {
           return (
-            <Link to={ele.link} className={classes.link}>
+            <Link to={ele.link} className={classes.link} key={ele._id}>
               <MenuItem>{ele.message}</MenuItem>
             </Link>
           );

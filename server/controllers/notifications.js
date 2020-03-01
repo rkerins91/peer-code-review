@@ -1,7 +1,7 @@
 const { User, Notification } = require("../database");
 
-const createNotification = async reqBody => {
-  const { recipient, event, origin, thread } = reqBody;
+const createNotification = async data => {
+  const { recipient, event, origin, thread } = data;
   const newNotification = await new Notification({
     recipient,
     event: Number(event),
@@ -10,6 +10,14 @@ const createNotification = async reqBody => {
   });
   const notification = await newNotification.save();
   return notification;
+};
+
+const updateNotifications = async notifications => {
+  notifications.forEach(async notification => {
+    const current = await Notification.findById(notification._id);
+    current.seen = true;
+    current.save();
+  });
 };
 
 const getUsersNotifications = async recipient => {
@@ -27,8 +35,21 @@ const generateNotificationData = notification => {
     message: generateNotificationMessage(notification),
     // May want to use a function to generate link in future, if there are notifications
     // that will not be linking to a specific review
-    link: `/reviews/${notification.thread}`
+    link: generateNotificationLink(notification)
   };
+};
+
+const generateNotificationLink = notification => {
+  switch (notification.event) {
+    case 1:
+      return `dashboard/requests/${notification.thread}`;
+    case 2:
+      return `dashboard/assigned/${notification.thread}`;
+    case 3:
+      return `dashboard/requests/${notification.thread}`;
+    default:
+      return "";
+  }
 };
 
 const generateNotificationMessage = notification => {
@@ -44,4 +65,8 @@ const generateNotificationMessage = notification => {
   }
 };
 
-module.exports = { createNotification, getUsersNotifications };
+module.exports = {
+  createNotification,
+  getUsersNotifications,
+  updateNotifications
+};

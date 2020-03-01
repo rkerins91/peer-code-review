@@ -191,4 +191,12 @@ router.put("/user/:id/add-credit", async (req, res) => {
   }
 });
 
+//Route used for testing
+router.get("/users/all", async (req, res) => {
+  const users = await User.find({ assignedThreads: { $exists: true } });
+  res.status(200).json({
+    users
+  });
+});
+
 module.exports = router;

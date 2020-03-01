@@ -13,7 +13,7 @@ const config = {
     availableLanguages: ["C", "C++", "Java", "JavaScript", "Python", "Ruby"],
     threadStatus: ["new", "assigned", "ongoing", "complete", "archived"],
     notificationEvents: ["new-review", "new-assignment", "new-post"],
-    assignmentTimeout: 30000 // 30 seconds for testing
+    assignmentTimeout: 86400000 // 30 seconds for testing
   },
   stripe: {
     stripeSecret: process.env.STRIPE_SECRET_KEY

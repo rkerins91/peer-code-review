@@ -3,26 +3,35 @@ const router = express.Router();
 const { Notification, User } = require("../database");
 const {
   createNotification,
-  getUsersNotifications
+  getUsersNotifications,
+  updateNotifications
 } = require("../controllers/notifications");
 
-router.get("/:id/test", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const notificationData = await getUsersNotifications(req.params.id);
-    // console.log(notifications);
     res.status(200).send(notificationData);
   } catch (error) {
-    res.status(500).send("No good");
+    res.status(500).send({ error: err });
   }
 });
 
-router.post("/test", async (req, res) => {
+router.put("/update-read", async (req, res) => {
+  try {
+    await updateNotifications(req.body.notifications);
+    res.status(200).send({ message: "Successfully updated notifications" });
+  } catch (err) {
+    res.status(500).send({ error: err });
+  }
+});
+
+router.post("/", async (req, res) => {
   try {
     const notification = await createNotification(req.body);
     console.log(notification);
     res.status(200).send(notification);
   } catch (error) {
-    res.status(500).send("No good");
+    res.status(500).send({ error: err });
   }
 });
 

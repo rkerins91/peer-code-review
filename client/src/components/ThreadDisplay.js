@@ -11,12 +11,11 @@ import {
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
-import { languageGrammar } from "utils";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
   backdrop: {
-    zIndex: 1000,
+    zIndex: 900,
     color: "#fff",
     left: "20vw" // same width as the sidebar
   },
@@ -51,7 +50,13 @@ const useStyles = makeStyles({
   }
 });
 
-const ThreadDisplay = ({ threadData, user, refreshThread }) => {
+const ThreadDisplay = ({
+  threadData,
+  user,
+  refreshThread,
+  typeParam,
+  defaultSelection
+}) => {
   const classes = useStyles();
 
   const [replyButtonText, setReplyButtonText] = useState("Reply");
@@ -125,7 +130,9 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
           alerts.add("Post edited successfully!");
           setPageAlerts(alerts);
           setPostSuccessAlert(true);
-          refreshThread(threadData._id);
+          if (typeParam) {
+            refreshThread(threadData._id, typeParam);
+          } else refreshThread(threadData._id, defaultSelection.type);
         }
       } catch (err) {
         console.log(err);
@@ -145,8 +152,10 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
           setPageAlerts(alerts);
           setPostSuccessAlert(true);
           setSubmitState(false);
-          refreshThread(response.data.threadId);
           setReadOnly(true);
+          if (typeParam) {
+            refreshThread(threadData._id, typeParam);
+          } else refreshThread(threadData._id, defaultSelection.type);
         }
       } catch (err) {
         console.log(err);
