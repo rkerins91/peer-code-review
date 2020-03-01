@@ -74,12 +74,11 @@ matchingQueue.on("completed", async (job, result) => {
     const threadId = job.data.thread._id;
     const assigneeId = result.assignee._id;
 
-    const assignedUser = await assignThread(
+    await assignThread(
       //make the assignment
       assigneeId,
       threadId
     );
-    console.log(`assignment succeded to user ${assignedUser.email}`);
     await updateStatus(threadId, "assigned");
     const updatedThread = await addToNoAssign(threadId, assigneeId);
 
