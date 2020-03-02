@@ -30,43 +30,25 @@ const getUsersNotifications = async recipient => {
 };
 
 const generateNotificationData = notification => {
-  return {
-    ...notification._doc,
-    message: generateNotificationMessage(notification),
-    // May want to use a function to generate link in future, if there are notifications
-    // that will not be linking to a specific review
-    link: generateNotificationLink(notification)
-  };
-};
-
-const generateNotificationLink = notification => {
+  var result = {};
   switch (notification.event) {
     case 1:
-      return `dashboard/requests/${notification.thread}`;
+      result.link = `dashboard/requests/${notification.thread}`;
+      result.message = `Your code has been reviewed by ${notification.origin}`;
     case 2:
-      return `dashboard/assigned/${notification.thread}`;
+      result.link = `dashboard/assigned/${notification.thread}`;
+      result.message = `You have been assigned code to review for ${notification.origin}`;
     case 3:
-      return `dashboard/requests/${notification.thread}`;
+      result.link = `dashboard/requests/${notification.thread}`;
+      result.message = `A thread you are in has a new post by ${notification.origin}`;
     case 4:
-      return `dashboard/assigned/${notification.thread}`;
+      result.link = `dashboard/reviews/${notification.thread}`;
+      result.message = `A thread you are in has a new post by ${notification.origin}`;
     default:
-      return "";
+      result.link = "";
+      result.message = null;
   }
-};
-
-const generateNotificationMessage = notification => {
-  switch (notification.event) {
-    case 1:
-      return `Your code has been reviewed by ${notification.origin}`;
-    case 2:
-      return `You have been assigned code to review for ${notification.origin}`;
-    case 3:
-      return `A thread you are in has a new post by ${notification.origin}`;
-    case 4:
-      return `A thread you are in has a new post by ${notification.origin}`;
-    default:
-      return null;
-  }
+  return result;
 };
 
 module.exports = {

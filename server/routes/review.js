@@ -61,13 +61,15 @@ router.post("/thread/:id/post", isAuth, async (req, res) => {
     var result = await createPost(threadId, req.body);
     const { thread, notification } = result;
 
-    if (req.body.author !== notification.recipient) {
-      const newNotification = await createNotification({
-        origin: req.body.authorName,
-        event,
-        thread: req.params.id,
-        recipient
-      });
+    if (notification) {
+      if (req.body.author !== notification.recipient) {
+        const newNotification = await createNotification({
+          origin: req.body.authorName,
+          event: notification.event,
+          thread: req.params.id,
+          recipient: notification.recipient
+        });
+      }
     }
 
     if (thread) {
