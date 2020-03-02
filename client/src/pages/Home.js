@@ -5,6 +5,7 @@ import { NavBar } from "components";
 import CodeUpload from "./CodeUpload";
 import ReviewPage from "./Review";
 import Balance from "./Balance";
+import MyProfile from "./MyProfile";
 
 const Home = () => {
   // user context
@@ -25,6 +26,7 @@ const Home = () => {
           <Route path="/code-upload" component={CodeUpload} />
           <Route path="/reviews/:threadParam" children={<ReviewPage />} />
           <Route path="/reviews" component={ReviewPage} />
+          <Route exact path="/" component={MyProfile} />
         </Switch>
       </>
     );
