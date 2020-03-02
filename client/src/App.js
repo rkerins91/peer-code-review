@@ -10,7 +10,6 @@ import Login from "./pages/Login";
 import Experience from "./pages/Experience";
 import Home from "./pages/Home";
 import Loading from "./components/Loading";
-import socket from "./functions/sockets";
 import "./App.css";
 
 function App() {
@@ -38,7 +37,6 @@ function App() {
       setUserLoading(true);
       let user = await authJWT();
       setUser(user);
-      socket.emit("login", user._id);
       setUserLoading(false);
     }
     getUser();
