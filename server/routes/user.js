@@ -211,7 +211,7 @@ router.patch("/user/:id/decline-request/:requestId", async (req, res) => {
     }
     const user = await unassignThread(userId, threadId);
     const thread = await Thread.findById(threadId);
-    matchingQueue.add({ thread: thread, pass: 1 }); //begin rematching
+    matchingQueue.addJob({ thread: thread, pass: 1 }); //begin rematching
     if (user) {
       return res.status(200).json({
         success: true,
