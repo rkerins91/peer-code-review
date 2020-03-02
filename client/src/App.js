@@ -38,7 +38,7 @@ function App() {
       setUserLoading(true);
       let user = await authJWT();
       setUser(user);
-      socket.emit("login", user._id);
+      // socket.emit("login", user._id);
       setUserLoading(false);
     }
     getUser();

@@ -6,7 +6,7 @@ import ThreadDisplay from "./ThreadDisplay";
 import { UserContext } from "context/UserContext";
 import SideBar from "./SideBar";
 import axios from "axios";
-import { authHeader } from "../../functions/jwt";
+import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   link: {

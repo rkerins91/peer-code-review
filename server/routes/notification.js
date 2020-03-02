@@ -10,6 +10,7 @@ const {
 router.get("/:id", async (req, res) => {
   try {
     const notificationData = await getUsersNotifications(req.params.id);
+    console.log(notificationData);
     res.status(200).send(notificationData);
   } catch (error) {
     res.status(500).send({ error: err });

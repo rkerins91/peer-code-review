@@ -30,43 +30,32 @@ const getUsersNotifications = async recipient => {
 };
 
 const generateNotificationData = notification => {
-  return {
-    ...notification._doc,
-    message: generateNotificationMessage(notification),
-    // May want to use a function to generate link in future, if there are notifications
-    // that will not be linking to a specific review
-    link: generateNotificationLink(notification)
-  };
-};
-
-const generateNotificationLink = notification => {
+  var result = {};
+  console.log(notification);
+  console.log(typeof notification.event);
   switch (notification.event) {
     case 1:
-      return `dashboard/requests/${notification.thread}`;
+      result.link = `/dashboard/requests/${notification.thread}`;
+      result.message = `Your code has been reviewed by ${notification.origin}`;
+      break;
     case 2:
-      return `dashboard/assigned/${notification.thread}`;
+      result.link = `/dashboard/assigned/${notification.thread}`;
+      result.message = `You have been assigned code to review for ${notification.origin}`;
+      break;
     case 3:
-      return `dashboard/requests/${notification.thread}`;
+      result.link = `/dashboard/requests/${notification.thread}`;
+      result.message = `A thread you are in has a new post by ${notification.origin}`;
+      break;
     case 4:
-      return `dashboard/assigned/${notification.thread}`;
+      result.link = `/dashboard/reviews/${notification.thread}`;
+      result.message = `A thread you are in has a new post by ${notification.origin}`;
+      break;
     default:
-      return "";
+      result.link = null;
+      result.message = null;
   }
-};
-
-const generateNotificationMessage = notification => {
-  switch (notification.event) {
-    case 1:
-      return `Your code has been reviewed by ${notification.origin}`;
-    case 2:
-      return `You have been assigned code to review for ${notification.origin}`;
-    case 3:
-      return `A thread you are in has a new post by ${notification.origin}`;
-    case 4:
-      return `A thread you are in has a new post by ${notification.origin}`;
-    default:
-      return null;
-  }
+  console.log(result);
+  return result;
 };
 
 module.exports = {

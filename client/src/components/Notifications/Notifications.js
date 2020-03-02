@@ -66,7 +66,7 @@ const Notifications = () => {
     setAnchorEl(null);
     axios.put(`/notifications/update-read`, { notifications });
   };
-
+  console.log(notifications);
   return (
     <div>
       <IconButton
