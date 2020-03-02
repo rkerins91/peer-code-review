@@ -12,7 +12,7 @@ import {
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
-import { authHeader } from "../functions/jwt";
+import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },

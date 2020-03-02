@@ -10,8 +10,8 @@ import Login from "./pages/Login";
 import Experience from "./pages/Experience";
 import Home from "./pages/Home";
 import Loading from "./components/Loading";
-import "./App.css";
 import socket from "./functions/sockets";
+import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
