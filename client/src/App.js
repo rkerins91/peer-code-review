@@ -37,7 +37,6 @@ function App() {
     async function getUser() {
       setUserLoading(true);
       let user = await authJWT();
-      console.log(user);
       setUser(user);
       setUserLoading(false);
     }

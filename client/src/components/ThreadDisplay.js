@@ -123,7 +123,10 @@ const ThreadDisplay = ({
         const response = await axios({
           method: "put",
           url: `/thread/${threadData._id}/post/${postId}`,
-          headers: { "content-type": "application/json" },
+          headers: {
+            "content-type": "application/json",
+            ...authHeader.headers
+          },
           data: JSON.stringify(requestData)
         });
         if (response.data.success) {

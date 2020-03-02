@@ -4,10 +4,10 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const config = require("../config/config");
 const passport = require("passport");
-
 const stripe = require("stripe")(config.stripe.stripeSecret);
 const { setExperience, updateCredits } = require("../controllers/user");
 const { User } = require("../database");
+const isAuth = config.server.isAuth;
 
 router.post(
   "/signup",
@@ -126,107 +126,73 @@ router.post(
   }
 );
 
-router.get(
-  "/user/:id",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    const _id = req.params.id;
-    // Find if user exists
-    try {
-      var user = await User.findById(_id);
-      if (!user) {
-        return res.status(404).json({
-          errors: [
-            {
-              value: _id,
-              msg: "Cannot find the user",
-              param: "id"
-            }
-          ]
-        });
-      } else {
-        res.status(201).json({
-          user: user
-        });
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }
-);
-
-router.put(
-  "/user/:id/experience",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    const languages = { ...req.body };
-    try {
-      const user = await User.findById(req.params.id);
-      if (
-        Object.keys(languages).every(ele =>
-          config.server.availableLanguages.includes(ele)
-        )
-      ) {
-        // Set values of languages obj to numbers
-        for (let language in languages) {
-          if (languages.hasOwnProperty(language)) {
-            languages[language] = Number(languages[language]);
+router.get("/user/:id", isAuth, async (req, res) => {
+  const _id = req.params.id;
+  // Find if user exists
+  try {
+    var user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({
+        errors: [
+          {
+            value: _id,
+            msg: "Cannot find the user",
+            param: "id"
           }
-        }
-      }
-      // Set user experience to new languages obj and save
-      user.experience = languages;
-      user.markModified("experience");
-      user.save();
+        ]
+      });
+    } else {
+      res.status(201).json({
+        user: user
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.put("/user/:id/experience", isAuth, async (req, res) => {
+  const languages = { ...req.body };
+  try {
+    await setExperience(req.params.id, languages);
+    return res
+      .status(200)
+      .send({ message: "Successfully updated experience!" });
+  } catch (err) {
+    return res.status(400).send({ message: err.message });
+  }
+});
+
+router.post("/user/:id/purchase-credit", isAuth, async (req, res) => {
+  const { credits } = req.body;
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: credits * 500,
+      currency: "usd"
+    });
+    res.status(200).send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+router.put("/user/:id/add-credit", isAuth, async (req, res) => {
+  try {
+    const { credits } = req.body;
+    const success = await updateCredits(req.params.id, credits);
+    if (success) {
       return res
         .status(200)
-        .send({ message: "Successfully updated experience!" });
-    } catch (err) {
-      return res.status(400).send({ message: err.message });
+        .send({ success: true, message: "Successfully added credits!" });
+    } else {
+      return res
+        .status(403)
+        .send({ success: false, error: "Not enough credits" });
     }
+  } catch (err) {
+    return res.status(400);
   }
-);
-
-router.post(
-  "/user/:id/purchase-credit",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    const { credits } = req.body;
-    try {
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: credits * 500,
-        currency: "usd"
-      });
-      res.status(200).send({ clientSecret: paymentIntent.client_secret });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-);
-
-router.put(
-  "/user/:id/add-credit",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    try {
-      const { credits } = req.body;
-      const user = await User.findById(req.params.id);
-      if (user.credits + credits >= 0) {
-        user.credits += Number(credits);
-        user.save();
-        return res
-          .status(200)
-          .send({ success: true, message: "Successfully added credits!" });
-      } else {
-        return res
-          .status(403)
-          .send({ success: false, error: "Not enough credits" });
-      }
-    } catch (err) {
-      return res.status(400);
-    }
-  }
-);
+});
 
 //Route used for testing
 router.get("/users/all", async (req, res) => {

@@ -6,6 +6,7 @@ import { ThreadDisplay } from "components";
 import { UserContext } from "context/UserContext";
 import SideBar from "./SideBar";
 import axios from "axios";
+import { authHeader } from "../../functions/jwt";
 
 const useStyles = makeStyles({
   link: {
@@ -51,7 +52,8 @@ const Dashboard = () => {
       const res = await fetch(`/threads/open/${user._id}`, {
         method: "get",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          ...authHeader.headers
         }
       });
       const json = await res.json();
@@ -76,7 +78,7 @@ const Dashboard = () => {
       const response = await axios({
         method: "get",
         url: `/thread/${threadId}`,
-        headers: { "content-type": "application/json" }
+        headers: { "content-type": "application/json", ...authHeader.headers }
       });
       if (response.data.success) {
         switch (type) {
