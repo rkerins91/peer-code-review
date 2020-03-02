@@ -31,6 +31,7 @@ const useStyles = makeStyles({
   editorRead: {
     padding: "10px",
     margin: "0",
+    height: "10vh",
     maxHeight: "50vh",
     overflow: "auto"
   }

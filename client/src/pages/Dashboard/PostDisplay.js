@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Grid, Typography, makeStyles, Button } from "@material-ui/core";
+import {
+  Grid,
+  Typography,
+  makeStyles,
+  Button,
+  Divider
+} from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { TextEditor } from "components";
 
@@ -122,6 +128,7 @@ const PostDisplay = ({
           ></TextEditor>
         </Grid>
       </Grid>
+      <Divider />
     </div>
   );
 };
