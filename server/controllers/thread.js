@@ -42,7 +42,8 @@ module.exports = {
 
       // check to see if author does not have a post in thread already, so we can differentiate between
       // first review and subsequent comments for notifications
-      var isFirstReview = thread.status === 1 && author !== thread.creator;
+      var isFirstReview =
+        thread.status === 1 && author !== thread.creator.toString();
       //Check if thread needs to be accepted
       if (isFirstReview) {
         thread.reviewer = author;
