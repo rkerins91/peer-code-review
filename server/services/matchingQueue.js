@@ -1,7 +1,8 @@
 const Queue = require("bull");
-const { matchingQueries } = require("../database");
+const { matchingQueries, User } = require("../database");
 const { assignThread, unassignThread } = require("../controllers/user");
 const { addToNoAssign, updateStatus } = require("../controllers/thread");
+const { createNotification } = require("../controllers/notifications");
 const config = require("../config/config");
 const io = require("./socketService");
 
@@ -27,7 +28,7 @@ class MatchingConfig {
   addJob(job) {
     this.queue.add(job);
   }
-
+  
   runQueue() {
     this.queue.process(async (job, done) => {
       const thread = job.data.thread;
@@ -88,12 +89,22 @@ class MatchingConfig {
         const threadId = job.data.thread._id;
         const assigneeId = result.assignee._id;
 
+
         const assignedUser = await assignThread(
           //make the assignment
           assigneeId,
           threadId
         );
+       
         console.log(`assignment succeded to user ${assignedUser.email}`);
+        const creatorName = await User.findById(job.data.thread.creator);
+        await createNotification({
+          recipient: assigneeId,
+          event: 2,
+          thread: threadId,
+          origin: creatorName.name
+        });
+        
         await updateStatus(threadId, "assigned");
         const updatedThread = await addToNoAssign(threadId, assigneeId);
 

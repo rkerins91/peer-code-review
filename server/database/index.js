@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("./models/User");
 const { Post } = require("./models/Post");
 const Thread = require("./models/Thread");
+const { Notification } = require("./models/Notification");
 const { threadQueries, matchingQueries } = require("./queries");
 
 const config = require("../config/config");
@@ -25,6 +26,7 @@ module.exports = {
   User,
   Post,
   Thread,
+  Notification,
   threadQueries,
   matchingQueries
 };
