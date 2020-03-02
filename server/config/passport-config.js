@@ -10,15 +10,16 @@ opts.secretOrKey = config.jwt.secret;
 
 module.exports = passport => {
   passport.use(
-    new JwtStrategy(opts, (jwt_payload, done) => {
-      User.findById(jwt_payload._id)
-        .then(user => {
-          if (user) {
-            return done(null, user);
-          }
-          return done(null, false);
-        })
-        .catch(err => console.log(err));
+    new JwtStrategy(opts, async (jwt_payload, done) => {
+      const user = await User.findById(jwt_payload.user._id);
+      try {
+        if (user) {
+          return done(null, user);
+        }
+        return done(null, false);
+      } catch (error) {
+        return done(null, false);
+      }
     })
   );
 };

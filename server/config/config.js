@@ -1,3 +1,5 @@
+const passport = require("passport");
+
 const config = {
   constants: {
     notificationExpiry: 15552000
@@ -18,7 +20,8 @@ const config = {
       "new-post-by-OP",
       "new-post-by-reviewer"
     ],
-    assignmentTimeout: 86400000 // 30 seconds for testing
+    assignmentTimeout: 86400000, // 30 seconds for testing
+    isAuth: passport.authenticate("jwt", { session: false })
   },
   stripe: {
     stripeSecret: process.env.STRIPE_SECRET_KEY
