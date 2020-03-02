@@ -7,6 +7,7 @@ const {
   updateNotifications
 } = require("../controllers/notifications");
 
+//just a test route to debug notifications, keep here until we tie sockets in
 router.get("/all", async (req, res) => {
   const notifications = await Notification.find({});
   res.status(200).send(notifications);
