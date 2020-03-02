@@ -54,6 +54,7 @@ router.post(
 
 //push a new post onto a thread
 router.post("/thread/:id/post", isAuth, async (req, res) => {
+  const threadId = req.params.id;
   try {
     if (!mongoose.isValidObjectId(threadId)) {
       throw new Error("invalidThreadIdError");

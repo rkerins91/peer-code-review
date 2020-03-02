@@ -38,11 +38,11 @@ module.exports = {
       });
       const post = await newPost.save();
       var thread = await Thread.findById(threadId);
-      // check to see if author does not have a post in thread already, so we can differentiate between
-      // first review and subsequent comments for notifications
-      const isFirstReview = thread.status === 1 && author !== thread.creator;
       thread.posts.push(post);
 
+      // check to see if author does not have a post in thread already, so we can differentiate between
+      // first review and subsequent comments for notifications
+      var isFirstReview = thread.status === 1 && author !== thread.creator;
       //Check if thread needs to be accepted
       if (isFirstReview) {
         thread.reviewer = author;
@@ -56,15 +56,15 @@ module.exports = {
     // and commenter
     let notification = null;
     if (newThread.reviewer) {
-      if (newThread.reviewer === author && isFirstReview) {
-        notification = { recipient: newThread.creator._id, event: 1 };
-      } else if (newThread.reviewer === author && !isFirstReview) {
-        notification = { recipient: newThread.creator._id, event: 3 };
+      if (newThread.reviewer.toString() === author && isFirstReview) {
+        notification = { recipient: newThread.creator, event: 1 };
+      } else if (newThread.reviewer.toString() === author && !isFirstReview) {
+        notification = { recipient: newThread.creator, event: 3 };
       } else {
         notification = { recipient: newThread.reviewer, event: 4 };
       }
     }
-    return { thread: newThread, notification };
+    return { thread: newThread, notification: notification };
   },
 
   getRequestThreads: async (userId, status) => {

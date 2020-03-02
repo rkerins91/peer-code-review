@@ -58,13 +58,23 @@ const Notifications = () => {
   };
 
   const handleClose = () => {
-    const setUnread = notifications.map(ele => {
-      ele.seen = true;
-      return ele;
-    });
-    setNotifications(setUnread);
+    var updateRequired = false;
+    for (let i = 0; i < notifications.length; i++) {
+      if (!notifications[i].seen) {
+        updateRequired = true;
+        break;
+      }
+    }
+
+    if (updateRequired) {
+      const setUnread = notifications.map(ele => {
+        ele.seen = true;
+        return ele;
+      });
+      setNotifications(setUnread);
+      axios.put(`/notifications/update-read`, { notifications });
+    }
     setAnchorEl(null);
-    axios.put(`/notifications/update-read`, { notifications });
   };
 
   return (

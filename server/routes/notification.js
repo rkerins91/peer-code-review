@@ -7,12 +7,18 @@ const {
   updateNotifications
 } = require("../controllers/notifications");
 
+router.get("/all", async (req, res) => {
+  const notifications = await Notification.find({});
+  res.status(200).send(notifications);
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const notificationData = await getUsersNotifications(req.params.id);
     res.status(200).send(notificationData);
   } catch (error) {
-    res.status(500).send({ error: err });
+    console.error(error);
+    res.status(500).send({ error: error });
   }
 });
 
@@ -21,6 +27,7 @@ router.put("/update-read", async (req, res) => {
     await updateNotifications(req.body.notifications);
     res.status(200).send({ message: "Successfully updated notifications" });
   } catch (err) {
+    console.error(err);
     res.status(500).send({ error: err });
   }
 });

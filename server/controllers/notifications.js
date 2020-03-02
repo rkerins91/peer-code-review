@@ -31,19 +31,26 @@ const getUsersNotifications = async recipient => {
 
 const generateNotificationData = notification => {
   var result = {};
+  result._id = notification._id;
+  result.seen = notification.seen;
+
   switch (notification.event) {
     case 1:
-      result.link = `dashboard/requests/${notification.thread}`;
+      result.link = `/dashboard/requests/${notification.thread}`;
       result.message = `Your code has been reviewed by ${notification.origin}`;
+      break;
     case 2:
-      result.link = `dashboard/assigned/${notification.thread}`;
+      result.link = `/dashboard/assigned/${notification.thread}`;
       result.message = `You have been assigned code to review for ${notification.origin}`;
+      break;
     case 3:
-      result.link = `dashboard/requests/${notification.thread}`;
+      result.link = `/dashboard/requests/${notification.thread}`;
       result.message = `A thread you are in has a new post by ${notification.origin}`;
+      break;
     case 4:
-      result.link = `dashboard/reviews/${notification.thread}`;
+      result.link = `/dashboard/reviews/${notification.thread}`;
       result.message = `A thread you are in has a new post by ${notification.origin}`;
+      break;
     default:
       result.link = "";
       result.message = null;
