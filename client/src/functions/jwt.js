@@ -2,7 +2,7 @@ import axios from "axios";
 
 var jwtDecode = require("jwt-decode");
 
-export const getToken = () => {
+const getToken = () => {
   let token = localStorage.getItem("peercode-auth-token");
   return token;
 };
