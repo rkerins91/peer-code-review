@@ -10,13 +10,18 @@ const {
   getReviewThreads,
   getAssignedThreads
 } = require("../controllers/thread");
-const matchingQueue = require("../services/matchingQueue");
+const { createNotification } = require("../controllers/notifications");
+const MatchingService = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const io = require("../services/socketService");
+
+const isAuth = config.server.isAuth;
 
 router.post(
   "/create-request",
   [
+    isAuth,
     check("title", "Please add a title to your request")
       .not()
       .isEmpty(),
@@ -34,7 +39,7 @@ router.post(
     }
     try {
       const thread = await createRequest(req.body);
-      matchingQueue.add({ thread: thread, pass: 1 }); //enqueue matching job
+      MatchingService.addJob({ thread: thread, pass: 1 }); //enqueue matching job
 
       return res.status(201).json({
         success: true,
@@ -48,20 +53,26 @@ router.post(
 );
 
 //push a new post onto a thread
-router.post("/thread/:id/post", async (req, res) => {
-  const threadId = req.params.id;
+router.post("/thread/:id/post", isAuth, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(threadId)) {
       throw new Error("invalidThreadIdError");
     }
-    var updatedThread = await createPost(threadId, req.body);
-    if (updatedThread) {
-      return res.status(201).json({
-        success: true
+    const { recipient, event } = await createPost(req.params.id, req.body);
+
+    if (req.body.author !== recipient.toString()) {
+      const notification = await createNotification({
+        origin: req.body.authorName,
+        event,
+        thread: req.params.id,
+        recipient
       });
-    } else {
-      throw new Error();
     }
+
+    return res.status(201).json({
+      success: true,
+      threadId: req.params.id
+    });
   } catch (err) {
     console.log(err);
     if (err.message === "invalidThreadIdError") {
@@ -89,7 +100,7 @@ router.post("/thread/:id/post", async (req, res) => {
 });
 
 //get a single thread by id
-router.get("/thread/:id", async (req, res) => {
+router.get("/thread/:id", isAuth, async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
       throw new Error("invalidThreadIdError");
@@ -99,7 +110,7 @@ router.get("/thread/:id", async (req, res) => {
     if (thread) {
       return res.status(200).json({
         success: true,
-        thread: thread
+        thread
       });
     } else {
       throw new Error("invalidThreadIdError");
@@ -117,12 +128,11 @@ router.get("/thread/:id", async (req, res) => {
         ]
       });
     }
-    return res.sendStatus(500);
   }
 });
 
 //get a user's requests by id and status
-router.get("/threads/:status/:id", async (req, res) => {
+router.get("/threads/:status/:id", isAuth, async (req, res) => {
   const userId = req.params.id;
   const status = req.params.status;
   try {
@@ -167,7 +177,7 @@ router.get("/threads/:status/:id", async (req, res) => {
 });
 
 // Route used for testing
-router.get("/user/:id/assigned", async (req, res) => {
+router.get("/user/:id/assigned", isAuth, async (req, res) => {
   const assigned = await getAssignedThreads(req.params.id);
   return res.status(200).json({
     assigned: assigned
@@ -175,7 +185,7 @@ router.get("/user/:id/assigned", async (req, res) => {
 });
 
 //Save an edited post
-router.put("/thread/:threadId/post/:postId", async (req, res) => {
+router.put("/thread/:threadId/post/:postId", isAuth, async (req, res) => {
   const newData = req.body.content;
   try {
     const thread = await Thread.findOneAndUpdate(
@@ -195,6 +205,19 @@ router.put("/thread/:threadId/post/:postId", async (req, res) => {
     console.log(err);
     return res.sendStatus(500);
   }
+});
+
+router.get("/notification-test/:id", async (req, res) => {
+  var createdAt = new Date(Date.now());
+  const testData = {
+    _id: "notificationId",
+    event: "new_assignment",
+    origin: "system",
+    read: false,
+    createdAt: createdAt.toLocaleString()
+  };
+  io.sendNotification(req.params.id, testData);
+  res.sendStatus(200);
 });
 
 module.exports = router;

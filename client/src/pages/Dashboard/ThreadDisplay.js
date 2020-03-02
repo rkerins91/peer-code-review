@@ -12,6 +12,7 @@ import {
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
+import { authHeader } from "../functions/jwt";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
@@ -161,7 +162,10 @@ const ThreadDisplay = ({
         const response = await axios({
           method: "put",
           url: `/thread/${threadData._id}/post/${postId}`,
-          headers: { "content-type": "application/json" },
+          headers: {
+            "content-type": "application/json",
+            ...authHeader.headers
+          },
           data: JSON.stringify(requestData)
         });
         if (response.data.success) {
@@ -185,7 +189,10 @@ const ThreadDisplay = ({
         const response = await axios({
           method: "post",
           url: `/thread/${threadData._id}/post`,
-          headers: { "content-type": "application/json" },
+          headers: {
+            "content-type": "application/json",
+            ...authHeader.headers
+          },
           data: JSON.stringify(requestData)
         });
         if (response.data.success) {

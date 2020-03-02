@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const config = require("../../config/config");
 const Thread = require("./Thread");
+const { Notification } = require("./Notification");
 
 const userSchema = new Schema(
   {

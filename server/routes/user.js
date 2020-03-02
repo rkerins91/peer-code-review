@@ -11,7 +11,9 @@ const {
 const matchingQueue = require("../services/matchingQueue");
 const { User, Thread } = require("../database");
 const stripe = require("stripe")(config.stripe.stripeSecret);
-const mongoose = require("mongoose");
+const { setExperience, updateCredits } = require("../controllers/user");
+const { User } = require("../database");
+const isAuth = config.server.isAuth;
 
 router.post(
   "/signup",
@@ -68,68 +70,69 @@ router.post(
       console.log(err);
     }
   }
-),
-  router.post(
-    "/login",
-    [
-      check("email", "Enter your account email address to login")
-        .not()
-        .isEmpty(),
-      check("password", "Please enter a password to login")
-        .not()
-        .isEmpty()
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (errors.length > 0) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+);
 
-      const { email, password } = req.body;
-      // Find if user exists
-      try {
-        var user = await User.findOne({ email });
-        if (!user) {
-          return res.status(404).json({
+router.post(
+  "/login",
+  [
+    check("email", "Enter your account email address to login")
+      .not()
+      .isEmpty(),
+    check("password", "Please enter a password to login")
+      .not()
+      .isEmpty()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (errors.length > 0) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+    // Find if user exists
+    try {
+      var user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({
+          errors: [
+            {
+              value: email,
+              msg: "Cannot find a user with this email",
+              param: "email"
+            }
+          ]
+        });
+      } else {
+        // User exists, compare hashed password
+        let isMatch = await bcrypt.compare(password, user.password);
+        if (isMatch) {
+          // Passwords match, create JWT Payload, and send it in response with user object
+          user.login(user, (err, token) => {
+            if (err) throw err;
+            res.status(201).json({
+              success: true,
+              token: "Bearer " + token,
+              user: user
+            });
+          });
+        } else {
+          return res.status(400).json({
             errors: [
               {
-                value: email,
-                msg: "Cannot find a user with this email",
-                param: "email"
+                msg: "The password you entered did not match our records",
+                param: "password"
               }
             ]
           });
-        } else {
-          // User exists, compare hashed password
-          let isMatch = await bcrypt.compare(password, user.password);
-          if (isMatch) {
-            // Passwords match, create JWT Payload, and send it in response with user object
-            user.login(user, (err, token) => {
-              if (err) throw err;
-              res.status(201).json({
-                success: true,
-                token: "Bearer " + token,
-                user: user
-              });
-            });
-          } else {
-            return res.status(400).json({
-              errors: [
-                {
-                  msg: "The password you entered did not match our records",
-                  param: "password"
-                }
-              ]
-            });
-          }
         }
-      } catch (err) {
-        console.log(err);
       }
+    } catch (err) {
+      console.log(err);
     }
-  );
+  }
+);
 
-router.get("/user/:id", async (req, res) => {
+router.get("/user/:id", isAuth, async (req, res) => {
   const _id = req.params.id;
   // Find if user exists
   try {
@@ -154,7 +157,7 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
-router.put("/user/:id/experience", async (req, res) => {
+router.put("/user/:id/experience", isAuth, async (req, res) => {
   const languages = { ...req.body };
   try {
     await setExperience(req.params.id, languages);
@@ -166,7 +169,7 @@ router.put("/user/:id/experience", async (req, res) => {
   }
 });
 
-router.post("/user/:id/purchase-credit", async (req, res) => {
+router.post("/user/:id/purchase-credit", isAuth, async (req, res) => {
   const { credits } = req.body;
   try {
     const paymentIntent = await stripe.paymentIntents.create({
@@ -179,7 +182,7 @@ router.post("/user/:id/purchase-credit", async (req, res) => {
   }
 });
 
-router.put("/user/:id/add-credit", async (req, res) => {
+router.put("/user/:id/add-credit", isAuth, async (req, res) => {
   try {
     const { credits } = req.body;
     const success = await updateCredits(req.params.id, credits);
