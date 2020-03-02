@@ -3,6 +3,7 @@ import { Link, Redirect } from "react-router-dom";
 import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import { SignUpContainer } from "components";
 import { UserContext } from "context/UserContext";
+import axios from "axios";
 import socket from "functions/sockets";
 
 const useStyles = makeStyles({
@@ -87,21 +88,21 @@ const Login = () => {
   const submit = () => {
     async function login(user) {
       try {
-        const res = await fetch("/login", {
+        const { data } = await axios({
+          url: "/login",
           method: "post",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify(user)
+          data: JSON.stringify(user)
         });
-        const json = await res.json();
-        if (json.errors) {
-          setError(json.errors);
+        if (data.errors) {
+          setError(data.errors);
         } else {
-          if ((json.success = true)) {
-            localStorage.setItem("peercode-auth-token", json.token);
-            setUser(json.user);
-            socket.emit("login", json.user._id);
+          if ((data.success = true)) {
+            localStorage.setItem("peercode-auth-token", data.token);
+            setUser(data.user);
+            socket.emit("login", data.user._id);
           }
         }
       } catch (e) {

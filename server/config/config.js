@@ -1,3 +1,5 @@
+const passport = require("passport");
+
 const config = {
   db: {
     connectionString: process.env.MONGO_URI_DEV
@@ -9,7 +11,8 @@ const config = {
   server: {
     availableLanguages: ["C", "C++", "Java", "JavaScript", "Python", "Ruby"],
     threadStatus: ["new", "assigned", "ongoing", "complete", "archived"],
-    assignmentTimeout: 86400000 // 30 seconds for testing
+    assignmentTimeout: 86400000, // 30 seconds for testing
+    isAuth: passport.authenticate("jwt", { session: false })
   },
   stripe: {
     stripeSecret: process.env.STRIPE_SECRET_KEY

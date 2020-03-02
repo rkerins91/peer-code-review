@@ -13,6 +13,7 @@ import { UserContext } from "context/UserContext";
 import { TextEditor } from "components/index";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
+import { authHeader } from "../functions/jwt";
 
 const useStyles = makeStyles({
   root: {
@@ -125,14 +126,19 @@ const CodeUpload = () => {
     };
 
     let alerts = new Set();
+
     try {
-      const removeCredit = await axios.put(`/user/${user._id}/add-credit`, {
-        credits: -1
-      });
+      const removeCredit = await axios.put(
+        `/user/${user._id}/add-credit`,
+        {
+          credits: -1
+        },
+        authHeader
+      );
       const response = await axios({
         method: "post",
         url: "/create-request",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...authHeader.headers },
         data: JSON.stringify(requestData)
       });
       //redirect user to their reviews page

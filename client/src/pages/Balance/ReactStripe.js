@@ -9,6 +9,7 @@ import {
 import { UserContext } from "context/UserContext";
 import { Grid, Button, makeStyles, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
+import { authHeader } from "functions/jwt";
 import "./common.css";
 import axios from "axios";
 
@@ -133,7 +134,8 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
       `/user/${user._id}/purchase-credit`,
       {
         credits
-      }
+      },
+      authHeader
     );
 
     const payload = await stripe.createPaymentMethod({
@@ -152,9 +154,13 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
     if (confirm.paymentIntent && confirm.paymentIntent.status === "succeeded") {
       setMadeSuccessfulPayment(true);
       setProcessing(false);
-      const { data } = await axios.put(`/user/${user._id}/add-credit`, {
-        credits
-      });
+      const { data } = await axios.put(
+        `/user/${user._id}/add-credit`,
+        {
+          credits
+        },
+        authHeader
+      );
       if (data.success) {
         setMadeSuccessfulPayment(true);
         user.credits += credits;
