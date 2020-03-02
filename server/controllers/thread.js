@@ -43,10 +43,13 @@ module.exports = {
       await thread.save();
       // return recipient and event type based on which isFirst review
       // and commenter
-      if (thread.noAssign[1].toString() === author && isFirstReview) {
+      const reviewerId = thread.noAssign[1].toString();
+      if (reviewerId === author && isFirstReview) {
         return { recipient: thread.creator._id, event: 1 };
-      } else {
+      } else if (reviewerId === author && !isFirstReview) {
         return { recipient: thread.creator._id, event: 3 };
+      } else {
+        return { recipient: reviewerId, event: 4 };
       }
     } else {
       throw new Error("Missing required request data");

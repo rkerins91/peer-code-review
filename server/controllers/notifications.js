@@ -41,9 +41,13 @@ const generateNotificationData = notification => {
 
 const generateNotificationLink = notification => {
   switch (notification.event) {
-    case 1 || 3:
+    case 1:
       return `dashboard/requests/${notification.thread}`;
-    case 2 || 4:
+    case 2:
+      return `dashboard/assigned/${notification.thread}`;
+    case 3:
+      return `dashboard/requests/${notification.thread}`;
+    case 4:
       return `dashboard/assigned/${notification.thread}`;
     default:
       return "";
@@ -56,8 +60,10 @@ const generateNotificationMessage = notification => {
       return `Your code has been reviewed by ${notification.origin}`;
     case 2:
       return `You have been assigned code to review for ${notification.origin}`;
-    case 3 || 4:
-      return `A thread you are in has a new post`;
+    case 3:
+      return `A thread you are in has a new post by ${notification.origin}`;
+    case 4:
+      return `A thread you are in has a new post by ${notification.origin}`;
     default:
       return null;
   }

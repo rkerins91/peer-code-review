@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Menu, MenuItem, makeStyles, withTheme } from "@material-ui/core";
+import { Menu, MenuItem, makeStyles, IconButton } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import axios from "axios";
@@ -69,7 +69,11 @@ const Notifications = () => {
 
   return (
     <div>
-      <div onClick={handleMenu}>
+      <IconButton
+        onClick={handleMenu}
+        disabled={notifications.length < 1}
+        disableTouchRipple
+      >
         {seen ? (
           <NotificationsNoneRoundedIcon
             fontSize="large"
@@ -83,7 +87,7 @@ const Notifications = () => {
             />
           </div>
         )}
-      </div>
+      </IconButton>
       <Menu
         id="notification-bell"
         className={classes.menu}
