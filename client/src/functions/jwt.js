@@ -1,3 +1,5 @@
+import axios from "axios";
+
 var jwtDecode = require("jwt-decode");
 
 export const getToken = () => {
@@ -15,20 +17,19 @@ const decodeToken = token => {
 async function fetchUser(decodedToken) {
   async function getUser(id) {
     try {
-      const res = await fetch(`/user/${id}`, {
+      const { data } = await axios({
+        url: `/user/${id}`,
         method: "get",
         headers: {
           "Content-Type": "application/json",
           ...authHeader.headers
         }
       });
-      const json = await res.json();
-      if (json.errors) {
-        console.log(json.errors);
+      if (data.errors) {
         return {}; // if there is an error, return empty user object
       } else {
-        if ((json.success = true)) {
-          return json.user;
+        if ((data.success = true)) {
+          return data.user;
         }
       }
     } catch (e) {

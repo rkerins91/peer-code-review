@@ -49,22 +49,22 @@ const Dashboard = () => {
     };
 
     try {
-      const res = await fetch(`/threads/open/${user._id}`, {
+      const { data } = await axios({
+        url: `/threads/open/${user._id}`,
         method: "get",
         headers: {
           "Content-Type": "application/json",
           ...authHeader.headers
         }
       });
-      const json = await res.json();
-      if (json.errors) {
-        console.log(json.errors);
+      if (data.errors) {
+        console.log(data.errors);
         return {}; // if there is an error, return empty user object
       } else {
-        if (json.success) {
-          setRequests(createThreadObj(json.requests));
-          setReviews(createThreadObj(json.reviews));
-          setAssigned(createThreadObj(json.assigned));
+        if (data.success) {
+          setRequests(createThreadObj(data.requests));
+          setReviews(createThreadObj(data.reviews));
+          setAssigned(createThreadObj(data.assigned));
           return;
         }
       }
