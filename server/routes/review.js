@@ -12,7 +12,6 @@ const {
 const matchingQueue = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
-const passport = require("passport");
 
 const isAuth = config.server.isAuth;
 
