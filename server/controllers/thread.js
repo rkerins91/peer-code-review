@@ -38,16 +38,33 @@ module.exports = {
       });
       const post = await newPost.save();
       var thread = await Thread.findById(threadId);
+      // check to see if author does not have a post in thread already, so we can differentiate between
+      // first review and subsequent comments for notifications
+      const isFirstReview = thread.status === 1 && author !== thread.creator;
       thread.posts.push(post);
 
       //Check if thread needs to be accepted
-      if (thread.status === 1 && author !== thread.creator) {
+      if (isFirstReview) {
         thread.reviewer = author;
         thread.status = 2;
         unassignThread(author, thread._id);
       }
-      return await thread.save();
+      var newThread = await thread.save();
     } else throw new Error("Missing required request data");
+
+    // return recipient and event type based on which isFirst review
+    // and commenter
+    let notification = null;
+    if (newThread.reviewer) {
+      if (newThread.reviewer === author && isFirstReview) {
+        notification = { recipient: newThread.creator._id, event: 1 };
+      } else if (newThread.reviewer === author && !isFirstReview) {
+        notification = { recipient: newThread.creator._id, event: 3 };
+      } else {
+        notification = { recipient: newThread.reviewer, event: 4 };
+      }
+    }
+    return { thread: newThread, notification };
   },
 
   getRequestThreads: async (userId, status) => {

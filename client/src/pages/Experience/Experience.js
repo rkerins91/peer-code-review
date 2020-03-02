@@ -7,6 +7,7 @@ import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
+import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   text: {
@@ -97,7 +98,8 @@ const Experience = () => {
     // TO-DO, use context for user ID instead of hardcoding
     const { data } = await axios.put(
       `user/${user._id}/experience`,
-      experienceToSubmit
+      experienceToSubmit,
+      authHeader
     );
     setSuccessful(data.message);
   };
