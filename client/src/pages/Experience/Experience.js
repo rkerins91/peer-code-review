@@ -4,10 +4,11 @@ import ExperienceContainer from "components/SignUpContainer";
 import NewExperienceForm from "./NewExperienceForm";
 import { availableLanguages } from "utils";
 import { getToken } from "functions/jwt";
-import { Grid, Button, Typography, makeStyles, Paper } from "@material-ui/core";
+import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
+import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   text: {
@@ -40,7 +41,7 @@ const useStyles = makeStyles({
 });
 const Experience = () => {
   const classes = useStyles();
-  const { user, isLoading } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const defaultExperiences = [];
 
   // Set default experience shown to whatever user currently has on database
@@ -98,14 +99,13 @@ const Experience = () => {
     // TO-DO, use context for user ID instead of hardcoding
     const { data } = await axios.put(
       `user/${user._id}/experience`,
-      experienceToSubmit
+      experienceToSubmit,
+      authHeader
     );
     setSuccessful(data.message);
   };
 
-  if (!user && !isLoading) {
-    return <Redirect to="/login" />;
-  } else if (user && user.experience) {
+  if (user && user.experience) {
     return <Redirect to="/" />;
   } else
     return (

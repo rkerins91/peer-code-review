@@ -10,11 +10,10 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { UserContext } from "context/UserContext";
-import { NavBar } from "components";
 import { TextEditor } from "components/index";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
-import { languageGrammar } from "utils";
+import { authHeader } from "../functions/jwt";
 
 const useStyles = makeStyles({
   root: {
@@ -52,10 +51,6 @@ const useStyles = makeStyles({
     padding: "0"
   }
 });
-
-const getKeyByValue = (object, value) => {
-  return Object.keys(object).find(key => object[key] === value);
-};
 
 const CodeUpload = () => {
   const { user, setUser } = useContext(UserContext);
@@ -124,22 +119,26 @@ const CodeUpload = () => {
       title: requestTitle,
       language: {
         name: requestLanguage,
-        experience:
-          user.experience[getKeyByValue(languageGrammar, requestLanguage)]
+        experience: user.experience[requestLanguage]
       },
       content: data,
       user: user
     };
 
     let alerts = new Set();
+
     try {
-      const removeCredit = await axios.put(`/user/${user._id}/add-credit`, {
-        credits: -1
-      });
+      const removeCredit = await axios.put(
+        `/user/${user._id}/add-credit`,
+        {
+          credits: -1
+        },
+        authHeader
+      );
       const response = await axios({
         method: "post",
         url: "/create-request",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...authHeader.headers },
         data: JSON.stringify(requestData)
       });
       //redirect user to their reviews page
@@ -163,7 +162,6 @@ const CodeUpload = () => {
 
   return (
     <div className={classes.root}>
-      <NavBar></NavBar>
       <Grid className={classes.wrapper} container justify="center" spacing={2}>
         <Typography className={classes.header} variant="h3" align="center">
           Request a code review
@@ -188,7 +186,7 @@ const CodeUpload = () => {
           >
             {getLanguages.map(language => {
               return (
-                <MenuItem value={languageGrammar[language]} key={language}>
+                <MenuItem value={language} key={language}>
                   {language}
                 </MenuItem>
               );

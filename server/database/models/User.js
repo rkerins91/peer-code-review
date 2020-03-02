@@ -22,7 +22,8 @@ const userSchema = new Schema(
       type: Schema.Types.Mixed,
       of: Number
     },
-    assigned_threads: [{ type: Schema.Types.ObjectId, ref: Thread }],
+    assignedThreads: [{ type: Schema.Types.ObjectId, ref: Thread }],
+    assignedCount: { type: Number, default: 0 },
     credits: {
       type: Number,
       default: 3
@@ -37,6 +38,18 @@ userSchema.pre("save", async function(next) {
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+});
+
+// run after model.save
+userSchema.pre("save", async function(next) {
+  if (!this.isModified("assignedThreads")) return next();
+  try {
+    const count = this.assignedThreads.length;
+    this.assignedCount = count;
     return next();
   } catch (err) {
     return next(err);

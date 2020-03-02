@@ -8,7 +8,11 @@ const config = {
   },
   server: {
     availableLanguages: ["C", "C++", "Java", "JavaScript", "Python", "Ruby"],
-    threadStatus: ["open", "assigned", "ongoing", "complete"]
+    threadStatus: ["new", "assigned", "ongoing", "complete", "archived"],
+    assignmentTimeout: 86400000 // 30 seconds for testing
+  },
+  stripe: {
+    stripeSecret: process.env.STRIPE_SECRET_KEY
   }
 };
 

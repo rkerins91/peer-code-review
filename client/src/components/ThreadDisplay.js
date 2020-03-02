@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import {
   Grid,
@@ -11,12 +11,12 @@ import {
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
-import { LocalConvenienceStoreOutlined } from "@material-ui/icons";
+import { authHeader } from "../functions/jwt";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
   backdrop: {
-    zIndex: 1000,
+    zIndex: 900,
     color: "#fff",
     left: "20vw" // same width as the sidebar
   },
@@ -51,7 +51,13 @@ const useStyles = makeStyles({
   }
 });
 
-const ThreadDisplay = ({ threadData, user, refreshThread }) => {
+const ThreadDisplay = ({
+  threadData,
+  user,
+  refreshThread,
+  typeParam,
+  defaultSelection
+}) => {
   const classes = useStyles();
 
   const [replyButtonText, setReplyButtonText] = useState("Reply");
@@ -116,17 +122,18 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
       try {
         const response = await axios({
           method: "put",
-          url: `/thread/${threadData._id}/${postId}/content`,
+          url: `/thread/${threadData._id}/post/${postId}`,
           headers: { "content-type": "application/json" },
           data: JSON.stringify(requestData)
         });
-        //redirect user to their reviews page
         if (response.data.success) {
           var alerts = new Set();
           alerts.add("Post edited successfully!");
           setPageAlerts(alerts);
           setPostSuccessAlert(true);
-          refreshThread(threadData._id);
+          if (typeParam) {
+            refreshThread(threadData._id, typeParam);
+          } else refreshThread(threadData._id, defaultSelection.type);
         }
       } catch (err) {
         console.log(err);
@@ -137,18 +144,22 @@ const ThreadDisplay = ({ threadData, user, refreshThread }) => {
         const response = await axios({
           method: "post",
           url: `/thread/${threadData._id}/post`,
-          headers: { "content-type": "application/json" },
+          headers: {
+            "content-type": "application/json",
+            ...authHeader.headers
+          },
           data: JSON.stringify(requestData)
         });
-        //redirect user to their reviews page
         if (response.data.success) {
           var alerts = new Set();
           alerts.add("Reply posted successfully!");
           setPageAlerts(alerts);
           setPostSuccessAlert(true);
           setSubmitState(false);
-          refreshThread(response.data.threadId);
           setReadOnly(true);
+          if (typeParam) {
+            refreshThread(threadData._id, typeParam);
+          } else refreshThread(threadData._id, defaultSelection.type);
         }
       } catch (err) {
         console.log(err);

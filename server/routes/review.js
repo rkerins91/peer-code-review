@@ -1,7 +1,15 @@
 const express = require("express");
 const { check, validationResult } = require("express-validator");
 const router = express.Router();
-const { Post, Thread, threadQueries } = require("../database");
+const { Thread } = require("../database");
+const {
+  createRequest,
+  createPost,
+  getRequestThreads,
+  getReviewThreads,
+  getAssignedThreads
+} = require("../controllers/thread");
+const matchingQueue = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
 const passport = require("passport");
@@ -25,27 +33,10 @@ router.post(
     if (errors.length > 0) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { title, content, language, user } = req.body;
-
-    const newPost = new Post({
-      author: user._id,
-      authorName: user.name,
-      data: content
-    });
-
-    const newThread = new Thread({
-      creator: user._id,
-      title,
-      status: 0,
-      language: { name: language.name, experience: language.experience }
-    });
-
     try {
-      const post = await newPost.save();
-      newThread.posts.push(post);
-      newThread.no_assign.push(user._id);
-      const thread = await newThread.save();
-      //Success, add this thread to the matching queue
+      const thread = await createRequest(req.body);
+      matchingQueue.add({ thread: thread, pass: 1 }); //enqueue matching job
+
       return res.status(201).json({
         success: true,
         threadId: thread._id
@@ -64,35 +55,31 @@ router.post(
   async (req, res) => {
     try {
       if (!mongoose.isValidObjectId(req.params.id)) {
-        throw "invalidThreadIdError";
+        throw new Error("invalidThreadIdError");
       }
-      const threadId = req.params.id;
-      const { author, authorName, content } = req.body;
-
-      const newPost = new Post({
-        author: author,
-        authorName: authorName,
-        data: content
-      });
-      var newThread = await Thread.findById(threadId);
-      const post = await newPost.save();
-      newThread.posts.push(post);
-
-      // ??? undeclared variable, why create thread var from newThread if id is same?
-      await newThread.save();
+      await createPost(req.params.id, req.body);
       return res.status(201).json({
         success: true,
-        threadId
+        threadId: req.params.id
       });
     } catch (err) {
       console.log(err);
-      if (err === "invalidThreadIdError") {
+      if (err.message === "invalidThreadIdError") {
         return res.status(404).json({
           errors: [
             {
               value: req.params.id,
               msg: "Requested thread not found",
               param: "id"
+            }
+          ]
+        });
+      }
+      if (err.message === "Missing required request data") {
+        return res.status(404).json({
+          errors: [
+            {
+              msg: err.message
             }
           ]
         });
@@ -103,120 +90,111 @@ router.post(
 );
 
 //get a single thread by id
-router.get(
-  "/thread/:id",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    try {
-      if (!mongoose.isValidObjectId(req.params.id)) {
-        throw "invalidThreadIdError";
-      }
-      const threadId = req.params.id;
-      const thread = await Thread.findById(threadId);
-      if (thread) {
-        return res.status(200).json({
-          success: true,
-          thread: thread
-        });
-      } else {
-        throw "invalidThreadIdError";
-      }
-    } catch (err) {
-      console.log(err);
-      if (err === "invalidThreadIdError") {
-        return res.status(404).json({
-          errors: [
-            {
-              value: req.params.id,
-              msg: "Requested thread not found",
-              param: "id"
-            }
-          ]
-        });
-      }
-      res.sendStatus(500);
+router.get("/thread/:id", async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      throw new Error("invalidThreadIdError");
     }
-  }
-);
-
-//get a user's requests by id and status
-router.get(
-  "/requests/:status/:id",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    try {
-      if (!mongoose.isValidObjectId(req.params.id)) {
-        throw "invalidUserIdError";
-      }
-      const userId = req.params.id;
-      var threads;
-      switch (req.params.status) {
-        case config.server.threadStatus[0]:
-          threads = await threadQueries.getOpenUserRequests(userId);
-          break;
-        case "all":
-          threads = await threadQueries.getAllUserRequests(userId);
-          break;
-        default:
-          throw "invalidStatusError";
-      }
+    const threadId = req.params.id;
+    const thread = await Thread.findById(threadId);
+    if (thread) {
       return res.status(200).json({
         success: true,
-        threads: threads
+        threadId
       });
-    } catch (err) {
-      console.log(err);
-      if (err === "invalidUserIdError") {
-        return res.status(404).json({
-          errors: [
-            {
-              value: req.params.id,
-              msg: "User not found",
-              param: "id"
-            }
-          ]
-        });
-      } else if (err === "invalidStatusError") {
-        return res.status(404).json({
-          errors: [
-            {
-              value: req.params.status,
-              msg: "Invalid status parameter",
-              param: "status"
-            }
-          ]
-        });
-      }
-      res.sendStatus(500);
+    } else {
+      throw new Error("invalidThreadIdError");
+    }
+  } catch (err) {
+    console.log(err);
+    if (err.message === "invalidThreadIdError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.id,
+            msg: "Requested thread not found",
+            param: "id"
+          }
+        ]
+      });
     }
   }
-);
+});
+
+//get a user's requests by id and status
+router.get("/threads/:status/:id", async (req, res) => {
+  const userId = req.params.id;
+  const status = req.params.status;
+  try {
+    if (!mongoose.isValidObjectId(userId)) {
+      throw new Error("invalidUserIdError");
+    }
+    const requests = await getRequestThreads(userId, status);
+    const reviews = await getReviewThreads(userId, status);
+    const assigned = await getAssignedThreads(userId);
+
+    return res.status(200).json({
+      success: true,
+      requests: requests,
+      reviews: reviews,
+      assigned: assigned
+    });
+  } catch (err) {
+    console.log(err);
+    if (err.message === "invalidUserIdError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.id,
+            msg: "User not found",
+            param: "id"
+          }
+        ]
+      });
+    } else if (err === "invalidStatusError") {
+      return res.status(404).json({
+        errors: [
+          {
+            value: req.params.status,
+            msg: "Invalid status parameter",
+            param: "status"
+          }
+        ]
+      });
+    }
+    res.sendStatus(500);
+  }
+});
+
+// Route used for testing
+router.get("/user/:id/assigned", async (req, res) => {
+  const assigned = await getAssignedThreads(req.params.id);
+  return res.status(200).json({
+    assigned: assigned
+  });
+});
 
 //Save an edited post
-router.put(
-  "/thread/:threadId/:postId/content",
-  passport.authenticate("jwt", { session: false }),
-  async (req, res) => {
-    const newData = req.body.content;
-    try {
-      const thread = await Thread.findOneAndUpdate(
-        { _id: req.params.threadId, "posts._id": req.params.postId },
-        {
-          $set: {
-            "posts.$.data": newData
-          }
+router.put("/thread/:threadId/post/:postId", async (req, res) => {
+  const newData = req.body.content;
+  try {
+    const thread = await Thread.findOneAndUpdate(
+      { _id: req.params.threadId, "posts._id": req.params.postId },
+      {
+        $set: {
+          "posts.$.data": newData
         }
-      );
-      if (thread) {
-        return res.status(200).json({
-          success: true
-        });
       }
-    } catch (err) {
-      console.log(err);
-      res.sendStatus(500);
+    );
+    if (thread) {
+      return res.status(200).json({
+        success: true
+      });
     }
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
   }
-);
+});
 
 module.exports = router;

@@ -5,6 +5,8 @@ const bcrypt = require("bcryptjs");
 const config = require("../config/config");
 const passport = require("passport");
 
+const stripe = require("stripe")(config.stripe.stripeSecret);
+const { setExperience, updateCredits } = require("../controllers/user");
 const { User } = require("../database");
 
 router.post(
@@ -31,7 +33,6 @@ router.post(
     }
 
     const { name, email, password } = req.body;
-
     try {
       //Check for an existing user
       var user = await User.findOne({ email: email });
@@ -47,7 +48,6 @@ router.post(
         });
       } else {
         const newUser = new User({ name, email, password });
-
         user = await newUser.save();
 
         //On successful save, create payload and send response token with user
@@ -64,75 +64,73 @@ router.post(
       console.log(err);
     }
   }
-),
-  router.post(
-    "/login",
-    [
-      check("email", "Enter your account email address to login")
-        .not()
-        .isEmpty(),
-      check("password", "Please enter a password to login")
-        .not()
-        .isEmpty()
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
+);
 
-      if (errors.length > 0) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+router.post(
+  "/login",
+  [
+    check("email", "Enter your account email address to login")
+      .not()
+      .isEmpty(),
+    check("password", "Please enter a password to login")
+      .not()
+      .isEmpty()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (errors.length > 0) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-      const { email, password } = req.body;
-
-      // Find if user exists
-      try {
-        var user = await User.findOne({ email });
-        if (!user) {
-          return res.status(404).json({
+    const { email, password } = req.body;
+    // Find if user exists
+    try {
+      var user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({
+          errors: [
+            {
+              value: email,
+              msg: "Cannot find a user with this email",
+              param: "email"
+            }
+          ]
+        });
+      } else {
+        // User exists, compare hashed password
+        let isMatch = await bcrypt.compare(password, user.password);
+        if (isMatch) {
+          // Passwords match, create JWT Payload, and send it in response with user object
+          user.login(user, (err, token) => {
+            if (err) throw err;
+            res.status(201).json({
+              success: true,
+              token: "Bearer " + token,
+              user: user
+            });
+          });
+        } else {
+          return res.status(400).json({
             errors: [
               {
-                value: email,
-                msg: "Cannot find a user with this email",
-                param: "email"
+                msg: "The password you entered did not match our records",
+                param: "password"
               }
             ]
           });
-        } else {
-          // User exists, compare hashed password
-          let isMatch = await bcrypt.compare(password, user.password);
-
-          if (isMatch) {
-            // Passwords match, create JWT Payload, and send it in response with user object
-            user.login(user, (err, token) => {
-              if (err) throw err;
-              res.status(201).json({
-                success: true,
-                token: "Bearer " + token,
-                user: user
-              });
-            });
-          } else {
-            return res.status(400).json({
-              errors: [
-                {
-                  msg: "The password you entered did not match our records",
-                  param: "password"
-                }
-              ]
-            });
-          }
         }
-      } catch (err) {
-        console.log(err);
       }
+    } catch (err) {
+      console.log(err);
     }
-  );
+  }
+);
 
 router.get(
-  "/user/me",
+  "/user/:id",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    const _id = req.body.id;
+    const _id = req.params.id;
     // Find if user exists
     try {
       var user = await User.findById(_id);
@@ -189,6 +187,23 @@ router.put(
   }
 );
 
+router.post(
+  "/user/:id/purchase-credit",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { credits } = req.body;
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: credits * 500,
+        currency: "usd"
+      });
+      res.status(200).send({ clientSecret: paymentIntent.client_secret });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+);
+
 router.put(
   "/user/:id/add-credit",
   passport.authenticate("jwt", { session: false }),
@@ -212,5 +227,13 @@ router.put(
     }
   }
 );
+
+//Route used for testing
+router.get("/users/all", async (req, res) => {
+  const users = await User.find({ assignedThreads: { $exists: true } });
+  res.status(200).json({
+    users
+  });
+});
 
 module.exports = router;
