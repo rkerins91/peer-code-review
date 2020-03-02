@@ -4,6 +4,7 @@ import { Button, TextField, Typography, makeStyles } from "@material-ui/core";
 import { SignUpContainer } from "components";
 import { UserContext } from "context/UserContext";
 import axios from "axios";
+import socket from "functions/sockets";
 
 const useStyles = makeStyles({
   input: {
@@ -101,6 +102,7 @@ const Login = () => {
           if ((data.success = true)) {
             localStorage.setItem("peercode-auth-token", data.token);
             setUser(data.user);
+            socket.emit("login", data.user._id);
           }
         }
       } catch (e) {

@@ -9,9 +9,10 @@ const {
   getReviewThreads,
   getAssignedThreads
 } = require("../controllers/thread");
-const matchingQueue = require("../services/matchingQueue");
+const MatchingService = require("../services/matchingQueue");
 const mongoose = require("mongoose");
 const config = require("../config/config");
+const io = require("../services/socketService");
 
 const isAuth = config.server.isAuth;
 
@@ -36,7 +37,7 @@ router.post(
     }
     try {
       const thread = await createRequest(req.body);
-      matchingQueue.add({ thread: thread, pass: 1 }); //enqueue matching job
+      MatchingService.addJob({ thread: thread, pass: 1 }); //enqueue matching job
 
       return res.status(201).json({
         success: true,
@@ -192,6 +193,19 @@ router.put("/thread/:threadId/post/:postId", isAuth, async (req, res) => {
     console.log(err);
     res.sendStatus(500);
   }
+});
+
+router.get("/notification-test/:id", async (req, res) => {
+  var createdAt = new Date(Date.now());
+  const testData = {
+    _id: "notificationId",
+    event: "new_assignment",
+    origin: "system",
+    read: false,
+    createdAt: createdAt.toLocaleString()
+  };
+  io.sendNotification(req.params.id, testData);
+  res.sendStatus(200);
 });
 
 module.exports = router;
