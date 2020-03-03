@@ -3,7 +3,6 @@ import socket from "./sockets";
 var jwtDecode = require("jwt-decode");
 
 const getToken = () => {
-  console.log("ran");
   let token = localStorage.getItem("peercode-auth-token");
   return token;
 };
