@@ -102,7 +102,7 @@ const Login = () => {
           if ((data.success = true)) {
             localStorage.setItem("peercode-auth-token", data.token);
             setUser(data.user);
-            socket.emit("login", data.user._id);
+            socket.login(data.user._id);
           }
         }
       } catch (e) {

@@ -43,7 +43,7 @@ async function fetchUser(decodedToken) {
   } else {
     let id = decodedToken.user._id;
     let userObject = await getUser(id);
-    socket.emit("login", id);
+    socket.login(id);
     return userObject;
   }
 }
