@@ -96,9 +96,12 @@ const Dashboard = () => {
             setAssigned(assigned);
             break;
         }
-        setSelectedThread(response.data.thread);
+        if (threadParam === threadId) {
+          setSelectedThread(response.data.thread);
+        }
       }
     } catch (err) {
+      console.log(err);
       window.location.reload(true); //If there's an error, refresh the whole page
     }
   };
@@ -151,21 +154,17 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const prepareRefresh = notification => {
-      const match = matchPath(notification.link, {
-        path: "/dashboard/:typeParam/:threadParam"
-      });
-      handleThreadRefresh(match.params.threadParam, match.params.typeParam);
-    };
+    selectDefault();
+  }, [threadParam, typeParam, requests, reviews, assigned]);
 
-    socket.subscribe("dashboard", prepareRefresh);
+  useEffect(() => {
+    socket.subscribe("dashboard", () => {
+      getReviews();
+      selectDefault();
+    });
 
     return () => socket.unsubscribe("dashboard");
   }, []);
-
-  useEffect(() => {
-    selectDefault();
-  }, [reviews, requests, assigned]);
 
   return (
     <div>
