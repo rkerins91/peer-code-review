@@ -55,7 +55,7 @@ const Dashboard = () => {
         method: "get",
         headers: {
           "Content-Type": "application/json",
-          ...authHeader.headers
+          ...authHeader().headers
         }
       });
       if (data.errors) {
@@ -79,7 +79,7 @@ const Dashboard = () => {
       const response = await axios({
         method: "get",
         url: `/thread/${threadId}`,
-        headers: { "content-type": "application/json", ...authHeader.headers }
+        headers: { "content-type": "application/json", ...authHeader().headers }
       });
       if (response.data.success) {
         switch (type) {

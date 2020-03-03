@@ -99,7 +99,7 @@ const Experience = () => {
     const { data } = await axios.put(
       `user/${user._id}/experience`,
       experienceToSubmit,
-      authHeader
+      authHeader()
     );
     setSuccessful(data.message);
   };

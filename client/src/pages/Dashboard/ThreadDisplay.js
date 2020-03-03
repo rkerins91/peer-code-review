@@ -164,7 +164,7 @@ const ThreadDisplay = ({
           url: `/thread/${threadData._id}/post/${postId}`,
           headers: {
             "content-type": "application/json",
-            ...authHeader.headers
+            ...authHeader().headers
           },
           data: JSON.stringify(requestData)
         });
@@ -191,7 +191,7 @@ const ThreadDisplay = ({
           url: `/thread/${threadData._id}/post`,
           headers: {
             "content-type": "application/json",
-            ...authHeader.headers
+            ...authHeader().headers
           },
           data: JSON.stringify(requestData)
         });

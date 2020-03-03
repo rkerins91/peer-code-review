@@ -3,11 +3,12 @@ import socket from "./sockets";
 var jwtDecode = require("jwt-decode");
 
 const getToken = () => {
+  console.log("ran");
   let token = localStorage.getItem("peercode-auth-token");
   return token;
 };
 
-export const authHeader = { headers: { Authorization: getToken() } };
+export const authHeader = () => ({ headers: { Authorization: getToken() } });
 
 const decodeToken = token => {
   var decodedToken = jwtDecode(token);
@@ -22,7 +23,7 @@ async function fetchUser(decodedToken) {
         method: "get",
         headers: {
           "Content-Type": "application/json",
-          ...authHeader.headers
+          ...authHeader().headers
         }
       });
       if (data.errors) {

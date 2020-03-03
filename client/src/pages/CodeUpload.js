@@ -133,12 +133,15 @@ const CodeUpload = () => {
         {
           credits: -1
         },
-        authHeader
+        authHeader()
       );
       const response = await axios({
         method: "post",
         url: "/create-request",
-        headers: { "content-type": "application/json", ...authHeader.headers },
+        headers: {
+          "content-type": "application/json",
+          ...authHeader().headers
+        },
         data: JSON.stringify(requestData)
       });
       //redirect user to their reviews page

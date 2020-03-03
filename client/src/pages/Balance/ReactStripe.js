@@ -135,7 +135,7 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
       {
         credits
       },
-      authHeader
+      authHeader()
     );
 
     const payload = await stripe.createPaymentMethod({
@@ -159,7 +159,7 @@ const CheckoutForm = ({ setAddCredit, credits }) => {
         {
           credits
         },
-        authHeader
+        authHeader()
       );
       if (data.success) {
         setMadeSuccessfulPayment(true);
