@@ -6,17 +6,21 @@ import axios from "axios";
 import NotificationsNoneRoundedIcon from "@material-ui/icons/NotificationsNoneRounded";
 import NotificationsActiveRoundedIcon from "@material-ui/icons/NotificationsActiveRounded";
 import { blue } from "@material-ui/core/colors";
+import socket from "functions/sockets";
 
 const useStyles = makeStyles({
   notificationIcon: {
     color: "white"
+  },
+  activeNotificationIcon: {
+    color: "#43DDC1"
   },
   menu: {
     backgroundColor: blue
   },
   link: {
     textDecoration: "none",
-    color: "#6E3ADB",
+    color: "#43DDC1",
     fontSize: "24px"
   },
   seen: {
@@ -46,7 +50,15 @@ const Notifications = () => {
       setNotifications(data.reverse());
     };
     getNotifications();
+    socket.subscribe("notifications", handleSocketNotification);
+
+    return () => socket.unsubscribe("notifications");
   }, []);
+
+  const handleSocketNotification = notification => {
+    notifications.unshift(notification);
+    setNotifications(notifications);
+  };
 
   useEffect(() => {
     setSeen(notifications.every(ele => ele.seen === true));
@@ -93,7 +105,7 @@ const Notifications = () => {
           <div>
             <NotificationsActiveRoundedIcon
               fontSize="large"
-              className={classes.notificationIcon}
+              className={classes.activeNotificationIcon}
             />
           </div>
         )}
@@ -105,11 +117,11 @@ const Notifications = () => {
         anchorOrigin={{
           horizontal: "center"
         }}
-        keepMounted
         transformOrigin={{
           vertical: -40,
           horizontal: "right"
         }}
+        keepMounted
         open={open}
         onClose={handleClose}
       >

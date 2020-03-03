@@ -1,4 +1,5 @@
 const { User, Notification } = require("../database");
+const io = require("../services/socketService");
 
 const createNotification = async data => {
   const { recipient, event, origin, thread } = data;
@@ -9,6 +10,7 @@ const createNotification = async data => {
     thread
   });
   const notification = await newNotification.save();
+  io.sendNotification(recipient, generateNotificationData(notification));
   return notification;
 };
 
