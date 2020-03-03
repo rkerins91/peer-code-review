@@ -6,12 +6,13 @@ import {
   Backdrop,
   CircularProgress,
   makeStyles,
-  Button
+  Button,
+  Tooltip
 } from "@material-ui/core";
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
-import { authHeader } from "../functions/jwt";
+import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   root: { padding: "5%" },
@@ -37,17 +38,25 @@ const useStyles = makeStyles({
     padding: "0 3em"
   },
   threadTitle: {
-    fontWeight: "500"
+    fontWeight: "500",
+    display: "inline-flex"
   },
   threadDate: {
     fontWeight: "500",
-    color: "grey"
+    color: "grey",
+    display: "block"
   },
   editButton: {
     backgroundColor: "#43DDC1",
     textTransform: "none",
-    margin: "1em auto",
+    margin: "1em 1em",
     justifySelf: "center"
+  },
+  declineButton: {
+    backgroundColor: "#43DDC1",
+    textTransform: "none",
+    margin: "1em 1em",
+    float: "right"
   }
 });
 
@@ -55,8 +64,8 @@ const ThreadDisplay = ({
   threadData,
   user,
   refreshThread,
-  typeParam,
-  defaultSelection
+  assignmentActions,
+  typeParam
 }) => {
   const classes = useStyles();
 
@@ -100,6 +109,35 @@ const ThreadDisplay = ({
     }
   };
 
+  var displayDecline = false;
+  if (typeParam) {
+    if (typeParam === "assigned") {
+      displayDecline = true;
+    }
+  }
+
+  const handleDecline = async () => {
+    var alerts = new Set();
+    try {
+      const response = await axios({
+        method: "patch",
+        url: `/user/${user._id}/decline-request/${threadData._id}`,
+        headers: { "content-type": "application/json" }
+      });
+      if (response.data.success) {
+        alerts.add("Request declined successfully");
+        setPageAlerts(alerts);
+        setPostSuccessAlert(true);
+        assignmentActions(threadData._id, true);
+      } else throw new Error("Request unsuccessful");
+    } catch (err) {
+      alerts.add("Could not decline request");
+      setPageAlerts(alerts);
+      setAlertState(true);
+      setSubmitState(false);
+    }
+  };
+
   const handleSaveReply = () => {
     if (!editorHasContent) {
       handleErrors("New content cannot be blank");
@@ -120,6 +158,7 @@ const ThreadDisplay = ({
     if (postId) {
       //Truthy if this is a post edit
       try {
+        var alerts = new Set();
         const response = await axios({
           method: "put",
           url: `/thread/${threadData._id}/post/${postId}`,
@@ -130,20 +169,23 @@ const ThreadDisplay = ({
           data: JSON.stringify(requestData)
         });
         if (response.data.success) {
-          var alerts = new Set();
           alerts.add("Post edited successfully!");
           setPageAlerts(alerts);
           setPostSuccessAlert(true);
           if (typeParam) {
             refreshThread(threadData._id, typeParam);
-          } else refreshThread(threadData._id, defaultSelection.type);
+          } else throw new Error("Request unsuccessful");
         }
       } catch (err) {
-        console.log(err);
+        alerts.add("Post Edit failed");
+        setPageAlerts(alerts);
+        setAlertState(true);
+        setSubmitState(false);
       }
     } else {
       //This is a new reply
       try {
+        var alerts = new Set();
         const response = await axios({
           method: "post",
           url: `/thread/${threadData._id}/post`,
@@ -154,18 +196,22 @@ const ThreadDisplay = ({
           data: JSON.stringify(requestData)
         });
         if (response.data.success) {
-          var alerts = new Set();
           alerts.add("Reply posted successfully!");
           setPageAlerts(alerts);
           setPostSuccessAlert(true);
           setSubmitState(false);
           setReadOnly(true);
           if (typeParam) {
-            refreshThread(threadData._id, typeParam);
-          } else refreshThread(threadData._id, defaultSelection.type);
-        }
+            if (typeParam === "assigned") {
+              assignmentActions(threadData._id, false);
+            } else refreshThread(threadData._id, typeParam);
+          }
+        } else throw new Error("Request unsuccessful");
       } catch (err) {
-        console.log(err);
+        alerts.add("Reply post failed");
+        setPageAlerts(alerts);
+        setAlertState(true);
+        setSubmitState(false);
       }
     }
   };
@@ -195,6 +241,20 @@ const ThreadDisplay = ({
             >
               {threadData.title}
             </Typography>
+            {displayDecline ? (
+              <Tooltip title="Decline to review this request?">
+                <Button
+                  className={classes.declineButton}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleDecline}
+                >
+                  Decline
+                </Button>
+              </Tooltip>
+            ) : (
+              <span />
+            )}
             <Typography
               className={classes.threadDate}
               variant="subtitle1"

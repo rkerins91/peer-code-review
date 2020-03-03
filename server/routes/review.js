@@ -6,6 +6,7 @@ const {
   createRequest,
   createPost,
   getRequestThreads,
+  acceptRequest,
   getReviewThreads,
   getAssignedThreads
 } = require("../controllers/thread");
@@ -53,25 +54,32 @@ router.post(
 
 //push a new post onto a thread
 router.post("/thread/:id/post", isAuth, async (req, res) => {
+  const threadId = req.params.id;
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
+    if (!mongoose.isValidObjectId(threadId)) {
       throw new Error("invalidThreadIdError");
     }
-    const { recipient, event } = await createPost(req.params.id, req.body);
+    var result = await createPost(threadId, req.body);
+    const { thread, notification } = result;
 
-    if (req.body.author !== recipient.toString()) {
-      const notification = await createNotification({
-        origin: req.body.authorName,
-        event,
-        thread: req.params.id,
-        recipient
-      });
+    if (notification) {
+      if (req.body.author !== notification.recipient) {
+        const newNotification = await createNotification({
+          origin: req.body.authorName,
+          event: notification.event,
+          thread: req.params.id,
+          recipient: notification.recipient
+        });
+      }
     }
 
-    return res.status(201).json({
-      success: true,
-      threadId: req.params.id
-    });
+    if (thread) {
+      return res.status(201).json({
+        success: true
+      });
+    } else {
+      throw new Error();
+    }
   } catch (err) {
     console.log(err);
     if (err.message === "invalidThreadIdError") {
@@ -94,7 +102,7 @@ router.post("/thread/:id/post", isAuth, async (req, res) => {
         ]
       });
     }
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
 
@@ -127,6 +135,7 @@ router.get("/thread/:id", isAuth, async (req, res) => {
         ]
       });
     }
+    return res.sendStatus(500);
   }
 });
 
@@ -171,7 +180,7 @@ router.get("/threads/:status/:id", isAuth, async (req, res) => {
         ]
       });
     }
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
 
@@ -202,7 +211,7 @@ router.put("/thread/:threadId/post/:postId", isAuth, async (req, res) => {
     }
   } catch (err) {
     console.log(err);
-    res.sendStatus(500);
+    return res.sendStatus(500);
   }
 });
 

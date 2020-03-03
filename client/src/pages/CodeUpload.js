@@ -13,7 +13,7 @@ import { UserContext } from "context/UserContext";
 import { TextEditor } from "components/index";
 import AlertSnackbar from "components/AlertSnackbar";
 import SubmitButton from "components/TextEditor/components/SubmitButton";
-import { authHeader } from "../functions/jwt";
+import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   root: {

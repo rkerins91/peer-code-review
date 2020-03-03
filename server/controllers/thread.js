@@ -1,27 +1,31 @@
 const { Thread, Post, threadQueries } = require("../database");
+const { unassignThread } = require("./user");
 const config = require("../config/config");
 
 module.exports = {
   createRequest: async data => {
     const { title, content, language, user } = data;
-    const newPost = new Post({
-      author: user._id,
-      authorName: user.name,
-      data: content
-    });
 
-    const newThread = new Thread({
-      creator: user._id,
-      title,
-      status: 0,
-      language: { name: language.name, experience: language.experience }
-    });
+    if (title && content && language && user) {
+      const newPost = new Post({
+        author: user._id,
+        authorName: user.name,
+        data: content
+      });
 
-    const post = await newPost.save();
-    newThread.posts.push(post);
-    newThread.noAssign.push(user._id);
-    const resultThread = await newThread.save();
-    return resultThread;
+      const newThread = new Thread({
+        creator: user._id,
+        title,
+        status: 0,
+        language: { name: language.name, experience: language.experience }
+      });
+
+      const post = await newPost.save();
+      newThread.posts.push(post);
+      newThread.noAssign.push(user._id);
+      const resultThread = await newThread.save();
+      return resultThread;
+    } else throw new Error("Missing required request data");
   },
 
   createPost: async (threadId, postData) => {
@@ -34,26 +38,34 @@ module.exports = {
       });
       const post = await newPost.save();
       var thread = await Thread.findById(threadId);
+      thread.posts.push(post);
+
       // check to see if author does not have a post in thread already, so we can differentiate between
       // first review and subsequent comments for notifications
-      const isFirstReview = thread.posts.every(currPost => {
-        return currPost.author.toString() !== author;
-      });
-      thread.posts.push(post);
-      await thread.save();
-      // return recipient and event type based on which isFirst review
-      // and commenter
-      const reviewerId = thread.noAssign[1].toString();
-      if (reviewerId === author && isFirstReview) {
-        return { recipient: thread.creator._id, event: 1 };
-      } else if (reviewerId === author && !isFirstReview) {
-        return { recipient: thread.creator._id, event: 3 };
-      } else {
-        return { recipient: reviewerId, event: 4 };
+      var isFirstReview =
+        thread.status === 1 && author !== thread.creator.toString();
+      //Check if thread needs to be accepted
+      if (isFirstReview) {
+        thread.reviewer = author;
+        thread.status = 2;
+        unassignThread(author, thread._id);
       }
-    } else {
-      throw new Error("Missing required request data");
+      var newThread = await thread.save();
+    } else throw new Error("Missing required request data");
+
+    // return recipient and event type based on which isFirst review
+    // and commenter
+    let notification = null;
+    if (newThread.reviewer) {
+      if (newThread.reviewer.toString() === author && isFirstReview) {
+        notification = { recipient: newThread.creator, event: 1 };
+      } else if (newThread.reviewer.toString() === author && !isFirstReview) {
+        notification = { recipient: newThread.creator, event: 3 };
+      } else {
+        notification = { recipient: newThread.reviewer, event: 4 };
+      }
     }
+    return { thread: newThread, notification: notification };
   },
 
   getRequestThreads: async (userId, status) => {

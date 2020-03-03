@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
-import { ThreadDisplay } from "components";
+import ThreadDisplay from "./ThreadDisplay";
 import { UserContext } from "context/UserContext";
 import SideBar from "./SideBar";
 import axios from "axios";
-import { authHeader } from "../../functions/jwt";
+import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   link: {
@@ -33,7 +33,7 @@ const Dashboard = () => {
   const [assigned, setAssigned] = useState({});
   const [selectedThread, setSelectedThread] = useState(null);
   var { threadParam, typeParam } = useParams();
-  const [defaultSelection, setDefaultSelection] = useState(null);
+  const routeHistory = useHistory();
 
   // user context
   const { user } = useContext(UserContext);
@@ -102,13 +102,25 @@ const Dashboard = () => {
     }
   };
 
+  const handleAssignmentActions = async (threadId, decline) => {
+    delete assigned[threadId];
+    setAssigned(assigned);
+    if (!decline) {
+      handleThreadRefresh(threadId, "reviews"); // Refresh the thread and treat as a review instead of assigned.
+      routeHistory.push("/dashboard/reviews/" + threadId);
+    } else {
+      typeParam = null;
+      selectDefault();
+    }
+  };
+
   useEffect(() => {
     if (user) {
       getReviews();
     }
   }, []);
 
-  useEffect(() => {
+  const selectDefault = () => {
     switch (typeParam) {
       case "requests":
         setSelectedThread(requests[threadParam]);
@@ -124,17 +136,21 @@ const Dashboard = () => {
         if (Object.values(requests).length > 0) {
           threadParam = Object.values(requests)[0]._id;
           setSelectedThread(requests[threadParam]);
-          setDefaultSelection({ type: "requests", threadId: threadParam });
+          routeHistory.replace("/dashboard/requests/" + threadParam);
         } else if (Object.values(reviews).length > 0) {
           threadParam = Object.values(reviews)[0]._id;
           setSelectedThread(reviews[threadParam]);
-          setDefaultSelection({ type: "reviews", threadId: threadParam });
+          routeHistory.replace("/dashboard/reviews/" + threadParam);
         } else if (Object.values(assigned).length > 0) {
           threadParam = Object.values(assigned)[0]._id;
           setSelectedThread(assigned[threadParam]);
-          setDefaultSelection({ type: "assigned", threadId: threadParam });
+          routeHistory.replace("/dashboard/assigned/" + threadParam);
         }
     }
+  };
+
+  useEffect(() => {
+    selectDefault();
   }, [reviews, requests, assigned]);
 
   return (
@@ -146,7 +162,6 @@ const Dashboard = () => {
         threadParam={threadParam}
         typeParam={typeParam}
         setSelectedThread={setSelectedThread}
-        defaultSelection={defaultSelection}
       ></SideBar>
       <Grid container className={classes.container}>
         <Grid item xs={12} className={classes.gridItem}>
@@ -154,8 +169,8 @@ const Dashboard = () => {
             threadData={selectedThread}
             user={user}
             refreshThread={handleThreadRefresh}
+            assignmentActions={handleAssignmentActions}
             typeParam={typeParam}
-            defaultSelection={defaultSelection}
           />
         </Grid>
       </Grid>

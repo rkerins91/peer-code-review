@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import socket from "./sockets";
 var jwtDecode = require("jwt-decode");
 
 const getToken = () => {
@@ -43,6 +43,7 @@ async function fetchUser(decodedToken) {
   } else {
     let id = decodedToken.user._id;
     let userObject = await getUser(id);
+    socket.emit("login", id);
     return userObject;
   }
 }
@@ -51,10 +52,10 @@ export const removeToken = () => {
   localStorage.removeItem("peercode-auth-token");
 };
 
-export const authJWT = () => {
+export const authJWT = async () => {
   let token = getToken();
   if (token) {
     let decodedToken = decodeToken(token);
-    return fetchUser(decodedToken);
+    return await fetchUser(decodedToken);
   } else return null;
 };
