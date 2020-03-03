@@ -7,7 +7,7 @@ const getToken = () => {
   return token;
 };
 
-export const authHeader = { headers: { Authorization: getToken() } };
+export const authHeader = () => ({ headers: { Authorization: getToken() } });
 
 const decodeToken = token => {
   var decodedToken = jwtDecode(token);
@@ -22,7 +22,7 @@ async function fetchUser(decodedToken) {
         method: "get",
         headers: {
           "Content-Type": "application/json",
-          ...authHeader.headers
+          ...authHeader().headers
         }
       });
       if (data.errors) {
