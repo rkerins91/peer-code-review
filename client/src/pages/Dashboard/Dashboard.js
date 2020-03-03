@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory, matchPath } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
 import ThreadDisplay from "./ThreadDisplay";
@@ -7,6 +7,7 @@ import { UserContext } from "context/UserContext";
 import SideBar from "./SideBar";
 import axios from "axios";
 import { authHeader } from "functions/jwt";
+import socket from "functions/sockets";
 
 const useStyles = makeStyles({
   link: {
@@ -98,7 +99,7 @@ const Dashboard = () => {
         setSelectedThread(response.data.thread);
       }
     } catch (err) {
-      Location.reload(true); //If there's an error, refresh the whole page
+      window.location.reload(true); //If there's an error, refresh the whole page
     }
   };
 
@@ -148,6 +149,19 @@ const Dashboard = () => {
         }
     }
   };
+
+  useEffect(() => {
+    const prepareRefresh = notification => {
+      const match = matchPath(notification.link, {
+        path: "/dashboard/:typeParam/:threadParam"
+      });
+      handleThreadRefresh(match.params.threadParam, match.params.typeParam);
+    };
+
+    socket.subscribe("dashboard", prepareRefresh);
+
+    return () => socket.unsubscribe("dashboard");
+  }, []);
 
   useEffect(() => {
     selectDefault();
