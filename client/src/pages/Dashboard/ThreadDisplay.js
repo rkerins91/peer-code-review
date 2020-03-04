@@ -109,7 +109,7 @@ const ThreadDisplay = ({
     }
   };
 
-  var displayDecline = false;
+  let displayDecline = false;
   if (typeParam) {
     if (typeParam === "assigned") {
       displayDecline = true;
@@ -117,7 +117,7 @@ const ThreadDisplay = ({
   }
 
   const handleDecline = async () => {
-    var alerts = new Set();
+    let alerts = new Set();
     try {
       const response = await axios({
         method: "patch",

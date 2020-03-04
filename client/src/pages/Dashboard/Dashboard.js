@@ -43,7 +43,6 @@ const reducer = (state, action) => {
   const deleteThread = (threadId, collection) => {
     const newState = { ...collection };
     delete newState[threadId];
-    console.log(newState);
     return newState;
   };
 

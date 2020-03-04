@@ -29,6 +29,7 @@ const socketListeners = socket => {
 
   // Subscribe this socket connection to a room keyed by their userId
   socket.on("login", userId => {
+    console.log("User joined room " + userId);
     socket.join(userId);
   });
 };

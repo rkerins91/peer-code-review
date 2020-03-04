@@ -65,7 +65,7 @@ module.exports = {
         notification = { recipient: newThread.reviewer, event: 4 };
       }
     }
-    return { thread: newThread, notification: notification };
+    return { thread: newThread, notification };
   },
 
   getRequestThreads: async (userId, status) => {
