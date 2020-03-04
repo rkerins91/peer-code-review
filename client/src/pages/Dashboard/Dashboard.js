@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useReducer } from "react";
 import { useParams, useHistory, matchPath } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid } from "@material-ui/core";
@@ -27,11 +27,65 @@ const useStyles = makeStyles({
   }
 });
 
+const initialState = {
+  requests: {},
+  reviews: {},
+  assigned: {}
+};
+
+const reducer = (state, action) => {
+  const updateThread = (thread, collection) => {
+    const newState = { ...collection };
+    newState[thread._id] = thread;
+    return newState;
+  };
+
+  const deleteThread = (threadId, collection) => {
+    const newState = { ...collection };
+    delete newState[threadId];
+    console.log(newState);
+    return newState;
+  };
+
+  switch (action.type) {
+    case "getThreads":
+      return {
+        requests: action.payload.requests,
+        reviews: action.payload.reviews,
+        assigned: action.payload.assigned
+      };
+    case "updateRequests":
+      return {
+        requests: updateThread(action.payload, state.requests),
+        reviews: state.reviews,
+        assigned: state.assigned
+      };
+    case "updateReviews":
+      return {
+        reviews: updateThread(action.payload, state.reviews),
+        requests: state.requests,
+        assigned: state.assigned
+      };
+    case "updateAssigned":
+      return {
+        assigned: updateThread(action.payload, state.assigned),
+        requests: state.requests,
+        reviews: state.reviews
+      };
+    case "deleteAssigned":
+      return {
+        assigned: deleteThread(action.payload, state.assigned),
+        requests: state.requests,
+        reviews: state.reviews
+      };
+    default:
+      throw new Error("State update error");
+  }
+};
+
 const Dashboard = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const classes = useStyles();
-  const [reviews, setReviews] = useState({});
-  const [requests, setRequests] = useState({});
-  const [assigned, setAssigned] = useState({});
   const [selectedThread, setSelectedThread] = useState(null);
   var { threadParam, typeParam } = useParams();
   const routeHistory = useHistory();
@@ -63,9 +117,14 @@ const Dashboard = () => {
         return {}; // if there is an error, return empty user object
       } else {
         if (data.success) {
-          setRequests(createThreadObj(data.requests));
-          setReviews(createThreadObj(data.reviews));
-          setAssigned(createThreadObj(data.assigned));
+          dispatch({
+            type: "getThreads",
+            payload: {
+              requests: createThreadObj(data.requests),
+              reviews: createThreadObj(data.reviews),
+              assigned: createThreadObj(data.assigned)
+            }
+          });
           return;
         }
       }
@@ -84,16 +143,13 @@ const Dashboard = () => {
       if (response.data.success) {
         switch (type) {
           case "requests":
-            requests[threadId] = response.data.thread;
-            setRequests(requests);
+            dispatch({ type: "updateRequests", payload: response.data.thread });
             break;
           case "reviews":
-            reviews[threadId] = response.data.thread;
-            setReviews(reviews);
+            dispatch({ type: "updateReviews", payload: response.data.thread });
             break;
           case "assigned":
-            assigned[threadId] = response.data.thread;
-            setAssigned(assigned);
+            dispatch({ type: "updateAssigned", payload: response.data.thread });
             break;
         }
         if (threadParam === threadId) {
@@ -107,14 +163,12 @@ const Dashboard = () => {
   };
 
   const handleAssignmentActions = async (threadId, decline) => {
-    delete assigned[threadId];
-    setAssigned(assigned);
+    dispatch({ type: "deleteAssigned", payload: threadId });
     if (!decline) {
       handleThreadRefresh(threadId, "reviews"); // Refresh the thread and treat as a review instead of assigned.
       routeHistory.push("/dashboard/reviews/" + threadId);
     } else {
-      typeParam = null;
-      selectDefault();
+      routeHistory.replace("/dashboard");
     }
   };
 
@@ -127,27 +181,27 @@ const Dashboard = () => {
   const selectDefault = () => {
     switch (typeParam) {
       case "requests":
-        setSelectedThread(requests[threadParam]);
+        setSelectedThread(state.requests[threadParam]);
         break;
       case "reviews":
-        setSelectedThread(reviews[threadParam]);
+        setSelectedThread(state.reviews[threadParam]);
         break;
       case "assigned":
-        setSelectedThread(assigned[threadParam]);
+        setSelectedThread(state.assigned[threadParam]);
         break;
       default:
         // fallback, select the first thread in the first collection that has a thread as selected by default
-        if (Object.values(requests).length > 0) {
-          threadParam = Object.values(requests)[0]._id;
-          setSelectedThread(requests[threadParam]);
+        if (Object.values(state.requests).length > 0) {
+          threadParam = Object.values(state.requests)[0]._id;
+          setSelectedThread(state.requests[threadParam]);
           routeHistory.replace("/dashboard/requests/" + threadParam);
-        } else if (Object.values(reviews).length > 0) {
-          threadParam = Object.values(reviews)[0]._id;
-          setSelectedThread(reviews[threadParam]);
+        } else if (Object.values(state.reviews).length > 0) {
+          threadParam = Object.values(state.reviews)[0]._id;
+          setSelectedThread(state.reviews[threadParam]);
           routeHistory.replace("/dashboard/reviews/" + threadParam);
-        } else if (Object.values(assigned).length > 0) {
-          threadParam = Object.values(assigned)[0]._id;
-          setSelectedThread(assigned[threadParam]);
+        } else if (Object.values(state.assigned).length > 0) {
+          threadParam = Object.values(state.assigned)[0]._id;
+          setSelectedThread(state.assigned[threadParam]);
           routeHistory.replace("/dashboard/assigned/" + threadParam);
         }
     }
@@ -155,13 +209,17 @@ const Dashboard = () => {
 
   useEffect(() => {
     selectDefault();
-  }, [threadParam, typeParam, requests, reviews, assigned]);
+  }, [threadParam, typeParam, state.requests, state.reviews, state.assigned]);
+
+  const handleNotification = notification => {
+    const match = matchPath(notification.link, {
+      path: "/dashboard/:typeParam/:threadParam"
+    });
+    handleThreadRefresh(match.params.threadParam, match.params.typeParam);
+  };
 
   useEffect(() => {
-    socket.subscribe("dashboard", () => {
-      getReviews();
-      selectDefault();
-    });
+    socket.subscribe("dashboard", handleNotification);
 
     return () => socket.unsubscribe("dashboard");
   }, []);
@@ -169,9 +227,9 @@ const Dashboard = () => {
   return (
     <div>
       <SideBar
-        requests={Object.values(requests)}
-        reviews={Object.values(reviews)}
-        assigned={Object.values(assigned)}
+        requests={Object.values(state.requests)}
+        reviews={Object.values(state.reviews)}
+        assigned={Object.values(state.assigned)}
         threadParam={threadParam}
         typeParam={typeParam}
         setSelectedThread={setSelectedThread}
