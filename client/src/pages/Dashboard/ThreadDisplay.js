@@ -109,7 +109,7 @@ const ThreadDisplay = ({
     }
   };
 
-  var displayDecline = false;
+  let displayDecline = false;
   if (typeParam) {
     if (typeParam === "assigned") {
       displayDecline = true;
@@ -117,7 +117,7 @@ const ThreadDisplay = ({
   }
 
   const handleDecline = async () => {
-    var alerts = new Set();
+    let alerts = new Set();
     try {
       const response = await axios({
         method: "patch",
@@ -164,7 +164,7 @@ const ThreadDisplay = ({
           url: `/thread/${threadData._id}/post/${postId}`,
           headers: {
             "content-type": "application/json",
-            ...authHeader.headers
+            ...authHeader().headers
           },
           data: JSON.stringify(requestData)
         });
@@ -191,7 +191,7 @@ const ThreadDisplay = ({
           url: `/thread/${threadData._id}/post`,
           headers: {
             "content-type": "application/json",
-            ...authHeader.headers
+            ...authHeader().headers
           },
           data: JSON.stringify(requestData)
         });
