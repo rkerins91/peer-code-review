@@ -25,7 +25,7 @@ const ProfileExperience = ({ experience, editable }) => {
       container
       className={classes.expContainer}
       justify="center"
-      spacing={4}
+      spacing={1}
     >
       <Grid container item>
         <Grid item xs={11} />

@@ -6,7 +6,6 @@ import { availableLanguages } from "utils";
 import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
-import { Redirect } from "react-router-dom";
 import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
