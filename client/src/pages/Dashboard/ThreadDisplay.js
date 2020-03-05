@@ -256,7 +256,7 @@ const ThreadDisplay = ({
   };
 
   const ratingComponent = () => {
-    if (threadData.status >= 2) {
+    if (threadData.status >= 2 && threadData.creator === user._id) {
       return (
         <div className={classes.rating}>
           <Typography variant="subtitle2" align="right">
