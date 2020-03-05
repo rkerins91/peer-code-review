@@ -95,12 +95,11 @@ class MatchingConfig {
         );
 
         console.log(`assignment succeded to user ${assignedUser.email}`);
-        const creatorName = await User.findById(job.data.thread.creator);
         await createNotification({
           recipient: assigneeId,
           event: 2,
           thread: threadId,
-          origin: creatorName.name
+          origin: job.data.thread.creator
         });
 
         await updateStatus(threadId, "assigned");

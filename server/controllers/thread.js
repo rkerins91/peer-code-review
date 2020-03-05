@@ -122,6 +122,9 @@ module.exports = {
   setRating: async (threadId, rating) => {
     try {
       rating = Number(rating);
+      if (rating < 0 || rating > 5) {
+        throw new Error("Invalid rating value");
+      }
       const thread = await Thread.findById(threadId);
       const prevRating = thread.rating;
       thread.rating = rating;

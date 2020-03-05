@@ -256,16 +256,28 @@ const ThreadDisplay = ({
   };
 
   const ratingComponent = () => {
-    if (threadData.status >= 2 && threadData.creator === user._id) {
-      return (
-        <div className={classes.rating}>
-          <Typography variant="subtitle2" align="right">
-            Rate this review
-          </Typography>
-          <Rating value={threadData.rating} onChange={handleRating} />
-        </div>
-      );
-    } else return <></>;
+    if (threadData.rating && threadData.status >= 2) {
+      if (threadData.creator === user._id) {
+        return (
+          <div className={classes.rating}>
+            <Typography variant="subtitle2" align="right">
+              Rate this review
+            </Typography>
+            <Rating value={threadData.rating} onChange={handleRating} />
+          </div>
+        );
+      } else if (threadData.reviewer === user._id) {
+        return (
+          <div className={classes.rating}>
+            <Typography variant="subtitle2" align="right">
+              Rating
+            </Typography>
+            <Rating value={threadData.rating} readOnly />
+          </div>
+        );
+      }
+    }
+    return <></>;
   };
 
   if (!threadData) {

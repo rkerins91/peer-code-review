@@ -64,8 +64,8 @@ router.post("/thread/:id/post", isAuth, async (req, res) => {
 
     if (notification) {
       if (req.body.author !== notification.recipient) {
-        const newNotification = await createNotification({
-          origin: req.body.authorName,
+        await createNotification({
+          origin: req.body.author,
           event: notification.event,
           thread: req.params.id,
           recipient: notification.recipient
@@ -215,18 +215,31 @@ router.put("/thread/:threadId/post/:postId", isAuth, async (req, res) => {
   }
 });
 
+//Add or update a thread rating
 router.put("/thread/:threadId/rating/:rating", async (req, res) => {
   const rating = req.params.rating;
   const threadId = req.params.threadId;
   try {
     const updatedThread = await setRating(threadId, rating);
     if (updatedThread) {
+      createNotification({
+        recipient: updatedThread.reviewer,
+        event: 5,
+        origin: updatedThread.creator,
+        thread: threadId
+      });
       return res.status(200).json({
         success: true
       });
     } else throw new Error();
   } catch (err) {
     console.error(err);
+    if (err.message === "Invalide rating value") {
+      return res.status(400).json({
+        success: false,
+        errors: { msg: err.message }
+      });
+    }
     return res.sendStatus(500);
   }
 });
