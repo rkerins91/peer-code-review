@@ -122,13 +122,10 @@ const Dashboard = () => {
 
   const selectDefault = () => {
     if (threadParam) {
-      console.log("****************");
       getThread();
     } else if (typeParam) {
-      console.log("* * * * * * * * * * * * * *");
       getType();
     } else {
-      console.log("*  *  *  *  *  *  *  *  *  *  *  *  *  *");
       getDefault();
     }
   };
