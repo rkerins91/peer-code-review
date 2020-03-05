@@ -235,4 +235,14 @@ router.get("/users/all", async (req, res) => {
   });
 });
 
+router.patch("/users/rating", async (req, res) => {
+  const users = await User.updateMany(
+    { _id: { $exists: true } },
+    { rating: { averageRating: 3, count: 0 } }
+  );
+  res.status(200).json({
+    users
+  });
+});
+
 module.exports = router;

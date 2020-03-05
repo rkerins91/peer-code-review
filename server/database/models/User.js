@@ -28,6 +28,16 @@ const userSchema = new Schema(
     credits: {
       type: Number,
       default: 3
+    },
+    rating: {
+      averageRating: {
+        type: Number,
+        default: 3
+      },
+      count: {
+        type: Number,
+        default: 1
+      }
     }
   },
   { timestamps: true }

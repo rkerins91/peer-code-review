@@ -1,12 +1,13 @@
-const { User, Notification } = require("../database");
+const { Notification, User } = require("../database");
 const io = require("../services/socketService");
 
 const createNotification = async data => {
   const { recipient, event, origin, thread } = data;
+  const originDoc = await User.findById(origin);
   const newNotification = await new Notification({
     recipient,
     event: Number(event),
-    origin,
+    origin: originDoc.name,
     thread
   });
   const notification = await newNotification.save();
@@ -52,6 +53,10 @@ const generateNotificationData = notification => {
     case 4:
       result.link = `/dashboard/reviews/${notification.thread}`;
       result.message = `A thread you are in has a new post by ${notification.origin}`;
+      break;
+    case 5:
+      result.link = `/dashboard/reviews/${notification.thread}`;
+      result.message = `${notification.origin} has rated your review`;
       break;
     default:
       result.link = "";
