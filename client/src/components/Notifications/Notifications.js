@@ -120,7 +120,6 @@ const Notifications = () => {
                 className={`${classes.link} ${
                   ele.seen ? classes.seen : classes.unseen
                 }`}
-                focusVisible={classes.focused}
               >
                 {ele.message}
               </MenuItem>

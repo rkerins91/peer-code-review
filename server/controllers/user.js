@@ -44,5 +44,17 @@ module.exports = {
     user.assignedThreads.pull(threadId);
     const updatedUser = await user.save();
     return updatedUser;
+  },
+
+  editName: async (userId, reqBody) => {
+    console.log(userId, reqBody);
+    const { name, email } = reqBody;
+    const user = await User.findById(userId);
+    console.log("gotHere");
+
+    user.name = name;
+    user.email = email;
+    const updatedUser = await user.save();
+    return updatedUser;
   }
 };

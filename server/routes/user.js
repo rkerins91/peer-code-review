@@ -6,7 +6,8 @@ const config = require("../config/config");
 const {
   setExperience,
   updateCredits,
-  unassignThread
+  unassignThread,
+  editName
 } = require("../controllers/user");
 const matchingQueue = require("../services/matchingQueue");
 const { User, Thread } = require("../database");
@@ -147,12 +148,50 @@ router.get("/user/:id", isAuth, async (req, res) => {
         ]
       });
     } else {
+      user.password = undefined;
       res.status(201).json({
-        user: user
+        user
       });
     }
   } catch (err) {
     console.log(err);
+  }
+});
+
+router.get("/user/profile/:id", isAuth, async (req, res) => {
+  const _id = req.params.id;
+  // Find if user exists
+
+  try {
+    var user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({
+        errors: [
+          {
+            value: _id,
+            msg: "Cannot find the user",
+            param: "id"
+          }
+        ]
+      });
+    } else {
+      user.password = undefined;
+      user.credits = undefined;
+      res.status(201).json({
+        user
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.put("/user/edit/:id", isAuth, async (req, res) => {
+  try {
+    const updatedUser = await editName(req.params.id, req.body);
+    res.status(200).send(updatedUser);
+  } catch (error) {
+    res.status(500).send({ error });
   }
 });
 
