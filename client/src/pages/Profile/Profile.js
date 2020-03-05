@@ -42,8 +42,8 @@ const Profile = ({ editable, userProp, width }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { userId } = useParams();
   const { user, setUser } = useContext(UserContext);
-
   const [userProfile, setUserProfile] = useState({});
+  const [experience, setExperience] = useState(user.experience);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
 
@@ -68,7 +68,8 @@ const Profile = ({ editable, userProp, width }) => {
       `/user/edit/${user._id}`,
       {
         name,
-        email
+        email,
+        experience
       },
       authHeader
     );
@@ -81,7 +82,7 @@ const Profile = ({ editable, userProp, width }) => {
 
   const changeEmail = e => setEmail(e.target.value);
 
-  const isEditableProfile = () => {
+  const isEditableProfileName = () => {
     if (editable) {
       return (
         <Grid container item>
@@ -125,9 +126,13 @@ const Profile = ({ editable, userProp, width }) => {
             }`}
           >
             <Grid container direction="column" spacing={6}>
-              {isEditableProfile()}
+              {isEditableProfileName()}
               <Grid item>
-                <ProfileExperience experience={user.experience} />
+                <ProfileExperience
+                  experience={user.experience}
+                  editable={editable}
+                  isEditing={isEditing}
+                />
               </Grid>
               <Grid item>
                 <ProfileActivity />
