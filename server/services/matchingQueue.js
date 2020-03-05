@@ -33,7 +33,7 @@ class MatchingConfig {
     this.queue.process(async (job, done) => {
       const thread = job.data.thread;
       try {
-        if (thread.status >= config.server.threadStatus.indexOf("ongoing")) {
+        if (thread.status >= 2) {
           throw new Error("Thread already has a reviewer");
         } else if (job.data.currentAssignee) {
           // if true, thread had been assigned previously and is now declined or timed-out

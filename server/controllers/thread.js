@@ -121,14 +121,15 @@ module.exports = {
 
   setRating: async (threadId, rating) => {
     try {
+      rating = Number(rating);
       const thread = await Thread.findById(threadId);
       const prevRating = thread.rating;
       thread.rating = rating;
       if (thread.status === 2) {
         thread.status = 3;
         await newRating(thread.reviewer, rating);
-      } else if (prevRating !== rating) {
-        const ratingDelta = prevRating - rating;
+      } else if (prevRating !== rating && thread.status > 2) {
+        const ratingDelta = rating - prevRating;
         await updateRating(thread.reviewer, ratingDelta);
       }
       const resultThread = await thread.save();

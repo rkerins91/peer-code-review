@@ -53,10 +53,15 @@ module.exports = {
       }
       const user = await User.findById(userId);
       if (user) {
-        let sum = user.rating.averageRating * user.rating.count;
-        sum += rating;
-        user.rating.count++;
-        user.rating.averageRating = sum / user.rating.count;
+        if (user.rating.count === 0) {
+          user.rating.averageRating = rating;
+          user.rating.count = 1;
+        } else {
+          let sum = user.rating.averageRating * user.rating.count;
+          sum += rating;
+          user.rating.count++;
+          user.rating.averageRating = sum / user.rating.count;
+        }
         const updatedUser = await user.save();
         return updatedUser;
       } else throw new Error("Invalid user id");
@@ -74,7 +79,7 @@ module.exports = {
       const user = await User.findById(userId);
       if (user) {
         let sum = user.rating.averageRating * user.rating.count;
-        sum += ratingDelta;
+        sum += Number(ratingDelta);
         user.rating.averageRating = sum / user.rating.count;
         const updatedUser = await user.save();
         return updatedUser;
