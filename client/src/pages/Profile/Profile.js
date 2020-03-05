@@ -43,17 +43,33 @@ const Profile = ({ editable, userProp, width }) => {
   const { userId } = useParams();
   const { user, setUser } = useContext(UserContext);
   const [userProfile, setUserProfile] = useState({});
-  const [experience, setExperience] = useState(user.experience);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
+  // Sort experience alphabetically for consistency
+  const alphabetizeExp = exp => {
+    const alphabetizedExp = Object.keys(user.experience)
+      .map(ele => {
+        return { [ele]: user.experience[ele] };
+      })
+      .sort((a, b) => {
+        if (Object.keys(a)[0] < Object.keys(b)[0]) {
+          return -1;
+        } else return 1;
+      });
+    return alphabetizedExp;
+  };
+  const [experience, setExperience] = useState(alphabetizeExp(user.experience));
 
   useDeepCompareEffect(() => {
     const getUser = async () => {
-      if (!userProfile) {
+      if (!userProp) {
         const { data } = await axios.get(`/user/profile/${userId}`, authHeader);
+        console.log(data);
         setUser(data.user);
+        setExperience(alphabetizeExp(data.user.experience));
       } else {
         setUser(userProp);
+        // setExperience(alphabetizeExp(userProp.experience));
       }
     };
     getUser();
@@ -129,7 +145,7 @@ const Profile = ({ editable, userProp, width }) => {
               {isEditableProfileName()}
               <Grid item>
                 <ProfileExperience
-                  experience={user.experience}
+                  experience={experience}
                   editable={editable}
                   isEditing={isEditing}
                 />
