@@ -104,7 +104,7 @@ const Dashboard = () => {
 
     try {
       const { data } = await axios({
-        url: `/threads/open/${user._id}`,
+        url: `/threads/all/${user._id}`,
         method: "get",
         headers: {
           "Content-Type": "application/json",
