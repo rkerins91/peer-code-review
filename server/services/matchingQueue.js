@@ -28,12 +28,12 @@ class MatchingConfig {
   addJob(job) {
     this.queue.add(job);
   }
-  
+
   runQueue() {
     this.queue.process(async (job, done) => {
       const thread = job.data.thread;
       try {
-        if (thread.status === config.server.threadStatus.indexOf("ongoing")) {
+        if (thread.status >= 2) {
           throw new Error("Thread already has a reviewer");
         } else if (job.data.currentAssignee) {
           // if true, thread had been assigned previously and is now declined or timed-out
@@ -58,7 +58,6 @@ class MatchingConfig {
     this.queue.on("failed", async (job, error) => {
       console.log(`Job failed
       ${error}`);
-      this.io.emit("test", "Assignment failed");
       if (error.message === "No candidates found") {
         console.log("clean up and rematch");
         //matching failed due to not finding any matches
@@ -89,26 +88,22 @@ class MatchingConfig {
         const threadId = job.data.thread._id;
         const assigneeId = result.assignee._id;
 
-
         const assignedUser = await assignThread(
           //make the assignment
           assigneeId,
           threadId
         );
-       
+
         console.log(`assignment succeded to user ${assignedUser.email}`);
-        const creatorName = await User.findById(job.data.thread.creator);
         await createNotification({
           recipient: assigneeId,
           event: 2,
           thread: threadId,
-          origin: creatorName.name
+          origin: job.data.thread.creator
         });
-        
+
         await updateStatus(threadId, "assigned");
         const updatedThread = await addToNoAssign(threadId, assigneeId);
-
-        this.io.emit("test", "Assignment made");
         //update job obj
         job.data.thread = updatedThread;
         job.data.currentAssignee = result.assignee._id;

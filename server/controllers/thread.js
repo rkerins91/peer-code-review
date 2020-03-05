@@ -1,5 +1,5 @@
 const { Thread, Post, threadQueries } = require("../database");
-const { unassignThread } = require("./user");
+const { unassignThread, newRating, updateRating } = require("./user");
 const config = require("../config/config");
 
 module.exports = {
@@ -65,7 +65,7 @@ module.exports = {
         notification = { recipient: newThread.reviewer, event: 4 };
       }
     }
-    return { thread: newThread, notification: notification };
+    return { thread: newThread, notification };
   },
 
   getRequestThreads: async (userId, status) => {
@@ -117,5 +117,28 @@ module.exports = {
       { status: status }
     );
     return resultThread;
+  },
+
+  setRating: async (threadId, rating) => {
+    try {
+      rating = Number(rating);
+      if (rating < 0 || rating > 5) {
+        throw new Error("Invalid rating value");
+      }
+      const thread = await Thread.findById(threadId);
+      const prevRating = thread.rating;
+      thread.rating = rating;
+      if (thread.status === 2) {
+        thread.status = 3;
+        await newRating(thread.reviewer, rating);
+      } else if (prevRating !== rating && thread.status > 2) {
+        const ratingDelta = rating - prevRating;
+        await updateRating(thread.reviewer, ratingDelta);
+      }
+      const resultThread = await thread.save();
+      return resultThread;
+    } catch (err) {
+      console.error(err);
+    }
   }
 };

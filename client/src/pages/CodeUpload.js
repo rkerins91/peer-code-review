@@ -133,12 +133,15 @@ const CodeUpload = () => {
         {
           credits: -1
         },
-        authHeader
+        authHeader()
       );
       const response = await axios({
         method: "post",
         url: "/create-request",
-        headers: { "content-type": "application/json", ...authHeader.headers },
+        headers: {
+          "content-type": "application/json",
+          ...authHeader().headers
+        },
         data: JSON.stringify(requestData)
       });
       //redirect user to their reviews page
@@ -162,7 +165,13 @@ const CodeUpload = () => {
 
   return (
     <div className={classes.root}>
-      <Grid className={classes.wrapper} container justify="center" spacing={2}>
+      <Grid
+        className={classes.wrapper}
+        container
+        justify="center"
+        alignItems="center"
+        spacing={2}
+      >
         <Typography className={classes.header} variant="h3" align="center">
           Request a code review
         </Typography>

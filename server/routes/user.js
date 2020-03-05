@@ -7,7 +7,8 @@ const {
   setExperience,
   updateCredits,
   unassignThread,
-  editName
+  editName,
+  getUserActivity
 } = require("../controllers/user");
 const matchingQueue = require("../services/matchingQueue");
 const { User, Thread } = require("../database");
@@ -186,13 +187,20 @@ router.get("/user/profile/:id", isAuth, async (req, res) => {
   }
 });
 
-router.put("/user/edit/:id", isAuth, async (req, res) => {
+router.put("/user/:id/edit", isAuth, async (req, res) => {
   try {
     const updatedUser = await editName(req.params.id, req.body);
     res.status(200).send(updatedUser);
   } catch (error) {
     res.status(500).send({ error });
   }
+});
+
+router.get("/user/:id/activity", isAuth, async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  const userActivity = await getUserActivity(id);
+  res.status(200).send(userActivity);
 });
 
 router.put("/user/:id/experience", isAuth, async (req, res) => {
@@ -250,7 +258,7 @@ router.patch("/user/:id/decline-request/:requestId", async (req, res) => {
     }
     const user = await unassignThread(userId, threadId);
     const thread = await Thread.findById(threadId);
-    matchingQueue.add({ thread: thread, pass: 1 }); //begin rematching
+    matchingQueue.addJob({ thread: thread, pass: 1 }); //begin rematching
     if (user) {
       return res.status(200).json({
         success: true,
@@ -269,6 +277,16 @@ router.patch("/user/:id/decline-request/:requestId", async (req, res) => {
 //Route used for testing
 router.get("/users/all", async (req, res) => {
   const users = await User.find({ assignedThreads: { $exists: true } });
+  res.status(200).json({
+    users
+  });
+});
+
+router.patch("/users/rating", async (req, res) => {
+  const users = await User.updateMany(
+    { _id: { $exists: true } },
+    { rating: { averageRating: 3, count: 0 } }
+  );
   res.status(200).json({
     users
   });

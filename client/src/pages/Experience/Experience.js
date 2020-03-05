@@ -98,7 +98,7 @@ const Experience = ({ history }) => {
     const { data } = await axios.put(
       `user/${user._id}/experience`,
       experienceToSubmit,
-      authHeader
+      authHeader()
     );
     setSuccessful(data.message);
     setUser({ ...user, experience: experienceToSubmit });

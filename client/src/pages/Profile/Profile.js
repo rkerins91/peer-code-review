@@ -60,12 +60,17 @@ const Profile = ({ editable, userProp, width }) => {
   const [email, setEmail] = useState(user.email);
   // Sort experience alphabetically for consistency
 
+  console.log(userId);
+
   const [experience, setExperience] = useState(alphabetizeExp(user.experience));
 
   useDeepCompareEffect(() => {
     const getUser = async () => {
       if (!userProp) {
-        const { data } = await axios.get(`/user/profile/${userId}`, authHeader);
+        const { data } = await axios.get(
+          `/user/profile/${userId}`,
+          authHeader()
+        );
         console.log(data);
         setUserProfile(data.user);
         setExperience(alphabetizeExp(data.user.experience));
@@ -83,7 +88,7 @@ const Profile = ({ editable, userProp, width }) => {
 
   const submitEdits = async () => {
     const { data } = await axios.put(
-      `/user/edit/${user._id}`,
+      `/user/${user._id}/edit`,
       {
         name,
         email,
@@ -123,7 +128,7 @@ const Profile = ({ editable, userProp, width }) => {
       return (
         <Grid container item>
           <Grid item xs={12}>
-            <ProfileName name={user.name} email={user.email} />
+            <ProfileName name={userProfile.name} email={userProfile.email} />
           </Grid>
         </Grid>
       );
@@ -152,7 +157,7 @@ const Profile = ({ editable, userProp, width }) => {
                 />
               </Grid>
               <Grid item>
-                <ProfileActivity ownProfile={userProp} />
+                <ProfileActivity ownProfile={userProp} userId={userId} />
               </Grid>
             </Grid>
           </Paper>

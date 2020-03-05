@@ -7,7 +7,7 @@ const getToken = () => {
   return token;
 };
 
-export const authHeader = { headers: { Authorization: getToken() } };
+export const authHeader = () => ({ headers: { Authorization: getToken() } });
 
 const decodeToken = token => {
   var decodedToken = jwtDecode(token);
@@ -22,7 +22,7 @@ async function fetchUser(decodedToken) {
         method: "get",
         headers: {
           "Content-Type": "application/json",
-          ...authHeader.headers
+          ...authHeader().headers
         }
       });
       if (data.errors) {
@@ -43,7 +43,7 @@ async function fetchUser(decodedToken) {
   } else {
     let id = decodedToken.user._id;
     let userObject = await getUser(id);
-    socket.emit("login", id);
+    socket.login(id);
     return userObject;
   }
 }

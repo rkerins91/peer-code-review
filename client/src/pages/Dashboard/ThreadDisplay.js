@@ -9,6 +9,7 @@ import {
   Button,
   Tooltip
 } from "@material-ui/core";
+import { Rating } from "@material-ui/lab";
 import PostDisplay from "./PostDisplay";
 import AlertSnackbar from "components/AlertSnackbar";
 import { TextEditor } from "components";
@@ -45,6 +46,9 @@ const useStyles = makeStyles({
     fontWeight: "500",
     color: "grey",
     display: "block"
+  },
+  rating: {
+    float: "right"
   },
   editButton: {
     backgroundColor: "#43DDC1",
@@ -109,7 +113,7 @@ const ThreadDisplay = ({
     }
   };
 
-  var displayDecline = false;
+  let displayDecline = false;
   if (typeParam) {
     if (typeParam === "assigned") {
       displayDecline = true;
@@ -117,7 +121,7 @@ const ThreadDisplay = ({
   }
 
   const handleDecline = async () => {
-    var alerts = new Set();
+    let alerts = new Set();
     try {
       const response = await axios({
         method: "patch",
@@ -164,7 +168,7 @@ const ThreadDisplay = ({
           url: `/thread/${threadData._id}/post/${postId}`,
           headers: {
             "content-type": "application/json",
-            ...authHeader.headers
+            ...authHeader().headers
           },
           data: JSON.stringify(requestData)
         });
@@ -191,7 +195,7 @@ const ThreadDisplay = ({
           url: `/thread/${threadData._id}/post`,
           headers: {
             "content-type": "application/json",
-            ...authHeader.headers
+            ...authHeader().headers
           },
           data: JSON.stringify(requestData)
         });
@@ -221,6 +225,61 @@ const ThreadDisplay = ({
     return localDate.toLocaleDateString();
   };
 
+  const handleRating = async (event, newValue) => {
+    const updateRating = async () => {
+      const response = await axios({
+        method: "put",
+        url: `/thread/${threadData._id}/rating/${newValue}`,
+        headers: {
+          ...authHeader().headers
+        }
+      });
+      if (!response.data.success) {
+        throw new Error("Failed to update status");
+      }
+    };
+
+    try {
+      var alerts = new Set();
+      await updateRating();
+      if (typeParam) {
+        await refreshThread(threadData._id, typeParam);
+      }
+      alerts.add("Rating updated");
+      setPageAlerts(alerts);
+      setPostSuccessAlert(true);
+    } catch (err) {
+      alerts.add("Rating update failed");
+      setPageAlerts(alerts);
+      setAlertState(true);
+    }
+  };
+
+  const ratingComponent = () => {
+    if (threadData.rating && threadData.status >= 2) {
+      if (threadData.creator === user._id) {
+        return (
+          <div className={classes.rating}>
+            <Typography variant="subtitle2" align="right">
+              Rate this review
+            </Typography>
+            <Rating value={threadData.rating} onChange={handleRating} />
+          </div>
+        );
+      } else if (threadData.reviewer === user._id) {
+        return (
+          <div className={classes.rating}>
+            <Typography variant="subtitle2" align="right">
+              Rating
+            </Typography>
+            <Rating value={threadData.rating} readOnly />
+          </div>
+        );
+      }
+    }
+    return <></>;
+  };
+
   if (!threadData) {
     return (
       <div>
@@ -241,6 +300,7 @@ const ThreadDisplay = ({
             >
               {threadData.title}
             </Typography>
+            {ratingComponent()}
             {displayDecline ? (
               <Tooltip title="Decline to review this request?">
                 <Button
