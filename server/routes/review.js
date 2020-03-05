@@ -6,9 +6,9 @@ const {
   createRequest,
   createPost,
   getRequestThreads,
-  acceptRequest,
   getReviewThreads,
-  getAssignedThreads
+  getAssignedThreads,
+  setRating
 } = require("../controllers/thread");
 const { createNotification } = require("../controllers/notifications");
 const MatchingService = require("../services/matchingQueue");
@@ -215,17 +215,20 @@ router.put("/thread/:threadId/post/:postId", isAuth, async (req, res) => {
   }
 });
 
-router.get("/notification-test/:id", async (req, res) => {
-  var createdAt = new Date(Date.now());
-  const testData = {
-    _id: "notificationId",
-    event: "new_assignment",
-    origin: "system",
-    read: false,
-    createdAt: createdAt.toLocaleString()
-  };
-  io.sendNotification(req.params.id, testData);
-  res.sendStatus(200);
+router.put("/thread/:threadId/rating/:rating", async (req, res) => {
+  const rating = req.params.rating;
+  const threadId = req.params.threadId;
+  try {
+    const updatedThread = await setRating(threadId, rating);
+    if (updatedThread) {
+      return res.status(200).json({
+        success: true
+      });
+    } else throw new Error();
+  } catch (err) {
+    console.error(err);
+    return res.sendStatus(500);
+  }
 });
 
 module.exports = router;
