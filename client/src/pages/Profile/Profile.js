@@ -117,6 +117,7 @@ const Profile = ({ editable, userProp, width }) => {
               changeName={changeName}
               changeEmail={changeEmail}
               isEditing={isEditing}
+              editable={editable}
             />
           </Grid>
           <Grid item xs={1}>
