@@ -18,8 +18,11 @@ const useStyles = makeStyles({
   root: { padding: "5%" },
   backdrop: {
     zIndex: 900,
-    color: "#fff",
-    left: "20vw" // same width as the sidebar
+    color: "#fff"
+  },
+  spinner: {
+    position: "relative",
+    left: "8vh"
   },
   header: {
     background: "white",
@@ -225,7 +228,10 @@ const ThreadDisplay = ({
     return (
       <div>
         <Backdrop className={classes.backdrop} open={true}>
-          <CircularProgress color="secondary"></CircularProgress>
+          <CircularProgress
+            className={classes.spinner}
+            color="secondary"
+          ></CircularProgress>
         </Backdrop>
       </div>
     );
