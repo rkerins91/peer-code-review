@@ -6,6 +6,7 @@ import {
   Button,
   Divider
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { TextEditor } from "components";
 
@@ -26,6 +27,9 @@ const useStyles = makeStyles({
     backgroundColor: "#43DDC1",
     textTransform: "none",
     marginLeft: "5px"
+  },
+  link: {
+    textDecoration: "none"
   }
 });
 
@@ -85,10 +89,12 @@ const PostDisplay = ({
     <div className={classes.root}>
       <Grid container spacing={1} justify="flex-start" alignItems="center">
         <Grid item xs={12}>
-          <AccountCircle className={classes.posterInfo} />
-          <Typography className={classes.posterInfo}>
-            {postData.authorName}
-          </Typography>
+          <Link to={`/profile/${postData.author}`} className={classes.link}>
+            <AccountCircle className={classes.posterInfo} />
+            <Typography className={classes.posterInfo}>
+              {postData.authorName}
+            </Typography>
+          </Link>
         </Grid>
         <Grid item xs={5}>
           {postData.author === user._id ? (
