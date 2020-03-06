@@ -34,6 +34,9 @@ const useStyles = makeStyles({
   },
   name: {
     fontWeight: "800"
+  },
+  icon: {
+    color: "#888888"
   }
 });
 
@@ -69,7 +72,6 @@ const Profile = ({ editable, userProp, width }) => {
           `/user/profile/${userId}`,
           authHeader()
         );
-        console.log(data);
         setUserProfile(data.user);
         setExperience(alphabetizeExp(data.user.experience));
       } else {
@@ -117,7 +119,9 @@ const Profile = ({ editable, userProp, width }) => {
             />
           </Grid>
           <Grid item xs={1}>
-            {!isEditing && <EditIcon onClick={toggleEditing} />}
+            {!isEditing && (
+              <EditIcon className={classes.icon} onClick={toggleEditing} />
+            )}
             {isEditing && <SaveRoundedIcon onClick={submitEdits} />}
           </Grid>
         </Grid>

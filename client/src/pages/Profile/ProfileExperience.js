@@ -17,7 +17,7 @@ const useStyles = makeStyles({
     fontSize: "3vh"
   },
   link: {
-    color: "black"
+    color: "#888888"
   }
 });
 
