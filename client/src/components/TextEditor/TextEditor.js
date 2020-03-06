@@ -25,13 +25,14 @@ const useStyles = makeStyles({
     border: "2px solid grey",
     padding: "10px",
     margin: "0",
-    height: "40vh",
+    minHeight: "40vh",
+    maxHeight: "60vh",
     overflow: "auto"
   },
   editorRead: {
     padding: "10px",
     margin: "0",
-    height: "10vh",
+    minHeight: "10vh",
     maxHeight: "50vh",
     overflow: "auto"
   }

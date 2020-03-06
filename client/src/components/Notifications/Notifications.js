@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useContext, useReducer } from "react";
-import { Menu, MenuItem, makeStyles, IconButton } from "@material-ui/core";
+import {
+  Menu,
+  MenuItem,
+  Grid,
+  makeStyles,
+  IconButton,
+  Typography,
+  Divider
+} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import axios from "axios";
@@ -16,23 +24,28 @@ const useStyles = makeStyles({
     color: "#43DDC1"
   },
   menu: {
-    backgroundColor: blue
+    padding: "0"
   },
   link: {
     textDecoration: "none",
-    color: "#43DDC1",
-    fontSize: "24px"
+    color: "black",
+    minHeight: "5vh",
+    textAlign: "start",
+    background: "white"
   },
-  seen: {
-    background: "#CCBAF2",
-    color: "white"
-  },
+  seen: { background: "white" },
   unseen: {
-    background: "#6E3ADB",
-    color: "white"
+    background: "#CCBAF2"
+  },
+  itemWrapper: {
+    padding: "0 1vh 0 0",
+    margin: "0"
   },
   focused: {
-    color: "#6E3ADB"
+    background: "white"
+  },
+  time: {
+    color: "#696969"
   }
 });
 
@@ -60,6 +73,15 @@ const reducer = (state, action) => {
     default:
       throw new Error("State update error");
   }
+};
+
+const timeMap = {
+  minute: 60000,
+  hour: 3600000,
+  day: 86400000,
+  week: 604800000,
+  month: 2592000000,
+  year: 31536000000
 };
 
 const Notifications = () => {
@@ -93,6 +115,39 @@ const Notifications = () => {
   const handleMenu = e => {
     setAnchorEl(e.currentTarget);
     setSeen(true);
+  };
+
+  const calcDate = date => {
+    const created = new Date(date);
+    const now = Date.now();
+    const timeDelta = now - created.valueOf();
+    let elapsed = 0;
+    console.log(timeDelta);
+    if (timeDelta < timeMap.minute) {
+      return "just now";
+    } else if (timeDelta < timeMap.hour) {
+      elapsed = timeDelta / timeMap.minute;
+      elapsed = Math.floor(elapsed);
+      return `${elapsed} minute(s) ago`;
+    } else if (timeDelta < timeMap.day) {
+      elapsed = timeDelta / timeMap.hour;
+      elapsed = Math.floor(elapsed);
+      return `${elapsed} hour(s) ago`;
+    } else if (timeDelta < timeMap.week) {
+      elapsed = timeDelta / timeMap.day;
+      elapsed = Math.floor(elapsed);
+      return `${elapsed} day(s) ago`;
+    } else if (timeDelta < timeMap.month) {
+      elapsed = timeDelta / timeMap.week;
+      elapsed = Math.floor(elapsed);
+      return `${elapsed} week(s) ago`;
+    } else if (timeDelta < timeMap.year) {
+      elapsed = timeDelta / timeMap.month;
+      elapsed = Math.floor(elapsed);
+      return `${elapsed} month(s) ago`;
+    } else {
+      return "over a year ago";
+    }
   };
 
   const handleClose = () => {
@@ -146,18 +201,38 @@ const Notifications = () => {
         keepMounted
         open={open}
         onClose={handleClose}
+        PaperProps={{
+          style: {
+            maxHeight: 300
+          }
+        }}
+        MenuListProps={{
+          disablePadding: true
+        }}
       >
         {state.notifications.map(ele => {
           return (
-            <Link to={ele.link} className={classes.link} key={ele._id}>
-              <MenuItem
-                className={`${classes.link} ${
-                  ele.seen ? classes.seen : classes.unseen
-                }`}
-              >
-                {ele.message}
-              </MenuItem>
-            </Link>
+            <>
+              <Link to={ele.link} className={classes.link} key={ele._id}>
+                <MenuItem
+                  className={`${classes.link} ${
+                    ele.seen ? classes.seen : classes.unseen
+                  }`}
+                >
+                  <Grid container className={classes.itemWrapper}>
+                    <Grid item xs={12} className={classes.message}>
+                      <Typography variant="h6">{ele.message}</Typography>
+                    </Grid>
+                    <Grid item xs={12} className={classes.time}>
+                      <Typography variant="subtitle2">
+                        {calcDate(ele.createdAt)}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </MenuItem>
+              </Link>
+              <Divider className={classes.divider} />
+            </>
           );
         })}
       </Menu>

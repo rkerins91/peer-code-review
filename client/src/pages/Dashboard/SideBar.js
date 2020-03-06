@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Drawer,
+  Paper,
   List,
   ListItem,
   ListItemText,
@@ -23,16 +24,15 @@ const useStyles = makeStyles({
     color: "#43DDC1"
   },
   drawer: {
+    minWidth: "280px",
+    width: "18vw",
     height: "calc(100% - 10vh)",
-    top: "10vh",
+    top: "9vh",
     zIndex: 1000 // z-index of app bar is 1100, default of drawer is 1200
   },
   list: {
     paddingLeft: "10px",
     paddingRight: "15px"
-  },
-  fullList: {
-    width: "20vw"
   },
   selected: {
     color: "#43DDC1",
@@ -63,7 +63,7 @@ const SideBar = ({
   const [assignedOpen, setAssignedOpen] = useState(false);
 
   const toggleDrawer = open => {
-    setDrawerOpen(open);
+    setDrawerOpen(prev => !prev);
   };
 
   const openRequests = () => {
@@ -113,9 +113,9 @@ const SideBar = ({
         classes={{ paper: classes.drawer }}
         open={drawerOpen}
         variant="persistent"
-        className={classes.fullList}
+        elevation={3}
       >
-        <List>
+        <List disablePadding={true}>
           <ListItem button onClick={openRequests}>
             <ListItemText>
               <Typography className={classes.header}>

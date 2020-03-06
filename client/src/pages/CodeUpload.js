@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import axios from "axios";
 import {
   Grid,
+  Paper,
   InputLabel,
   Select,
   MenuItem,
@@ -18,14 +19,15 @@ import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   root: {
-    padding: "8% 5%"
+    padding: "9vh 5%"
   },
   wrapper: {
     background: "white",
     borderRadius: "6px",
-    width: "80%",
-    height: "80%",
-    margin: "20px auto"
+    width: "75%",
+    height: "80vh",
+    margin: "8vh auto 0 auto",
+    padding: "3vh 10vh"
   },
   header: {
     margin: "4vh",
@@ -170,73 +172,69 @@ const CodeUpload = () => {
 
   return (
     <div className={classes.root}>
-      <Grid
-        className={classes.wrapper}
-        container
-        justify="center"
-        alignItems="center"
-        spacing={2}
-      >
-        <Typography className={classes.header} variant="h3" align="center">
-          Request a code review
-        </Typography>
-        <Grid item xs={8}>
-          <TextField
-            className={classes.textInput}
-            align="left"
-            label="Title"
-            variant="outlined"
-            onChange={handleTitleChange}
-          />
+      <Paper elevation={5} className={classes.wrapper}>
+        <Grid container justify="center" alignItems="center" spacing={2}>
+          <Typography className={classes.header} variant="h3" align="center">
+            Request a code review
+          </Typography>
+          <Grid item xs={8}>
+            <TextField
+              className={classes.textInput}
+              align="left"
+              label="Title"
+              variant="outlined"
+              onChange={handleTitleChange}
+            />
+          </Grid>
+          <Grid item xs={4}>
+            <InputLabel id="language-select-label">Language</InputLabel>
+            <Select
+              className={classes.languageSelect}
+              labelid="language-select-label"
+              id="language-select"
+              value={requestLanguage}
+              onChange={handleLanguageChange}
+            >
+              {getLanguages.map(language => {
+                return (
+                  <MenuItem value={language} key={language}>
+                    {language}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </Grid>
+          <Grid item xs={12}>
+            <TextEditor
+              className={classes.editor}
+              selectedLanguage={requestLanguage}
+              onSubmit={handleSubmit}
+              didSubmit={submitState}
+              hasContent={handleHasContent}
+              existingContent={null}
+              readOnly={false}
+            ></TextEditor>
+          </Grid>
+          <Grid item xs={12} className={classes.submit}>
+            <SubmitButton onChange={startSubmit} />
+          </Grid>
+          <Grid item xs={12} className={classes.errorDisplay}>
+            <AlertSnackbar
+              openAlert={alertState}
+              messages={[...pageAlerts]}
+              alertsClosed={resetAlerts}
+              variant="error"
+              autoHideDuration="6000"
+            ></AlertSnackbar>
+            <AlertSnackbar
+              openAlert={postSuccess}
+              messages={[...pageAlerts]}
+              alertsClosed={resetAlerts}
+              variant="success"
+            ></AlertSnackbar>
+          </Grid>
         </Grid>
-        <Grid item xs={4}>
-          <InputLabel id="language-select-label">Language</InputLabel>
-          <Select
-            className={classes.languageSelect}
-            labelid="language-select-label"
-            id="language-select"
-            value={requestLanguage}
-            onChange={handleLanguageChange}
-          >
-            {getLanguages.map(language => {
-              return (
-                <MenuItem value={language} key={language}>
-                  {language}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </Grid>
-        <Grid item xs={12}>
-          <TextEditor
-            className={classes.editor}
-            selectedLanguage={requestLanguage}
-            onSubmit={handleSubmit}
-            didSubmit={submitState}
-            hasContent={handleHasContent}
-            existingContent={null}
-            readOnly={false}
-          ></TextEditor>
-        </Grid>
-        <Grid item xs={12} className={classes.submit}>
-          <SubmitButton onChange={startSubmit} />
-        </Grid>
-        <Grid item xs={12} className={classes.errorDisplay}>
-          <AlertSnackbar
-            openAlert={alertState}
-            messages={[...pageAlerts]}
-            alertsClosed={resetAlerts}
-            variant="error"
-            autoHideDuration="6000"
-          ></AlertSnackbar>
-          <AlertSnackbar
-            openAlert={postSuccess}
-            messages={[...pageAlerts]}
-            alertsClosed={resetAlerts}
-            variant="success"
-          ></AlertSnackbar>
-        </Grid>
-      </Grid>
+      </Paper>
     </div>
   );
 };

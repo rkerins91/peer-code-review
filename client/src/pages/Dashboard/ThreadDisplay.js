@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import {
   Grid,
+  Paper,
   Typography,
   Backdrop,
   CircularProgress,
@@ -29,7 +30,7 @@ const useStyles = makeStyles({
     background: "white",
     width: "100%",
     padding: "2em 2em",
-    marginBottom: "2px"
+    marginBottom: "8px"
   },
   postWrapper: {
     background: "white",
@@ -38,8 +39,7 @@ const useStyles = makeStyles({
   },
   editorWrapper: {
     background: "white",
-    width: "100%",
-    padding: "0 3em"
+    width: "100%"
   },
   threadTitle: {
     fontWeight: "500",
@@ -56,8 +56,7 @@ const useStyles = makeStyles({
   editButton: {
     backgroundColor: "#43DDC1",
     textTransform: "none",
-    margin: "1em 1em",
-    justifySelf: "center"
+    margin: "1em"
   },
   declineButton: {
     backgroundColor: "#43DDC1",
@@ -298,84 +297,88 @@ const ThreadDisplay = ({
     return (
       <div className={classes.root}>
         <Grid container>
-          <Grid item className={classes.header} xs={12}>
-            <Typography
-              className={classes.threadTitle}
-              variant="h4"
-              align="left"
-            >
-              {threadData.title}
-            </Typography>
-            {ratingComponent()}
-            {displayDecline ? (
-              <Tooltip title="Decline to review this request?">
-                <Button
-                  className={classes.declineButton}
-                  variant="contained"
-                  color="primary"
-                  onClick={handleDecline}
-                >
-                  Decline
-                </Button>
-              </Tooltip>
-            ) : (
-              <span />
-            )}
-            <Typography
-              className={classes.threadDate}
-              variant="subtitle1"
-              align="left"
-            >
-              {getLocalDate(threadData.createdAt)}
-            </Typography>
-          </Grid>
-          <Grid item className={classes.postWrapper} xs={12}>
-            {threadData.posts.map(post => {
-              return (
-                <PostDisplay
-                  user={user}
-                  postData={post}
-                  postLanguage={threadData.language.name}
-                  key={post._id}
-                  onEditPost={handlePostEdit}
-                  onErrors={handleErrors}
-                ></PostDisplay>
-              );
-            })}
-          </Grid>
-          <Grid item className={classes.editorWrapper} xs={12}>
-            <Button
-              className={classes.editButton}
-              variant="contained"
-              color="primary"
-              onClick={handleToggleReply}
-            >
-              {replyButtonText}
-            </Button>
-          </Grid>
-          <Grid item className={classes.editorWrapper} xs={12}>
-            <TextEditor
-              selectedLanguage={threadData.language.name}
-              onSubmit={handlePostEdit}
-              didSubmit={submitState}
-              hasContent={handleHasContent}
-              readOnly={readOnly}
-            ></TextEditor>
-          </Grid>
-          <Grid item xs={12} className={classes.editorWrapper}>
-            {readOnly ? (
-              <div></div>
-            ) : (
+          <Paper className={classes.header} elevation={3}>
+            <Grid item xs={12}>
+              <Typography
+                className={classes.threadTitle}
+                variant="h4"
+                align="left"
+              >
+                {threadData.title}
+              </Typography>
+              {ratingComponent()}
+              {displayDecline ? (
+                <Tooltip title="Decline to review this request?">
+                  <Button
+                    className={classes.declineButton}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleDecline}
+                  >
+                    Decline
+                  </Button>
+                </Tooltip>
+              ) : (
+                <span />
+              )}
+              <Typography
+                className={classes.threadDate}
+                variant="subtitle1"
+                align="left"
+              >
+                {getLocalDate(threadData.createdAt)}
+              </Typography>
+            </Grid>
+          </Paper>
+          <Paper className={classes.postWrapper} elevation={3}>
+            <Grid item xs={12}>
+              {threadData.posts.map(post => {
+                return (
+                  <PostDisplay
+                    user={user}
+                    postData={post}
+                    postLanguage={threadData.language.name}
+                    key={post._id}
+                    onEditPost={handlePostEdit}
+                    onErrors={handleErrors}
+                  ></PostDisplay>
+                );
+              })}
+            </Grid>
+            <Grid item className={classes.editorWrapper} xs={12}>
               <Button
                 className={classes.editButton}
                 variant="contained"
                 color="primary"
-                onClick={handleSaveReply}
+                onClick={handleToggleReply}
               >
-                Post
+                {replyButtonText}
               </Button>
-            )}
-          </Grid>
+            </Grid>
+            <Grid item className={classes.editorWrapper} xs={12}>
+              <TextEditor
+                selectedLanguage={threadData.language.name}
+                onSubmit={handlePostEdit}
+                didSubmit={submitState}
+                hasContent={handleHasContent}
+                readOnly={readOnly}
+              ></TextEditor>
+            </Grid>
+            <Grid item xs={12} className={classes.editorWrapper}>
+              {readOnly ? (
+                <div></div>
+              ) : (
+                <Button
+                  className={classes.editButton}
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSaveReply}
+                >
+                  Post
+                </Button>
+              )}
+            </Grid>
+          </Paper>
         </Grid>
         <AlertSnackbar
           openAlert={alertState}

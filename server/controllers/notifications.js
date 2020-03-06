@@ -36,6 +36,7 @@ const generateNotificationData = notification => {
   var result = {};
   result._id = notification._id;
   result.seen = notification.seen;
+  result.createdAt = notification.createdAt;
 
   switch (notification.event) {
     case 1:
