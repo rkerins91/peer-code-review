@@ -9,7 +9,14 @@ const useStyles = makeStyles({
   }
 });
 
-const ProfileName = ({ name, changeName, email, changeEmail, isEditing }) => {
+const ProfileName = ({
+  name,
+  changeName,
+  email,
+  changeEmail,
+  isEditing,
+  editable
+}) => {
   const classes = useStyles();
 
   const edit = () => {
@@ -45,6 +52,7 @@ const ProfileName = ({ name, changeName, email, changeEmail, isEditing }) => {
           <Typography variant="h3" color="primary">
             {name}
           </Typography>
+          {editable && <Typography variant="h5"> {email} </Typography>}
         </div>
       );
     }
