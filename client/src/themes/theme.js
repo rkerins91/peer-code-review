@@ -13,7 +13,7 @@ export const theme = createMuiTheme({
     secondary: { main: "#43DDC1" }, // turquoise
     background: { default: "#E7EBFB" },
     action: {
-      hover: "#6E3ADB"
+      hover: "#D3D3D3"
     }
   }
 });

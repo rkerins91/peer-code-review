@@ -18,15 +18,15 @@ import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
   root: {
-    padding: "8% 5%"
+    padding: "9vh 5%"
   },
   wrapper: {
     background: "white",
     borderRadius: "6px",
     width: "75%",
-    height: "80%",
-    margin: "6vh auto 0 auto",
-    padding: "5vh 10vh"
+    height: "80vh",
+    margin: "8vh auto 0 auto",
+    padding: "3vh 10vh"
   },
   header: {
     margin: "4vh",
@@ -167,7 +167,7 @@ const CodeUpload = () => {
 
   return (
     <div className={classes.root}>
-      <Paper elevation={3} className={classes.wrapper}>
+      <Paper elevation={5} className={classes.wrapper}>
         <Grid container justify="center" alignItems="center" spacing={2}>
           <Typography className={classes.header} variant="h3" align="center">
             Request a code review

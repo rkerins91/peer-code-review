@@ -4,7 +4,7 @@ import logo from "../assets/images/logo.svg";
 export const Logo = () => {
   const style = {
     backgroundImage: "url(" + logo + ")",
-    backgroundSize: "120px",
+    backgroundSize: "150px",
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
     height: "50px",

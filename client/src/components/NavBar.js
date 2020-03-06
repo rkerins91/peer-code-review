@@ -18,7 +18,7 @@ import Notifications from "components/Notifications";
 const useStyles = makeStyles({
   bar: {
     justifyContent: "space-between",
-    height: "10vh"
+    height: "9vh"
   },
   linkButton: {
     color: "white",

@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     background: "white",
     width: "100%",
     padding: "2em 2em",
-    marginBottom: "4px"
+    marginBottom: "8px"
   },
   postWrapper: {
     background: "white",
@@ -36,8 +36,7 @@ const useStyles = makeStyles({
   },
   editorWrapper: {
     background: "white",
-    width: "100%",
-    padding: "0 3em"
+    width: "100%"
   },
   threadTitle: {
     fontWeight: "500",
@@ -54,8 +53,7 @@ const useStyles = makeStyles({
   editButton: {
     backgroundColor: "#43DDC1",
     textTransform: "none",
-    margin: "1em 1em",
-    justifySelf: "center"
+    margin: "1em"
   },
   declineButton: {
     backgroundColor: "#43DDC1",

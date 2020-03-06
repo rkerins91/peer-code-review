@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     minWidth: "280px",
     width: "18vw",
     height: "calc(100% - 10vh)",
-    top: "10vh",
+    top: "9vh",
     zIndex: 1000 // z-index of app bar is 1100, default of drawer is 1200
   },
   list: {
@@ -115,7 +115,7 @@ const SideBar = ({
         variant="persistent"
         elevation={3}
       >
-        <List>
+        <List disablePadding={true}>
           <ListItem button onClick={openRequests}>
             <ListItemText>
               <Typography className={classes.header}>

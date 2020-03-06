@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
   container: {
     marginLeft: "20vw",
-    marginTop: "10vh",
+    marginTop: "9vh",
     width: "80vw",
     height: "90vh"
   },
