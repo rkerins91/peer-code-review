@@ -126,7 +126,7 @@ const ProfileActivity = ({ ownProfile, userId, user }) => {
       );
     } else {
       return (
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justify="center">
           <Typography variant="h4"> Activity </Typography>
           <Grid container justify="space-around">
             <Grid item xs={12} md={4}>
