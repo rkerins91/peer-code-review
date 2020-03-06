@@ -80,7 +80,11 @@ const ProfileActivity = ({ ownProfile, userId, user }) => {
                 <Typography variant="h6" component="h3">
                   {user.rating.averageRating}
                 </Typography>
-                <Rating value={user.rating.averageRating} disabled />
+                <Rating
+                  value={user.rating.averageRating}
+                  disabled
+                  precision={0.25}
+                />
               </CardContent>
             </Card>
           </Grid>
@@ -138,7 +142,7 @@ const ProfileActivity = ({ ownProfile, userId, user }) => {
                   <Typography gutterBottom variant="h5" component="h2">
                     {rating}
                   </Typography>
-                  <Rating value={rating} disabled />
+                  <Rating value={rating} precision={0.25} disabled />
                 </CardContent>
               </Card>
             </Grid>
