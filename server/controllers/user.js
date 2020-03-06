@@ -1,4 +1,4 @@
-const { User } = require("../database");
+const { User, Thread } = require("../database");
 const config = require("../config/config");
 
 module.exports = {
@@ -46,6 +46,15 @@ module.exports = {
     return updatedUser;
   },
 
+  editName: async (userId, reqBody) => {
+    const { name, email } = reqBody;
+    const user = await User.findById(userId);
+    user.name = name;
+    user.email = email;
+    const updatedUser = await user.save();
+    return updatedUser;
+  },
+
   newRating: async (userId, rating) => {
     try {
       if (rating < 0 || rating > 5) {
@@ -88,5 +97,17 @@ module.exports = {
       console.error(err);
       return null;
     }
+  },
+
+  getUserActivity: async id => {
+    const requests = await Thread.find({ creator: id });
+    const reviews = await Thread.find({ reviewer: id });
+    const user = await User.findById(id);
+
+    return {
+      requests: requests.length,
+      reviews: reviews.length,
+      rating: user.rating.averageRating
+    };
   }
 };
