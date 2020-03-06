@@ -29,6 +29,9 @@ const useStyles = makeStyles({
     padding: "2em 2em",
     marginBottom: "8px"
   },
+  container: {
+    paddingBottom: "4vh"
+  },
   postWrapper: {
     background: "white",
     width: "100%",
@@ -50,10 +53,17 @@ const useStyles = makeStyles({
   rating: {
     float: "right"
   },
+  replyButton: {
+    float: "right"
+  },
   editButton: {
     backgroundColor: "#43DDC1",
+    textTransform: "none"
+  },
+  postButton: {
+    backgroundColor: "#43DDC1",
     textTransform: "none",
-    margin: "1em"
+    margin: "1vh 0 4vh 0"
   },
   declineButton: {
     backgroundColor: "#43DDC1",
@@ -290,7 +300,7 @@ const ThreadDisplay = ({
   } else {
     return (
       <div className={classes.root}>
-        <Grid container>
+        <Grid container className={classes.container}>
           <Paper className={classes.header} elevation={3}>
             <Grid item xs={12}>
               <Typography
@@ -339,7 +349,7 @@ const ThreadDisplay = ({
                 );
               })}
             </Grid>
-            <Grid item className={classes.editorWrapper} xs={12}>
+            <Grid item className={classes.replyButton} xs={1}>
               <Button
                 className={classes.editButton}
                 variant="contained"
@@ -363,7 +373,7 @@ const ThreadDisplay = ({
                 <div></div>
               ) : (
                 <Button
-                  className={classes.editButton}
+                  className={classes.postButton}
                   variant="contained"
                   color="primary"
                   onClick={handleSaveReply}
