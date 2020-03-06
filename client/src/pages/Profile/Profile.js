@@ -14,6 +14,7 @@ const useStyles = makeStyles({
     paddingTop: "15vh",
     paddingLeft: "25vh",
     paddingRight: "25vh",
+    paddingBottom: "15vh",
     overflowX: "auto"
   },
   smallRoot: {
@@ -145,6 +146,7 @@ const Profile = ({ editable, userProp, width }) => {
       >
         <Grid item xs={12}>
           <Paper
+            elevation={24}
             className={`${classes.paper} ${
               width > 600 ? classes.paper : classes.smallPaper
             }`}
