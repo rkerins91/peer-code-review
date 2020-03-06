@@ -6,7 +6,6 @@ import { availableLanguages } from "utils";
 import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
-import { Redirect, useHistory } from "react-router-dom";
 import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
@@ -38,9 +37,9 @@ const useStyles = makeStyles({
     backgroundColor: "#F0F0F0"
   }
 });
-const Experience = () => {
+const Experience = ({ history }) => {
   const classes = useStyles();
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const defaultExperiences = [];
 
   // Set default experience shown to whatever user currently has on database
@@ -102,19 +101,10 @@ const Experience = () => {
       authHeader()
     );
     setSuccessful(data.message);
+    setUser({ ...user, experience: experienceToSubmit });
+    history.push("/");
   };
 
-  const redirectAfterSubmit = () => {
-    if (successful) {
-      setTimeout(() => {
-        window.location.reload(true);
-      }, 3000);
-    }
-  };
-
-  if (user && user.experience) {
-    return <Redirect to="/" />;
-  }
   return (
     <ExperienceContainer>
       <Grid container spacing={1} direction="column" justify="space-evenly">
@@ -163,11 +153,9 @@ const Experience = () => {
             Submit
           </Button>
         </Grid>
-        {/* if user updates successfully, show message for 5 seconds */}
-        {successful && (
-          <Typography className={classes.success}>{successful}</Typography>
-        )}
-        {redirectAfterSubmit()}
+      {/* if user updates successfully, show message for 5 seconds */}
+
+
       </Grid>
     </ExperienceContainer>
   );

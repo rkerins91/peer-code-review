@@ -18,7 +18,8 @@ const config = {
       "new-review",
       "new-assignment",
       "new-post-by-OP",
-      "new-post-by-reviewer"
+      "new-post-by-reviewer",
+      "new-rating"
     ],
     assignmentTimeout: 86400000, // 30 seconds for testing
     isAuth: passport.authenticate("jwt", { session: false })

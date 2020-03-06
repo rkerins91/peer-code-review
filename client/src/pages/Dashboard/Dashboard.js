@@ -104,7 +104,7 @@ const Dashboard = () => {
 
     try {
       const { data } = await axios({
-        url: `/threads/open/${user._id}`,
+        url: `/threads/all/${user._id}`,
         method: "get",
         headers: {
           "Content-Type": "application/json",
@@ -178,6 +178,16 @@ const Dashboard = () => {
   }, []);
 
   const selectDefault = () => {
+    if (threadParam) {
+      getThread();
+    } else if (typeParam) {
+      getType();
+    } else {
+      getDefault();
+    }
+  };
+
+  const getThread = () => {
     switch (typeParam) {
       case "requests":
         setSelectedThread(state.requests[threadParam]);
@@ -189,21 +199,46 @@ const Dashboard = () => {
         setSelectedThread(state.assigned[threadParam]);
         break;
       default:
-        // fallback, select the first thread in the first collection that has a thread as selected by default
-        if (Object.values(state.requests).length > 0) {
-          threadParam = Object.values(state.requests)[0]._id;
-          setSelectedThread(state.requests[threadParam]);
-          routeHistory.replace("/dashboard/requests/" + threadParam);
-        } else if (Object.values(state.reviews).length > 0) {
-          threadParam = Object.values(state.reviews)[0]._id;
-          setSelectedThread(state.reviews[threadParam]);
-          routeHistory.replace("/dashboard/reviews/" + threadParam);
-        } else if (Object.values(state.assigned).length > 0) {
-          threadParam = Object.values(state.assigned)[0]._id;
-          setSelectedThread(state.assigned[threadParam]);
-          routeHistory.replace("/dashboard/assigned/" + threadParam);
-        }
+        return null;
     }
+  };
+
+  const getType = () => {
+    switch (typeParam) {
+      case "requests":
+        if (Object.values(state.requests).length > 0) {
+          setSelectedByType(state.requests, "requests");
+        }
+        break;
+      case "reviews":
+        if (Object.values(state.reviews).length > 0) {
+          setSelectedByType(state.reviews, "reviews");
+        }
+        break;
+      case "assigned":
+        if (Object.values(state.assigned).length > 0) {
+          setSelectedByType(state.assigned, "assigned");
+        }
+        break;
+      default:
+        return null;
+    }
+  };
+
+  const getDefault = () => {
+    if (Object.values(state.requests).length > 0) {
+      setSelectedByType(state.requests, "requests");
+    } else if (Object.values(state.reviews).length > 0) {
+      setSelectedByType(state.reviews, "reviews");
+    } else if (Object.values(state.assigned).length > 0) {
+      setSelectedByType(state.assigned, "assigned");
+    }
+  };
+
+  const setSelectedByType = (typeState, typeName) => {
+    threadParam = Object.values(typeState)[0]._id;
+    setSelectedThread(typeState[threadParam]);
+    routeHistory.replace(`/dashboard/${typeName}/${threadParam}`);
   };
 
   useEffect(() => {

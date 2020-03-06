@@ -6,7 +6,9 @@ const config = require("../config/config");
 const {
   setExperience,
   updateCredits,
-  unassignThread
+  unassignThread,
+  editName,
+  getUserActivity
 } = require("../controllers/user");
 const matchingQueue = require("../services/matchingQueue");
 const { User, Thread } = require("../database");
@@ -147,13 +149,58 @@ router.get("/user/:id", isAuth, async (req, res) => {
         ]
       });
     } else {
+      user.password = undefined;
       res.status(201).json({
-        user: user
+        user
       });
     }
   } catch (err) {
     console.log(err);
   }
+});
+
+router.get("/user/profile/:id", isAuth, async (req, res) => {
+  const _id = req.params.id;
+  // Find if user exists
+
+  try {
+    var user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({
+        errors: [
+          {
+            value: _id,
+            msg: "Cannot find the user",
+            param: "id"
+          }
+        ]
+      });
+    } else {
+      user.password = undefined;
+      user.credits = undefined;
+      res.status(201).json({
+        user
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+router.put("/user/:id/edit", isAuth, async (req, res) => {
+  try {
+    const updatedUser = await editName(req.params.id, req.body);
+    res.status(200).send(updatedUser);
+  } catch (error) {
+    res.status(500).send({ error });
+  }
+});
+
+router.get("/user/:id/activity", isAuth, async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  const userActivity = await getUserActivity(id);
+  res.status(200).send(userActivity);
 });
 
 router.put("/user/:id/experience", isAuth, async (req, res) => {
@@ -230,6 +277,16 @@ router.patch("/user/:id/decline-request/:requestId", async (req, res) => {
 //Route used for testing
 router.get("/users/all", async (req, res) => {
   const users = await User.find({ assignedThreads: { $exists: true } });
+  res.status(200).json({
+    users
+  });
+});
+
+router.patch("/users/rating", async (req, res) => {
+  const users = await User.updateMany(
+    { _id: { $exists: true } },
+    { rating: { averageRating: 3, count: 0 } }
+  );
   res.status(200).json({
     users
   });

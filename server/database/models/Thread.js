@@ -26,7 +26,11 @@ const threadSchema = new Schema(
       experience: Number
     },
     posts: [postSchema],
-    noAssign: [{ type: Schema.Types.ObjectId, ref: "User" }]
+    noAssign: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    rating: {
+      type: Number,
+      default: 3
+    }
   },
   { timestamps: true }
 );

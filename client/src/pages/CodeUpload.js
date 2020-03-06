@@ -170,7 +170,13 @@ const CodeUpload = () => {
 
   return (
     <div className={classes.root}>
-      <Grid className={classes.wrapper} container justify="center" spacing={2}>
+      <Grid
+        className={classes.wrapper}
+        container
+        justify="center"
+        alignItems="center"
+        spacing={2}
+      >
         <Typography className={classes.header} variant="h3" align="center">
           Request a code review
         </Typography>
