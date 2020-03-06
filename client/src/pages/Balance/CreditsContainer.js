@@ -11,10 +11,8 @@ const useStyles = makeStyles({
     width: "50vw",
     maxHeight: "80vh",
     minHeight: "20vh",
-    overflowY: "auto",
-    padding: "5vh",
+    padding: "5vh 0",
     textAlign: "center",
-    rounded: true,
     backgroundColor: "white",
     margin: "auto"
   }
