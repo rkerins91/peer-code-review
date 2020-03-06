@@ -153,13 +153,9 @@ const Experience = ({ history }) => {
             Submit
           </Button>
         </Grid>
-        {/* if user updates successfully, show message for 5 seconds */}
-        {successful &&
-          setTimeout(() => {
-            setSuccessful(false);
-          }, 5000) && (
-            <Typography className={classes.success}>{successful}</Typography>
-          )}
+      {/* if user updates successfully, show message for 5 seconds */}
+
+
       </Grid>
     </ExperienceContainer>
   );
