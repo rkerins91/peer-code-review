@@ -17,7 +17,7 @@ import { Rating } from "@material-ui/lab";
 
 const useStyles = makeStyles({
   root: {
-    minHeight: "12vh"
+    minHeight: "17vh"
   },
   paper: {
     minHeight: "75vh",
@@ -132,7 +132,7 @@ const ProfileActivity = ({ ownProfile, userId, user }) => {
       return (
         <Grid container spacing={4} justify="center">
           <Typography variant="h4"> Activity </Typography>
-          <Grid container justify="space-around">
+          <Grid container item justify="space-around">
             <Grid item xs={12} md={4}>
               <Card className={classes.root}>
                 <CardContent>
