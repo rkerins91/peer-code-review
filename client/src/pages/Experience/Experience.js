@@ -6,7 +6,7 @@ import { availableLanguages } from "utils";
 import { Grid, Button, Typography, makeStyles } from "@material-ui/core";
 import AddCircleOutlineOutlinedIcon from "@material-ui/icons/AddCircleOutlineOutlined";
 import axios from "axios";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import { authHeader } from "functions/jwt";
 
 const useStyles = makeStyles({
@@ -104,72 +104,73 @@ const Experience = () => {
     setSuccessful(data.message);
   };
 
+  const redirectAfterSubmit = () => {
+    if (successful) {
+      setTimeout(() => {
+        window.location.reload(true);
+      }, 3000);
+    }
+  };
+
   if (user && user.experience) {
     return <Redirect to="/" />;
-  } else
-    return (
-      <ExperienceContainer>
-        <Grid container spacing={1} direction="column" justify="space-evenly">
-          <Grid item xs={12}>
-            <Typography className={classes.text}>
-              Add your experience here
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Grid
-              container
-              spacing={3}
-              direction="column"
-              justify="space-evenly"
-            >
-              {experience.map((ele, idx) => {
-                const currLanguage = Object.keys(experience[idx])[0];
-                return (
-                  <Grid item key={currLanguage}>
-                    <NewExperienceForm
-                      updateExperience={updateExperience}
-                      language={currLanguage}
-                      level={ele[currLanguage]}
-                      availableLanguages={newUnselectedLanguages}
-                      deleteExperience={deleteExperience}
-                      index={idx}
-                      experience={experience}
-                      deletable={experience.length > 1}
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
-          </Grid>
-          {/* <Grid className={classes.buttonContainer}> */}
-          {experience.length < availableLanguages.length && (
-            <Grid item>
-              <AddCircleOutlineOutlinedIcon
-                className={classes.add}
-                onClick={addExperience}
-              />
-            </Grid>
-          )}
-          <Grid item xs={12}>
-            <Button
-              className={classes.button}
-              onClick={handleSubmit}
-              variant="contained"
-              color="primary"
-            >
-              Submit
-            </Button>
-          </Grid>
-          {/* if user updates successfully, show message for 5 seconds */}
-          {successful &&
-            setTimeout(() => {
-              setSuccessful(false);
-            }, 5000) && (
-              <Typography className={classes.success}>{successful}</Typography>
-            )}
+  }
+  return (
+    <ExperienceContainer>
+      <Grid container spacing={1} direction="column" justify="space-evenly">
+        <Grid item xs={12}>
+          <Typography className={classes.text}>
+            Add your experience here
+          </Typography>
         </Grid>
-      </ExperienceContainer>
-    );
+        <Grid item xs={12}>
+          <Grid container spacing={3} direction="column" justify="space-evenly">
+            {experience.map((ele, idx) => {
+              const currLanguage = Object.keys(experience[idx])[0];
+              return (
+                <Grid item key={currLanguage}>
+                  <NewExperienceForm
+                    updateExperience={updateExperience}
+                    language={currLanguage}
+                    level={ele[currLanguage]}
+                    availableLanguages={newUnselectedLanguages}
+                    deleteExperience={deleteExperience}
+                    index={idx}
+                    experience={experience}
+                    deletable={experience.length > 1}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+        </Grid>
+        {/* <Grid className={classes.buttonContainer}> */}
+        {experience.length < availableLanguages.length && (
+          <Grid item>
+            <AddCircleOutlineOutlinedIcon
+              className={classes.add}
+              onClick={addExperience}
+            />
+          </Grid>
+        )}
+        <Grid item xs={12}>
+          <Button
+            className={classes.button}
+            onClick={handleSubmit}
+            variant="contained"
+            color="primary"
+          >
+            Submit
+          </Button>
+        </Grid>
+        {/* if user updates successfully, show message for 5 seconds */}
+        {successful && (
+          <Typography className={classes.success}>{successful}</Typography>
+        )}
+        {redirectAfterSubmit()}
+      </Grid>
+    </ExperienceContainer>
+  );
 };
 
 export default Experience;
