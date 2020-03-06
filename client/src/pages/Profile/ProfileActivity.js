@@ -13,8 +13,12 @@ import axios from "axios";
 import { authHeader } from "functions/jwt";
 import coding from "assets/images/coding.jpeg";
 import codeRequest from "assets/images/codeRequest.jpeg";
+import { Rating } from "@material-ui/lab";
 
 const useStyles = makeStyles({
+  root: {
+    minHeight: "12vh"
+  },
   paper: {
     minHeight: "75vh",
     textAlign: "center",
@@ -31,11 +35,15 @@ const useStyles = makeStyles({
   },
   media: {
     height: "400px",
-    width: "400px"
+    width: "400px",
+    margin: "auto"
+  },
+  cardImg: {
+    margin: "auto"
   }
 });
 
-const ProfileActivity = ({ ownProfile, userId }) => {
+const ProfileActivity = ({ ownProfile, userId, user }) => {
   const [numRequests, setNumRequests] = useState(0);
   const [numReviews, setNumReviews] = useState(0);
   const [rating, setRating] = useState(0);
@@ -59,8 +67,23 @@ const ProfileActivity = ({ ownProfile, userId }) => {
   const ownProfileDisplay = () => {
     if (ownProfile) {
       return (
-        <Grid container direction="column" justify="center">
-          <Typography variant="h4">Activity</Typography>
+        <Grid container direction="column" justify="center" spacing={4}>
+          <Grid item>
+            <Typography variant="h4">Activity</Typography>
+          </Grid>
+          <Grid item>
+            <Card className={classes.root}>
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="h2">
+                  My Rating
+                </Typography>
+                <Typography variant="h6" component="h3">
+                  {user.rating.averageRating}
+                </Typography>
+                <Rating value={user.rating.averageRating} disabled />
+              </CardContent>
+            </Card>
+          </Grid>
           <Grid container justify="space-around">
             <Grid item xs={12} md={6}>
               <Link to="/dashboard/reviews" className={classes.link}>
@@ -68,7 +91,7 @@ const ProfileActivity = ({ ownProfile, userId }) => {
                   <CardActionArea>
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="h2">
-                        Reviews
+                        My Reviews
                       </Typography>
                     </CardContent>
                     <CardMedia
@@ -86,7 +109,7 @@ const ProfileActivity = ({ ownProfile, userId }) => {
                   <CardActionArea>
                     <CardContent>
                       <Typography gutterBottom variant="h5" component="h2">
-                        Requests
+                        My Requests
                       </Typography>
                     </CardContent>
                     <CardMedia
@@ -103,49 +126,44 @@ const ProfileActivity = ({ ownProfile, userId }) => {
       );
     } else {
       return (
-        <Grid>
+        <Grid container spacing={4}>
           <Typography variant="h4"> Activity </Typography>
           <Grid container justify="space-around">
             <Grid item xs={12} md={4}>
               <Card className={classes.root}>
-                <CardActionArea>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Rating
-                    </Typography>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {rating}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Rating
+                  </Typography>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {rating}
+                  </Typography>
+                  <Rating value={rating} disabled />
+                </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12} md={4}>
               <Card className={classes.root}>
-                <CardActionArea>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Reviews
-                    </Typography>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {numReviews}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Reviews
+                  </Typography>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {numReviews}
+                  </Typography>
+                </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12} md={4}>
               <Card className={classes.root}>
-                <CardActionArea>
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Requests
-                    </Typography>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {numRequests}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    Requests
+                  </Typography>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {numRequests}
+                  </Typography>
+                </CardContent>
               </Card>
             </Grid>
           </Grid>

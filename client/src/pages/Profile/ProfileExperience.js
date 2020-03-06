@@ -15,6 +15,9 @@ const useStyles = makeStyles({
   },
   level: {
     fontSize: "3vh"
+  },
+  link: {
+    color: "black"
   }
 });
 
@@ -31,7 +34,7 @@ const ProfileExperience = ({ experience, editable }) => {
         <Grid item xs={11} />
         {editable ? (
           <Grid item xs={1}>
-            <Link to="/experience">
+            <Link to="/experience" className={classes.link}>
               <EditIcon />
             </Link>
           </Grid>

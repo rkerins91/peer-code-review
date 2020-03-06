@@ -29,7 +29,8 @@ const useStyles = makeStyles({
     marginLeft: "5px"
   },
   link: {
-    textDecoration: "none"
+    textDecoration: "none",
+    color: "black"
   }
 });
 

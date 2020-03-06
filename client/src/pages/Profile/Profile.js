@@ -60,8 +60,6 @@ const Profile = ({ editable, userProp, width }) => {
   const [email, setEmail] = useState(user.email);
   // Sort experience alphabetically for consistency
 
-  console.log(userId);
-
   const [experience, setExperience] = useState(alphabetizeExp(user.experience));
 
   useDeepCompareEffect(() => {
@@ -94,7 +92,7 @@ const Profile = ({ editable, userProp, width }) => {
         email,
         experience
       },
-      authHeader
+      authHeader()
     );
     toggleEditing();
     setUser({ ...user, name, email });
@@ -157,7 +155,11 @@ const Profile = ({ editable, userProp, width }) => {
                 />
               </Grid>
               <Grid item>
-                <ProfileActivity ownProfile={userProp} userId={userId} />
+                <ProfileActivity
+                  ownProfile={userProp}
+                  userId={userId}
+                  user={user}
+                />
               </Grid>
             </Grid>
           </Paper>

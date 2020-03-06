@@ -45,7 +45,6 @@ const ProfileName = ({ name, changeName, email, changeEmail, isEditing }) => {
           <Typography variant="h3" color="primary">
             {name}
           </Typography>
-          <Typography variant="h5"> {email} </Typography>
         </div>
       );
     }
