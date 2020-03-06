@@ -24,11 +24,11 @@ const Home = () => {
         <Switch>
           <Route path="/balance" component={Balance} />
           <Route path="/code-upload" component={CodeUpload} />
-          <Route path="/dashboard/:typeParam" children={<Dashboard />} />
           <Route
             path="/dashboard/:typeParam/:threadParam"
             children={<Dashboard />}
           />
+          <Route path="/dashboard/:typeParam" children={<Dashboard />} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profile/:userId" component={Profile} />
           <Route exact path="/" component={MyProfile} />
