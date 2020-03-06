@@ -56,6 +56,10 @@ const useStyles = makeStyles({
     textDecoration: "none",
     marginLeft: "1vw",
     textTransform: "none"
+  },
+  dropdownItem: {
+    color: "black",
+    margin: "0"
   }
 });
 
@@ -130,8 +134,18 @@ const NavBar = () => {
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
+              <Link
+                to={`/profile/${user._id}`}
+                className={`${classes.link} ${classes.dropdownItem}`}
+              >
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+              </Link>
+              <Link
+                to="/"
+                className={`${classes.link} ${classes.dropdownItem}`}
+              >
+                <MenuItem onClick={handleClose}>My account</MenuItem>
+              </Link>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>

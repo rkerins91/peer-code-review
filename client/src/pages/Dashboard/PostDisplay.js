@@ -6,6 +6,9 @@ import {
   Button,
   Divider
 } from "@material-ui/core";
+import { Link } from "react-router-dom";
+import EditIcon from "@material-ui/icons/Edit";
+import CloseIcon from "@material-ui/icons/Close";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { TextEditor } from "components";
 
@@ -23,9 +26,19 @@ const useStyles = makeStyles({
     paddingLeft: "5em"
   },
   editButton: {
-    backgroundColor: "#43DDC1",
+    color: "#888888",
     textTransform: "none",
     marginLeft: "5px"
+  },
+  link: {
+    textDecoration: "none",
+    color: "black"
+  },
+  saveGrid: {
+    marginBottom: "2vh"
+  },
+  saveButton: {
+    background: "#43DDC1"
   }
 });
 
@@ -42,7 +55,6 @@ const PostDisplay = ({
   const [readOnly, setReadOnly] = useState(true);
   const [submitState, setSubmitState] = useState(false);
   const [editorHasContent, setEditorHasContent] = useState(false);
-  const [editButtonText, setEditButtonText] = useState("Edit");
 
   //check for errors before telling text editor to go through data conversion
   const handleSave = () => {
@@ -52,16 +64,22 @@ const PostDisplay = ({
     } else {
       setSubmitState(true);
       setReadOnly(true);
-      setEditButtonText("Edit");
     }
   };
 
   const handleToggleEdit = () => {
-    setReadOnly(!readOnly);
-    if (editButtonText === "Edit") {
-      setEditButtonText("Cancel");
+    setReadOnly(prev => !prev);
+  };
+
+  const editIcon = () => {
+    if (readOnly) {
+      return (
+        <EditIcon className={classes.editButton} onClick={handleToggleEdit} />
+      );
     } else {
-      setEditButtonText("Edit");
+      return (
+        <CloseIcon className={classes.editButton} onClick={handleToggleEdit} />
+      );
     }
   };
 
@@ -83,38 +101,17 @@ const PostDisplay = ({
   }
   return (
     <div className={classes.root}>
-      <Grid container spacing={1} justify="flex-start" alignItems="center">
-        <Grid item xs={12}>
-          <AccountCircle className={classes.posterInfo} />
-          <Typography className={classes.posterInfo}>
-            {postData.authorName}
-          </Typography>
+      <Grid container spacing={1} justify="space-between" alignItems="center">
+        <Grid item xs={11}>
+          <Link to={`/profile/${postData.author}`} className={classes.link}>
+            <AccountCircle className={classes.posterInfo} />
+            <Typography className={classes.posterInfo}>
+              {postData.authorName}
+            </Typography>
+          </Link>
         </Grid>
-        <Grid item xs={5}>
-          {postData.author === user._id ? (
-            <Button
-              className={classes.editButton}
-              variant="contained"
-              color="primary"
-              onClick={handleToggleEdit}
-            >
-              {editButtonText}
-            </Button>
-          ) : (
-            <div></div>
-          )}
-          {readOnly ? (
-            <div></div>
-          ) : (
-            <Button
-              className={classes.editButton}
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-            >
-              Save
-            </Button>
-          )}
+        <Grid item xs={1}>
+          {postData.author === user._id ? editIcon() : <div></div>}
         </Grid>
         <Grid item className={classes.editor} xs={12}>
           <TextEditor
@@ -126,6 +123,20 @@ const PostDisplay = ({
             existingContent={postData.data}
             postId={postData._id}
           ></TextEditor>
+        </Grid>
+        <Grid item className={classes.saveGrid}>
+          {readOnly ? (
+            <div></div>
+          ) : (
+            <Button
+              className={classes.saveButton}
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+            >
+              Save
+            </Button>
+          )}
         </Grid>
       </Grid>
       <Divider />
