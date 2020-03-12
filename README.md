@@ -30,3 +30,21 @@
 1. From server directory, run `npm run dev`
 2. From client directory, run `npm start`
 
+___
+
+## What is Peer Code Review?
+
+Peer code review is an application that allows users to request code reviews from people who have more experience in specific programming languages than them. Users can create an account, set their experience, upload code to be reviewed using our rich text editor, purchase credits to get more reviews, view the profiles of other users, and get notifications when they have a new review or when they get assigned code to review.
+
+## Who built it?
+
+Peer Code Review was built by Ryan Kerins, Alexander Han, and Nicolas Harrison
+
+## The tech stack
+
+- Node/Express on the back end
+- React/MaterialUI on the front end
+- Payments are handled with Stripe API
+- Notifications are handled with Socket.io
+- Assigning jobs are handled with Bull.js and redis
+
