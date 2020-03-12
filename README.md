@@ -3,7 +3,7 @@
 ## To Run Locally
 
 ### Install dependencies
-1. `git clone `
+1. `git clone https://github.com/rkerins91/peer-code-review.git`
 2. Navigate to root directory on shell
 3. Navigate to client directory and run `npm install`
 4. Navigate to server directory and run `npm intall`
