@@ -43,6 +43,7 @@ Peer Code Review was built by Ryan Kerins, Alexander Han, and Nicolas Harrison
 ## The tech stack
 
 - Node/Express on the back end
+- MongoDB with Mongoose ODM
 - React/MaterialUI on the front end
 - Payments are handled with Stripe API
 - Notifications are handled with Socket.io
